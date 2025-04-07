@@ -25,25 +25,24 @@ interface MonthData {
 const GitHubContributions = () => {
   const [year] = useState("2025");
   
-  // Generate mock contribution data - simplified for a cleaner look
+  // Generate mock contribution data
   const generateMockData = (): MonthData[] => {
-    // Use only 6 months to match the image
-    const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+    // Use 12 months to match the image
+    const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
     const mockData: MonthData[] = [];
     
     months.forEach((month, monthIndex) => {
-      const daysInMonth = new Date(2025, monthIndex + 4, 0).getDate(); // Starting from April (month 4)
+      const daysInMonth = 31; // Simplified for visual consistency
       const days: ContributionDay[] = [];
       
       for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(2025, monthIndex + 3, i);
-        
-        // Generate random contribution count with more zeros for a sparse look
-        const rand = Math.random();
-        let count = 0;
+        // Generate a pattern similar to the image
         let level: ContributionLevel = 0;
+        let count = 0;
         
-        if (rand > 0.75) {
+        // Create a pattern that resembles the image
+        const rand = Math.random();
+        if (rand > 0.8) {
           if (rand > 0.95) {
             count = Math.floor(Math.random() * 10) + 10;
             level = 4;
@@ -60,7 +59,7 @@ const GitHubContributions = () => {
         }
         
         days.push({
-          date: `${month} ${i}, 2025`,
+          date: `${month} ${i}, ${month === "Jan" || month === "Feb" || month === "Mar" ? "2025" : "2024"}`,
           count,
           level,
         });
@@ -76,13 +75,13 @@ const GitHubContributions = () => {
   };
   
   const contributionsData = generateMockData();
-  const totalContributions = 1362; // Hardcoded to match the design
+  const totalContributions = 1362; // Hardcoded to match the image
     
-  // Get color for contribution level - styled for dark theme with teal colors
+  // Get color for contribution level
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
-        return "bg-gray-800/60 hover:bg-gray-700/60";
+        return "bg-gray-800 hover:bg-gray-700";
       case 1:
         return "bg-teal-900 hover:bg-teal-800";
       case 2:
@@ -92,7 +91,7 @@ const GitHubContributions = () => {
       case 4:
         return "bg-teal-300 hover:bg-teal-200";
       default:
-        return "bg-gray-800/60 hover:bg-gray-700/60";
+        return "bg-gray-800 hover:bg-gray-700";
     }
   };
   
@@ -101,7 +100,7 @@ const GitHubContributions = () => {
       <CardContent className="p-5">
         <div className="w-full">
           {/* Month labels */}
-          <div className="grid grid-cols-6 gap-1 mb-2 text-xs text-gray-500">
+          <div className="grid grid-cols-12 gap-1 mb-2 text-xs text-gray-400">
             {contributionsData.map((month, index) => (
               <div key={index} className="text-center">
                 {month.name}
@@ -109,35 +108,40 @@ const GitHubContributions = () => {
             ))}
           </div>
           
-          {/* Contribution grid - even more compact */}
-          <div className="space-y-[2px]">
+          {/* Contribution grid */}
+          <div className="grid grid-flow-col gap-[2px]">
             {Array.from({ length: 7 }).map((_, rowIndex) => (
-              <div key={rowIndex} className="flex">
-                <div className="grow grid grid-cols-[repeat(180,minmax(0,1fr))] gap-[1px]">
-                  {contributionsData.flatMap((month) => 
-                    month.days.map((day, dayIndex) => {
-                      // Generate a pattern similar to the image
-                      let level: ContributionLevel = 0;
-                      if ((rowIndex + dayIndex) % 7 === 3 || (rowIndex * dayIndex) % 11 === 2) {
-                        level = Math.floor(Math.random() * 4) as ContributionLevel;
-                        if (level > 0) level = (level % 3 + 1) as ContributionLevel;
-                      }
-                      
-                      return (
-                        <TooltipProvider key={`${month.name}-${dayIndex}`}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className={cn("w-[9px] h-[9px] rounded-[1px]", getContributionColor(level))} />
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200">
-                              {level === 0 ? "No" : level} contribution{level !== 1 ? 's' : ''} on {day.date}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      );
-                    })
-                  )}
-                </div>
+              <div key={rowIndex} className="flex flex-col gap-[2px]">
+                {Array.from({ length: 52 }).map((_, colIndex) => {
+                  // Calculate month and day
+                  const monthIndex = Math.floor(colIndex / 4.33);
+                  const dayWithinMonth = Math.floor(colIndex % 4.33);
+                  
+                  const monthData = contributionsData[monthIndex >= 12 ? 11 : monthIndex];
+                  
+                  // Create a pattern that resembles the image
+                  let level: ContributionLevel = 0;
+                  if ((rowIndex * 53 + colIndex) % 5 === 1 || (rowIndex * colIndex) % 7 === 3) {
+                    level = (Math.random() > 0.5 ? 
+                      Math.floor(Math.random() * 4) as ContributionLevel : 
+                      0) as ContributionLevel;
+                  }
+                  
+                  const date = monthData ? `${monthData.name} ${dayWithinMonth + 1}, ${monthData.name === "Jan" || monthData.name === "Feb" || monthData.name === "Mar" ? "2025" : "2024"}` : "";
+                  
+                  return (
+                    <TooltipProvider key={`${rowIndex}-${colIndex}`}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className={cn("w-3 h-3 rounded-sm", getContributionColor(level))} />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200">
+                          {level === 0 ? "No" : level} contribution{level !== 1 ? 's' : ''} on {date}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                })}
               </div>
             ))}
           </div>
@@ -154,7 +158,7 @@ const GitHubContributions = () => {
                 {[0, 1, 2, 3, 4].map((level) => (
                   <div 
                     key={level} 
-                    className={cn("w-[10px] h-[10px] rounded-[1px]", getContributionColor(level as ContributionLevel))}
+                    className={cn("w-[10px] h-[10px] rounded-sm", getContributionColor(level as ContributionLevel))}
                   />
                 ))}
               </div>

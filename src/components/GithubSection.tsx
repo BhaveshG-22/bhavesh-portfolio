@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 const GithubSection = () => {
   return (
-    <section id="github" className="section-padding bg-gray-950 py-20">
+    <section id="github" className="section-padding bg-black py-20">
       <div className="max-container">
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 flex items-center gap-2 text-white">
@@ -20,7 +20,7 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full max-w-5xl mx-auto">
           <GitHubContributions />
         </div>
         
