@@ -1,4 +1,3 @@
-
 import TechStackSlider from "./TechStackSlider";
 import { 
   Code, 
@@ -27,34 +26,43 @@ import {
 } from "lucide-react";
 
 const SkillsSection = () => {
-  // Tech stacks for sliders with standard Lucide icons
-  const frontendTech = [
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "CSS", icon: Braces, color: "bg-blue-500" },
-    { name: "JavaScript", icon: FileCode, color: "bg-yellow-500" },
-    { name: "TypeScript", icon: Code, color: "bg-blue-600" },
-    { name: "React", icon: Webhook, color: "bg-cyan-500" },
-    { name: "Next.js", icon: Milestone, color: "bg-black" },
-    { name: "TailwindCSS", icon: Layers, color: "bg-cyan-400" },
-    { name: "Vue", icon: Box, color: "bg-green-500" },
-    { name: "Angular", icon: Monitor, color: "bg-red-500" },
-    { name: "Svelte", icon: Zap, color: "bg-orange-600" }
+  // Tech stacks split into smaller groups to prevent overflow
+  const frontendTechGroup1 = [
+    { name: "HTML", logo: <Globe className="h-4 w-4" />, color: "bg-orange-500" },
+    { name: "CSS", logo: <Braces className="h-4 w-4" />, color: "bg-blue-500" },
+    { name: "JavaScript", logo: <FileCode className="h-4 w-4" />, color: "bg-yellow-500" },
+    { name: "TypeScript", logo: <Code className="h-4 w-4" />, color: "bg-blue-600" },
+    { name: "React", logo: <Webhook className="h-4 w-4" />, color: "bg-cyan-500" }
   ];
   
-  const backendTech = [
-    { name: "Node.js", icon: Server, color: "bg-green-600" },
-    { name: "Express", icon: Activity, color: "bg-gray-700" },
-    { name: "Python", icon: FileCog, color: "bg-blue-500" },
-    { name: "Flask", icon: Terminal, color: "bg-black" },
-    { name: "MongoDB", icon: Database, color: "bg-green-700" },
-    { name: "Firebase", icon: Cloud, color: "bg-yellow-600" },
-    { name: "TensorFlow", icon: LineChart, color: "bg-orange-500" },
-    { name: "C++", icon: Cpu, color: "bg-blue-600" },
-    { name: "Nginx", icon: Network, color: "bg-green-500" },
-    { name: "Keras", icon: BarChart, color: "bg-red-500" },
-    { name: "Solidity", icon: Lock, color: "bg-gray-800" },
-    { name: "Bun", icon: Rocket, color: "bg-pink-500" },
-    { name: "Arch Linux", icon: HardDrive, color: "bg-blue-800" }
+  const frontendTechGroup2 = [
+    { name: "Next.js", logo: <Milestone className="h-4 w-4" />, color: "bg-black" },
+    { name: "TailwindCSS", logo: <Layers className="h-4 w-4" />, color: "bg-cyan-400" },
+    { name: "Vue", logo: <Box className="h-4 w-4" />, color: "bg-green-500" },
+    { name: "Angular", logo: <Monitor className="h-4 w-4" />, color: "bg-red-500" },
+    { name: "Svelte", logo: <Zap className="h-4 w-4" />, color: "bg-orange-600" }
+  ];
+  
+  const backendTechGroup1 = [
+    { name: "Node.js", logo: <Server className="h-4 w-4" />, color: "bg-green-600" },
+    { name: "Express", logo: <Activity className="h-4 w-4" />, color: "bg-gray-700" },
+    { name: "Python", logo: <FileCog className="h-4 w-4" />, color: "bg-blue-500" },
+    { name: "Flask", logo: <Terminal className="h-4 w-4" />, color: "bg-black" },
+    { name: "MongoDB", logo: <Database className="h-4 w-4" />, color: "bg-green-700" }
+  ];
+  
+  const backendTechGroup2 = [
+    { name: "Firebase", logo: <Cloud className="h-4 w-4" />, color: "bg-yellow-600" },
+    { name: "TensorFlow", logo: <LineChart className="h-4 w-4" />, color: "bg-orange-500" },
+    { name: "C++", logo: <Cpu className="h-4 w-4" />, color: "bg-blue-600" },
+    { name: "Nginx", logo: <Network className="h-4 w-4" />, color: "bg-green-500" },
+    { name: "Keras", logo: <BarChart className="h-4 w-4" />, color: "bg-red-500" }
+  ];
+  
+  const backendTechGroup3 = [
+    { name: "Solidity", logo: <Lock className="h-4 w-4" />, color: "bg-gray-800" },
+    { name: "Bun", logo: <Rocket className="h-4 w-4" />, color: "bg-pink-500" },
+    { name: "Arch Linux", logo: <HardDrive className="h-4 w-4" />, color: "bg-blue-800" }
   ];
 
   return (
@@ -70,11 +78,49 @@ const SkillsSection = () => {
             Here's a glimpse of my technical expertise and the technologies I work with.
           </p>
         </div>
-
-        {/* Tech stack sliders - removed shadow class */}
+        
+        {/* Tech stack sliders - distributed into more rows to prevent overflow */}
         <div className="mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-4">
-          <TechStackSlider direction="ltr" speed="medium" items={frontendTech} />
-          <TechStackSlider direction="rtl" speed="medium" items={backendTech} />
+          <div className="mb-2">
+            <h3 className="text-sm font-medium text-muted-foreground mb-1 ml-4">Front-end Technologies</h3>
+            <TechStackSlider 
+              direction="ltr" 
+              speed="medium" 
+              items={frontendTechGroup1} 
+              variant="glassmorphic"
+              className="mb-2" 
+            />
+            <TechStackSlider 
+              direction="rtl" 
+              speed="medium" 
+              items={frontendTechGroup2} 
+              variant="glassmorphic"
+            />
+          </div>
+          
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-muted-foreground mb-1 ml-4">Back-end & Other Technologies</h3>
+            <TechStackSlider 
+              direction="ltr" 
+              speed="medium" 
+              items={backendTechGroup1} 
+              variant="glassmorphic"
+              className="mb-2" 
+            />
+            <TechStackSlider 
+              direction="rtl" 
+              speed="medium" 
+              items={backendTechGroup2} 
+              variant="glassmorphic"
+              className="mb-2" 
+            />
+            <TechStackSlider 
+              direction="ltr" 
+              speed="medium" 
+              items={backendTechGroup3} 
+              variant="glassmorphic"
+            />
+          </div>
         </div>
       </div>
     </section>
