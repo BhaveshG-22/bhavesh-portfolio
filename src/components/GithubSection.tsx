@@ -18,7 +18,7 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <div className="glassmorphism dark:glass-morphism p-6 rounded-lg">
+        <div className="w-full">
           <GitHubContributions />
         </div>
         

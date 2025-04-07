@@ -104,7 +104,7 @@ const GitHubContributions = () => {
   };
   
   return (
-    <div className="glassmorphism rounded-xl p-6 w-full max-w-4xl mx-auto">
+    <div className="glassmorphism rounded-xl p-6 w-full mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h3 className="text-xl font-bold flex items-center gap-2">
@@ -150,8 +150,8 @@ const GitHubContributions = () => {
         </div>
       </div>
       
-      <div className="relative overflow-x-auto pb-4">
-        <div className="min-w-[720px]">
+      <div className="relative overflow-x-auto pb-4 w-full">
+        <div className="w-full min-w-[720px]">
           <div className="flex mb-2">
             <div className="w-8 shrink-0"></div>
             <div className="grow grid grid-cols-12 gap-1">
@@ -165,7 +165,7 @@ const GitHubContributions = () => {
           
           <div className="flex flex-col gap-1">
             {["Mon", "Wed", "Fri"].map((day, dayIndex) => (
-              <div key={dayIndex} className="flex items-center">
+              <div key={dayIndex} className="flex items-center w-full">
                 <div className="w-8 text-xs text-gray-600 dark:text-gray-400 shrink-0">{day}</div>
                 <div className="grow grid grid-cols-52 gap-1">
                   {contributionsData.flatMap((month) => 

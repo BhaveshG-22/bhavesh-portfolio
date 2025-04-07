@@ -76,7 +76,8 @@ const TechStackSlider = ({ direction, speed = "medium", items }: SliderProps) =>
         style={{
           animationPlayState: isHovered ? "paused" : "running",
           animationDuration: animationDuration[speed],
-          animationDirection: direction === "rtl" ? "reverse" : "normal"
+          animationDirection: direction === "rtl" ? "reverse" : "normal",
+          width: "fit-content"
         }}
       >
         {allItems.map((item, index) => (
