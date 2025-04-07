@@ -94,7 +94,7 @@ const ProjectsSection = () => {
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
           <div className="w-20 h-1.5 bg-primary rounded-full mb-8" />
-          <p className="text-lg text-muted-foreground max-w-3xl">
+          <p className="text-lg text-foreground/80 max-w-3xl">
             Browse through a selection of my recent work showcasing my skills in building full-stack applications,
             responsive interfaces, and robust backend systems.
           </p>
@@ -151,7 +151,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
   return (
     <Card className="group overflow-hidden glassmorphism-card border-0">
       <div className="relative h-48 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors z-10" />
+        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors z-10" />
         <img
           src={project.image}
           alt={project.title}
@@ -162,7 +162,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
         <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
           {project.title}
         </h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-sm text-foreground/80 mb-4">
           {project.description}
         </p>
         <div className="flex flex-wrap gap-2 mb-4">

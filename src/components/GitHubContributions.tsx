@@ -89,17 +89,17 @@ const GitHubContributions = () => {
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
-        return "bg-gray-800/30 dark:bg-gray-800/50 hover:bg-gray-700/40";
+        return "bg-gray-200/50 dark:bg-gray-800/50 hover:bg-gray-300/60 dark:hover:bg-gray-700/60";
       case 1:
-        return "bg-emerald-900/30 hover:bg-emerald-800/40";
+        return "bg-emerald-200/70 dark:bg-emerald-900/50 hover:bg-emerald-300/80 dark:hover:bg-emerald-800/60";
       case 2:
-        return "bg-emerald-700/40 hover:bg-emerald-600/50";
+        return "bg-emerald-300/70 dark:bg-emerald-700/60 hover:bg-emerald-400/80 dark:hover:bg-emerald-600/70";
       case 3:
-        return "bg-emerald-600/60 hover:bg-emerald-500/70";
+        return "bg-emerald-400/70 dark:bg-emerald-600/70 hover:bg-emerald-500/80 dark:hover:bg-emerald-500/80";
       case 4:
-        return "bg-emerald-500/80 hover:bg-emerald-400/90";
+        return "bg-emerald-500/80 dark:bg-emerald-500/80 hover:bg-emerald-600/90 dark:hover:bg-emerald-400/90";
       default:
-        return "bg-gray-800/30 dark:bg-gray-800/50";
+        return "bg-gray-200/50 dark:bg-gray-800/50";
     }
   };
   
@@ -118,8 +118,8 @@ const GitHubContributions = () => {
             className={cn(
               "px-3 py-1.5 rounded-md transition-colors",
               year === "2025" 
-                ? "bg-primary text-white" 
-                : "bg-gray-200/20 hover:bg-gray-300/30 text-gray-600 dark:text-gray-300"
+                ? "bg-primary text-primary-foreground" 
+                : "bg-gray-200/40 dark:bg-gray-700/40 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 text-foreground"
             )}
             onClick={() => setYear("2025")}
           >
@@ -129,8 +129,8 @@ const GitHubContributions = () => {
             className={cn(
               "px-3 py-1.5 rounded-md transition-colors",
               year === "2024" 
-                ? "bg-primary text-white" 
-                : "bg-gray-200/20 hover:bg-gray-300/30 text-gray-600 dark:text-gray-300"
+                ? "bg-primary text-primary-foreground" 
+                : "bg-gray-200/40 dark:bg-gray-700/40 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 text-foreground"
             )}
             onClick={() => setYear("2024")}
           >
@@ -140,8 +140,8 @@ const GitHubContributions = () => {
             className={cn(
               "px-3 py-1.5 rounded-md transition-colors",
               year === "2023" 
-                ? "bg-primary text-white" 
-                : "bg-gray-200/20 hover:bg-gray-300/30 text-gray-600 dark:text-gray-300"
+                ? "bg-primary text-primary-foreground" 
+                : "bg-gray-200/40 dark:bg-gray-700/40 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 text-foreground"
             )}
             onClick={() => setYear("2023")}
           >
@@ -156,7 +156,7 @@ const GitHubContributions = () => {
             <div className="w-8 shrink-0"></div>
             <div className="grow grid grid-cols-12 gap-1">
               {contributionsData.map((month, index) => (
-                <div key={index} className="text-xs text-center text-gray-500">
+                <div key={index} className="text-xs text-center text-gray-600 dark:text-gray-400">
                   {month.name}
                 </div>
               ))}
@@ -166,7 +166,7 @@ const GitHubContributions = () => {
           <div className="flex flex-col gap-1">
             {["Mon", "Wed", "Fri"].map((day, dayIndex) => (
               <div key={dayIndex} className="flex items-center">
-                <div className="w-8 text-xs text-gray-500 shrink-0">{day}</div>
+                <div className="w-8 text-xs text-gray-600 dark:text-gray-400 shrink-0">{day}</div>
                 <div className="grow grid grid-cols-52 gap-1">
                   {contributionsData.flatMap((month) => 
                     month.days
@@ -189,13 +189,13 @@ const GitHubContributions = () => {
             ))}
           </div>
           
-          <div className="flex justify-between mt-3 text-sm text-gray-500">
-            <button className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+          <div className="flex justify-between mt-3 text-sm">
+            <button className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
               <HelpCircle className="h-4 w-4" />
               Learn how we count contributions
             </button>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
               <span>Less</span>
               <div className="flex gap-1">
                 <div className={cn("grid-cell", getContributionColor(0))}></div>
