@@ -107,7 +107,7 @@ const TechStackSlider = ({
                 variant="outline"
               >
                 {item.logo && (
-                  <span className={`flex items-center justify-center w-6 h-6 rounded-full p-1 ${variant === "minimal" ? "" : itemColor || "bg-gradient-to-r from-gray-800 to-gray-600"} text-white shadow-inner`}>
+                  <span className={`flex items-center justify-center w-6 h-6 rounded-full p-1 ${variant === "minimal" ? "" : (item.color || "bg-gradient-to-r from-gray-800 to-gray-600")} text-white shadow-inner`}>
                     {item.logo}
                   </span>
                 )}
