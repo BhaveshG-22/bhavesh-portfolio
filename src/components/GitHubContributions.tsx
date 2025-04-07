@@ -85,29 +85,29 @@ const GitHubContributions = () => {
     .flatMap(month => month.days)
     .reduce((sum, day) => sum + day.count, 0);
     
-  // Get color for contribution level
+  // Get color for contribution level - updated for the dark theme look
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
-        return "bg-gray-200/50 dark:bg-gray-800/50 hover:bg-gray-300/60 dark:hover:bg-gray-700/60";
+        return "bg-gray-800/80 hover:bg-gray-700/80";
       case 1:
-        return "bg-emerald-200/70 dark:bg-emerald-900/50 hover:bg-emerald-300/80 dark:hover:bg-emerald-800/60";
+        return "bg-teal-900/80 hover:bg-teal-800/90";
       case 2:
-        return "bg-emerald-300/70 dark:bg-emerald-700/60 hover:bg-emerald-400/80 dark:hover:bg-emerald-600/70";
+        return "bg-teal-700/80 hover:bg-teal-600/90"; 
       case 3:
-        return "bg-emerald-400/70 dark:bg-emerald-600/70 hover:bg-emerald-500/80 dark:hover:bg-emerald-500/80";
+        return "bg-teal-500/80 hover:bg-teal-400/90";
       case 4:
-        return "bg-emerald-500/80 dark:bg-emerald-500/80 hover:bg-emerald-600/90 dark:hover:bg-emerald-400/90";
+        return "bg-teal-300/80 hover:bg-teal-200/90";
       default:
-        return "bg-gray-200/50 dark:bg-gray-800/50";
+        return "bg-gray-800/80 hover:bg-gray-700/80";
     }
   };
   
   return (
-    <div className="glassmorphism rounded-xl p-6 w-full mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div className="bg-gray-900/95 rounded-xl p-6 w-full mx-auto border border-gray-800">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h3 className="text-xl font-bold flex items-center gap-2">
+          <h3 className="text-xl font-bold flex items-center gap-2 text-white">
             <CalendarIcon className="h-5 w-5" />
             <span>{totalContributions} contributions in the last year</span>
           </h3>
@@ -118,8 +118,8 @@ const GitHubContributions = () => {
             className={cn(
               "px-3 py-1.5 rounded-md transition-colors",
               year === "2025" 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-gray-200/40 dark:bg-gray-700/40 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 text-foreground"
+                ? "bg-gray-700 text-white" 
+                : "bg-gray-800 hover:bg-gray-700 text-gray-300"
             )}
             onClick={() => setYear("2025")}
           >
@@ -129,8 +129,8 @@ const GitHubContributions = () => {
             className={cn(
               "px-3 py-1.5 rounded-md transition-colors",
               year === "2024" 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-gray-200/40 dark:bg-gray-700/40 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 text-foreground"
+                ? "bg-gray-700 text-white" 
+                : "bg-gray-800 hover:bg-gray-700 text-gray-300"
             )}
             onClick={() => setYear("2024")}
           >
@@ -140,8 +140,8 @@ const GitHubContributions = () => {
             className={cn(
               "px-3 py-1.5 rounded-md transition-colors",
               year === "2023" 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-gray-200/40 dark:bg-gray-700/40 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 text-foreground"
+                ? "bg-gray-700 text-white" 
+                : "bg-gray-800 hover:bg-gray-700 text-gray-300"
             )}
             onClick={() => setYear("2023")}
           >
@@ -156,7 +156,7 @@ const GitHubContributions = () => {
             <div className="w-8 shrink-0"></div>
             <div className="grow grid grid-cols-12 gap-1">
               {contributionsData.map((month, index) => (
-                <div key={index} className="text-xs text-center text-gray-600 dark:text-gray-400">
+                <div key={index} className="text-xs text-center text-gray-400">
                   {month.name}
                 </div>
               ))}
@@ -166,7 +166,7 @@ const GitHubContributions = () => {
           <div className="flex flex-col gap-1">
             {["Mon", "Wed", "Fri"].map((day, dayIndex) => (
               <div key={dayIndex} className="flex items-center w-full">
-                <div className="w-8 text-xs text-gray-600 dark:text-gray-400 shrink-0">{day}</div>
+                <div className="w-8 text-xs text-gray-500 shrink-0">{day}</div>
                 <div className="grow grid grid-cols-52 gap-1">
                   {contributionsData.flatMap((month) => 
                     month.days
@@ -177,7 +177,7 @@ const GitHubContributions = () => {
                             <TooltipTrigger asChild>
                               <div className={cn("grid-cell", getContributionColor(day.level))} />
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200">
                               {day.count} contribution{day.count !== 1 ? 's' : ''} on {day.date}
                             </TooltipContent>
                           </Tooltip>
@@ -189,13 +189,13 @@ const GitHubContributions = () => {
             ))}
           </div>
           
-          <div className="flex justify-between mt-3 text-sm">
-            <button className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+          <div className="flex justify-between mt-5 text-sm">
+            <button className="flex items-center gap-1 text-gray-400 hover:text-gray-300 transition-colors">
               <HelpCircle className="h-4 w-4" />
               Learn how we count contributions
             </button>
             
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+            <div className="flex items-center gap-2 text-gray-400">
               <span>Less</span>
               <div className="flex gap-1">
                 <div className={cn("grid-cell", getContributionColor(0))}></div>

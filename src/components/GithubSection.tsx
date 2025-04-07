@@ -4,7 +4,7 @@ import GitHubContributions from "@/components/GitHubContributions";
 
 const GithubSection = () => {
   return (
-    <section id="github" className="section-padding">
+    <section id="github" className="section-padding bg-gray-50 dark:bg-gray-900">
       <div className="max-container">
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 flex items-center gap-2">
@@ -18,7 +18,7 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <div className="w-full">
+        <div className="w-full max-w-6xl mx-auto">
           <GitHubContributions />
         </div>
         
@@ -27,7 +27,7 @@ const GithubSection = () => {
             href="https://github.com" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="glassmorphism-light dark:glassmorphism px-6 py-3 rounded-full flex items-center gap-2 hover:bg-white/30 dark:hover:bg-white/10 transition-all"
+            className="bg-gray-800 dark:bg-gray-800 text-white px-6 py-3 rounded-full flex items-center gap-2 hover:bg-gray-700 dark:hover:bg-gray-700 transition-all"
           >
             <Github className="h-5 w-5" />
             View my GitHub Profile
