@@ -1,10 +1,7 @@
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Github, ExternalLink, ChevronRight } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ExternalLink, Github } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Project = {
@@ -19,7 +16,7 @@ type Project = {
 };
 
 const ProjectsSection = () => {
-  const [visibleProjects, setVisibleProjects] = useState(3);
+  const [activeCategory, setActiveCategory] = useState("all");
   
   const projects: Project[] = [
     {
@@ -62,85 +59,41 @@ const ProjectsSection = () => {
       demo: "https://demo.com",
       category: "fullstack",
     },
-    {
-      id: 5,
-      title: "Investment Portfolio Tracker",
-      description: "A financial application for tracking investments, analyzing performance, and visualizing data.",
-      image: "https://images.unsplash.com/photo-1473091534298-04dcbce3278c",
-      tags: ["Next.js", "TypeScript", "AWS Lambda", "Recharts", "Auth0"],
-      github: "https://github.com",
-      demo: "https://demo.com",
-      category: "frontend",
-    },
-    {
-      id: 6,
-      title: "API Integration Service",
-      description: "A backend service that integrates multiple third-party APIs and provides a unified interface.",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-      tags: ["Node.js", "Express", "Docker", "Redis", "Jest"],
-      github: "https://github.com",
-      demo: "https://demo.com",
-      category: "backend",
-    },
   ];
 
-  const showMoreProjects = () => {
-    setVisibleProjects((prev) => Math.min(prev + 3, projects.length));
-  };
+  const filteredProjects = activeCategory === 'all' 
+    ? projects 
+    : projects.filter(project => project.category === activeCategory);
 
   return (
-    <section id="projects" className="section-padding">
+    <section id="projects" className="section-padding bg-gray-950 text-white">
       <div className="max-container">
-        <div className="flex flex-col items-center text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
-          <div className="w-20 h-1.5 bg-primary rounded-full mb-8" />
-          <p className="text-lg text-foreground/80 max-w-3xl">
-            Browse through a selection of my recent work showcasing my skills in building full-stack applications,
-            responsive interfaces, and robust backend systems.
-          </p>
+        <div className="flex flex-col items-start mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-light">Featured Projects</h2>
+          <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
+          
+          <div className="flex gap-6 mb-10 flex-wrap">
+            {["all", "frontend", "backend", "fullstack"].map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={cn(
+                  "px-4 py-1 text-sm rounded-md transition-all",
+                  activeCategory === category
+                    ? "bg-teal-500/20 text-teal-400 border border-teal-500/40"
+                    : "text-gray-400 hover:text-gray-200"
+                )}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
         
-        <div className="glassmorphism rounded-xl p-4 mb-12">
-          <Tabs defaultValue="all" className="mb-8">
-            <div className="flex justify-center">
-              <TabsList className="glassmorphism-light tabs-with-underline">
-                <TabsTrigger value="all">All Projects</TabsTrigger>
-                <TabsTrigger value="frontend">Frontend</TabsTrigger>
-                <TabsTrigger value="backend">Backend</TabsTrigger>
-                <TabsTrigger value="fullstack">Full Stack</TabsTrigger>
-              </TabsList>
-            </div>
-            
-            <TabsContent value="all" className="mt-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.slice(0, visibleProjects).map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))}
-              </div>
-            </TabsContent>
-            
-            {["frontend", "backend", "fullstack"].map((category) => (
-              <TabsContent key={category} value={category} className="mt-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {projects
-                    .filter((project) => project.category === category)
-                    .slice(0, visibleProjects)
-                    .map((project) => (
-                      <ProjectCard key={project.id} project={project} />
-                    ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-          
-          {visibleProjects < projects.length && (
-            <div className="flex justify-center">
-              <Button onClick={showMoreProjects} variant="outline" size="lg" className="glassmorphism-light">
-                Load More Projects
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {filteredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </div>
       </div>
     </section>
@@ -149,50 +102,52 @@ const ProjectsSection = () => {
 
 const ProjectCard = ({ project }: { project: Project }) => {
   return (
-    <Card className="group overflow-hidden glassmorphism-card border-0">
-      <div className="relative h-48 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors z-10" />
+    <div className="flex flex-col">
+      <div className="relative h-64 mb-6 overflow-hidden rounded-xl border border-white/10 backdrop-blur-sm bg-black/40 hover:border-teal-500/30 transition-all">
         <img
           src={project.image}
           alt={project.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="h-full w-full object-cover opacity-70 hover:opacity-100 transition-opacity duration-500"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
       </div>
-      <div className="p-6">
-        <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-          {project.title}
-        </h3>
-        <p className="text-sm text-foreground/80 mb-4">
-          {project.description}
-        </p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs glassmorphism-light">
-              {tag}
-            </Badge>
-          ))}
-          {project.tags.length > 3 && (
-            <Badge variant="outline" className="text-xs glassmorphism-light">
-              +{project.tags.length - 3}
-            </Badge>
-          )}
-        </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" asChild className="glassmorphism-light">
-            <a href={project.github} target="_blank" rel="noreferrer">
-              <Github className="mr-1 h-4 w-4" />
-              Code
-            </a>
-          </Button>
-          <Button size="sm" asChild className="glassmorphism">
-            <a href={project.demo} target="_blank" rel="noreferrer">
-              <ExternalLink className="mr-1 h-4 w-4" />
-              Live Demo
-            </a>
-          </Button>
-        </div>
+      
+      <h3 className="text-2xl font-bold mb-2 text-white">{project.title}</h3>
+      
+      <div className="flex flex-wrap gap-2 mb-3">
+        {project.tags.map((tag) => (
+          <span key={tag} className="text-xs text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2 py-1 rounded">
+            {tag}
+          </span>
+        ))}
       </div>
-    </Card>
+      
+      <p className="text-gray-400 mb-5 text-sm">
+        {project.description}
+      </p>
+      
+      <div className="flex gap-4 mt-auto">
+        <a 
+          href={project.demo} 
+          target="_blank" 
+          rel="noreferrer"
+          className="flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition-colors"
+        >
+          <span>Live Preview</span>
+          <ExternalLink className="h-4 w-4" />
+        </a>
+        
+        <a 
+          href={project.github} 
+          target="_blank" 
+          rel="noreferrer"
+          className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors"
+        >
+          <span>Repo URL</span>
+          <Github className="h-4 w-4" />
+        </a>
+      </div>
+    </div>
   );
 };
 

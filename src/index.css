@@ -122,6 +122,10 @@
   .text-gradient-bright {
     @apply bg-gradient-to-r from-white via-primary/90 to-portfolio-purple/90 bg-clip-text text-transparent drop-shadow-sm;
   }
+  
+  .text-teal-gradient {
+    @apply bg-gradient-to-r from-teal-400 to-teal-200 bg-clip-text text-transparent;
+  }
 
   .section-padding {
     @apply py-16 md:py-24;
@@ -145,6 +149,18 @@
 
   .glass-morphism {
     @apply backdrop-blur-xl bg-black/20 border border-white/20 dark:border-white/10 shadow-lg;
+  }
+  
+  .project-card {
+    @apply bg-black/40 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden transition-all hover:border-teal-500/30;
+  }
+  
+  .project-image {
+    @apply h-64 w-full object-cover opacity-70 transition-opacity duration-500;
+  }
+  
+  .project-tag {
+    @apply text-xs text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded;
   }
   
   .grid-cell {
