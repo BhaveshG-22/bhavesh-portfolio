@@ -3,9 +3,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Github, Linkedin, Mail } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  Sheet,
+  SheetContent,
+  SheetClose,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -24,6 +29,7 @@ const Header = () => {
   }, []);
 
   const navItems = [
+    { title: "Home", href: "#hero" },
     { title: "About", href: "#about" },
     { title: "Skills", href: "#skills" },
     { title: "Projects", href: "#projects" },
@@ -80,48 +86,57 @@ const Header = () => {
           </div>
         </nav>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation with Sheet */}
         <div className="flex md:hidden items-center gap-2">
           <ThemeToggle />
-          <Button
-            variant="ghost"
-            onClick={() => setIsOpen(!isOpen)}
-            className="text-white hover:bg-white/10"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white dark:bg-portfolio-blue/95 p-4 shadow-md md:hidden">
-            <nav className="flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <a
-                  key={item.title}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="text-base font-medium hover:text-primary transition-colors"
-                >
-                  {item.title}
-                </a>
-              ))}
-              <div className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <Github className="h-5 w-5" />
-                  </Button>
-                </a>
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <Linkedin className="h-5 w-5" />
-                  </Button>
-                </a>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="text-white hover:bg-white/10"
+                aria-label="Open menu"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="p-0 w-full max-w-full sm:max-w-full bg-[#1A1F2C]/95 border-l-0 flex flex-col h-full">
+              <div className="flex flex-col h-full">
+                <div className="flex justify-end p-4">
+                  <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+                    <X className="h-6 w-6 text-white" />
+                    <span className="sr-only">Close</span>
+                  </SheetClose>
+                </div>
+                
+                <nav className="flex-1 flex flex-col justify-center items-center space-y-8 py-8">
+                  {navItems.map((item) => (
+                    <SheetClose asChild key={item.title}>
+                      <a
+                        href={item.href}
+                        className="text-2xl font-medium text-white/70 hover:text-white transition-colors"
+                      >
+                        {item.title}
+                      </a>
+                    </SheetClose>
+                  ))}
+                </nav>
+                
+                <div className="flex justify-center space-x-6 p-6 border-t border-white/10">
+                  <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
+                    <Button variant="ghost" size="icon" className="h-10 w-10 text-white/70 hover:text-white hover:bg-white/10">
+                      <Github className="h-6 w-6" />
+                    </Button>
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                    <Button variant="ghost" size="icon" className="h-10 w-10 text-white/70 hover:text-white hover:bg-white/10">
+                      <Linkedin className="h-6 w-6" />
+                    </Button>
+                  </a>
+                </div>
               </div>
-            </nav>
-          </div>
-        )}
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );
