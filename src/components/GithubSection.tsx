@@ -27,7 +27,8 @@ const GithubSection = () => {
         <div className="mt-10 flex justify-center">
           <Button 
             size="lg"
-            className="bg-teal-600 hover:bg-teal-700 text-white rounded-md"
+            variant="dark"
+            className="border border-gray-700 px-6"
             asChild
           >
             <a 

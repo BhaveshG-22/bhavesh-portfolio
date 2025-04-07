@@ -27,13 +27,22 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-wrap gap-4 pt-4">
-            <Button asChild size="lg" className="glassmorphism">
+            <Button 
+              asChild 
+              size="lg" 
+              className="bg-gray-800 text-white hover:bg-gray-700 border border-gray-700 px-6 py-2 flex items-center gap-2"
+            >
               <a href="#projects">
                 View My Work
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
-            <Button variant="outline" size="lg" asChild className="glassmorphism-light">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              asChild 
+              className="bg-gray-900 text-white border-gray-700 hover:bg-gray-800 px-6"
+            >
               <a href="#contact">Contact Me</a>
             </Button>
           </div>
