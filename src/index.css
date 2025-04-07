@@ -114,6 +114,14 @@
   .text-gradient {
     @apply bg-gradient-to-r from-portfolio-blue to-portfolio-purple bg-clip-text text-transparent;
   }
+  
+  .text-gradient-light {
+    @apply bg-gradient-to-r from-white to-primary/80 bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-bright {
+    @apply bg-gradient-to-r from-white via-primary/90 to-portfolio-purple/90 bg-clip-text text-transparent drop-shadow-sm;
+  }
 
   .section-padding {
     @apply py-16 md:py-24;

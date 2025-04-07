@@ -39,8 +39,10 @@ const Header = () => {
       }`}
     >
       <div className="max-container flex items-center justify-between">
-        <a href="#hero" className="text-xl font-bold text-gradient">
-          BhaveshG.dev
+        <a href="#hero" className="text-xl font-bold text-white drop-shadow-md hover:text-primary transition-colors">
+          <span className="bg-gradient-to-r from-white to-primary/80 bg-clip-text text-transparent font-poppins">
+            BhaveshG.dev
+          </span>
         </a>
 
         {/* Desktop Navigation */}
@@ -50,7 +52,7 @@ const Header = () => {
               <li key={item.title}>
                 <a
                   href={item.href}
-                  className="text-sm font-medium hover:text-primary transition-colors"
+                  className="text-sm font-medium text-white/90 hover:text-primary transition-colors"
                 >
                   {item.title}
                 </a>
@@ -60,12 +62,12 @@ const Header = () => {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-white/90 hover:text-white hover:bg-white/10">
                 <Github className="h-5 w-5" />
               </Button>
             </a>
             <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-white/90 hover:text-white hover:bg-white/10">
                 <Linkedin className="h-5 w-5" />
               </Button>
             </a>
@@ -84,6 +86,7 @@ const Header = () => {
           <Button
             variant="ghost"
             onClick={() => setIsOpen(!isOpen)}
+            className="text-white hover:bg-white/10"
             aria-label="Toggle menu"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
