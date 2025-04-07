@@ -70,26 +70,32 @@ const SkillsSection = () => {
           </p>
         </div>
         
-        {/* Just two tech stack sliders - one flowing each direction */}
-        <div className="mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-4">
+        {/* Just two tech stack sliders - one flowing each direction with fixed backgrounds */}
+        <div className="mb-12 bg-white/5 dark:bg-gray-900/30 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-xl p-4 overflow-hidden">
           <div className="mb-8">
             <h3 className="text-sm font-medium text-muted-foreground mb-2 ml-4">Front-end Technologies</h3>
-            <TechStackSlider 
-              direction="ltr" 
-              speed="medium" 
-              items={frontendTech} 
-              variant="glassmorphic"
-            />
+            <div className="bg-transparent">
+              <TechStackSlider 
+                direction="ltr" 
+                speed="medium" 
+                items={frontendTech} 
+                variant="glassmorphic"
+                className="bg-transparent"
+              />
+            </div>
           </div>
           
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-2 ml-4">Back-end & Other Technologies</h3>
-            <TechStackSlider 
-              direction="rtl" 
-              speed="medium" 
-              items={backendTech} 
-              variant="glassmorphic"
-            />
+            <div className="bg-transparent">
+              <TechStackSlider 
+                direction="rtl" 
+                speed="medium" 
+                items={backendTech} 
+                variant="glassmorphic"
+                className="bg-transparent"
+              />
+            </div>
           </div>
         </div>
       </div>
