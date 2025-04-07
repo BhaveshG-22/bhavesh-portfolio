@@ -223,7 +223,7 @@ const SkillsSection = () => {
           <div className="w-20 h-1.5 bg-primary rounded-full mb-8" />
           <p className="text-lg text-muted-foreground max-w-3xl">
             I've acquired a diverse range of skills throughout my journey as a full-stack developer.
-            Here's a glimpse of my technical expertise and the technologies I work with.
+            Here's a glimpse of my technical expertise and the technologies I work withrrrrr.
           </p>
         </div>
 
@@ -231,18 +231,6 @@ const SkillsSection = () => {
         <div className="mb-12 glassmorphism rounded-xl p-4">
           <TechStackSlider direction="ltr" speed="medium" items={frontendTech} />
           <TechStackSlider direction="rtl" speed="medium" items={backendTech} />
-
-          // Example usage
-<TechStackSlider 
-  items={[
-    { name: "React" },
-    { name: "TypeScript" },
-    { name: "TailwindCSS" },
-    // Add more items as needed
-  ]}
-  speed="medium"
-  variant="default"
-/>
         </div>
       </div>
     </section>
