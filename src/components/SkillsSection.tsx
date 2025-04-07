@@ -223,7 +223,7 @@ const SkillsSection = () => {
           <div className="w-20 h-1.5 bg-primary rounded-full mb-8" />
           <p className="text-lg text-muted-foreground max-w-3xl">
             I've acquired a diverse range of skills throughout my journey as a full-stack developer.
-            Here's a glimpse of my technical expertise and the technologies I work withrrrrr.
+            Here's a glimpse of my technical expertise and the technologies I work with.
           </p>
         </div>
 
