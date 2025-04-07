@@ -163,7 +163,7 @@
   }
   
   .grid-cell {
-    @apply w-[15px] h-[15px] rounded-sm transition-colors duration-200;
+    @apply w-[12px] h-[12px] rounded-[2px] transition-colors duration-200;
   }
 
   /* Sliding Underline for Tabs */

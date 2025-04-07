@@ -20,16 +20,16 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <div className="w-full max-w-6xl mx-auto">
+        <div className="w-full max-w-md mx-auto">
           <GitHubContributions />
         </div>
         
-        <div className="mt-12 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <a 
             href="https://github.com" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="bg-primary/90 text-white px-6 py-3 rounded-full flex items-center gap-2 hover:bg-primary transition-all shadow-lg hover:shadow-primary/20"
+            className="bg-blue-700/90 hover:bg-blue-600/90 text-white px-8 py-3 rounded-full flex items-center gap-2 transition-all shadow-lg"
           >
             <Github className="h-5 w-5" />
             View my GitHub Profile
