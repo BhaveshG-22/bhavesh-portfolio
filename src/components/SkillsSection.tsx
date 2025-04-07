@@ -231,6 +231,18 @@ const SkillsSection = () => {
         <div className="mb-12 glassmorphism rounded-xl p-4">
           <TechStackSlider direction="ltr" speed="medium" items={frontendTech} />
           <TechStackSlider direction="rtl" speed="medium" items={backendTech} />
+
+          // Example usage
+<TechStackSlider 
+  items={[
+    { name: "React" },
+    { name: "TypeScript" },
+    { name: "TailwindCSS" },
+    // Add more items as needed
+  ]}
+  speed="medium"
+  variant="default"
+/>
         </div>
       </div>
     </section>
