@@ -90,7 +90,6 @@ const TechStackSlider = ({
   const [isHovered, setIsHovered] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [glowColors, setGlowColors] = useState<Record<string, string>>({});
   
   // Define animation speed based on prop
   const animationDuration = {
@@ -98,20 +97,6 @@ const TechStackSlider = ({
     medium: "25s",
     fast: "15s"
   };
-  
-  // Initialize random glow colors for neon effect
-  useEffect(() => {
-    if (variant === "neon") {
-      const colors: Record<string, string> = {};
-      const neonColors = ["blue-500", "purple-500", "pink-500", "emerald-500", "cyan-500", "fuchsia-500"];
-      
-      items.forEach(item => {
-        colors[item.name] = neonColors[Math.floor(Math.random() * neonColors.length)];
-      });
-      
-      setGlowColors(colors);
-    }
-  }, [items, variant]);
 
   useEffect(() => {
     if (sliderRef.current) {
@@ -149,13 +134,10 @@ const TechStackSlider = ({
   const getIconContainerClasses = (item: TechItem) => {
     const logoInfo = techLogos[item.name] || { icon: <Cpu className="h-4 w-4" />, color: "bg-gradient-to-r from-gray-800 to-gray-600" };
     const itemColor = item.color || logoInfo.color;
-    const colorName = itemColor.includes('from-') ? itemColor.split('from-')[1].split(' ')[0] : 'blue-500';
     
     switch(variant) {
       case "minimal":
         return "flex items-center justify-center w-6 h-6 rounded-full p-1 text-blue-500 dark:text-blue-400";
-      case "neon":
-        return `flex items-center justify-center w-7 h-7 rounded-full p-1 bg-${colorName} text-white shadow-md shadow-${colorName}/50`;
       case "pill":
         return `flex items-center justify-center w-6 h-6 rounded-full p-1 ${itemColor} text-white`;
       default:
@@ -176,8 +158,7 @@ const TechStackSlider = ({
         before:absolute before:left-0 before:top-0 before:z-10 before:w-24 before:h-full before:bg-gradient-to-r 
         before:from-white dark:before:from-black before:to-transparent 
         after:absolute after:right-0 after:top-0 after:z-10 after:w-24 after:h-full after:bg-gradient-to-l 
-        after:from-white dark:after:from-black after:to-transparent
-        ${variant === "neon" ? "bg-gray-950 dark:bg-black rounded-xl" : ""} ${className}`}
+        after:from-white dark:after:from-black after:to-transparent ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -205,7 +186,7 @@ const TechStackSlider = ({
       
       <div
         ref={sliderRef}
-        className={`flex items-center gap-4 whitespace-nowrap ${sliderAnimationClasses} ${variant === "neon" ? "py-3" : ""}`}
+        className={`flex items-center gap-4 whitespace-nowrap ${sliderAnimationClasses}`}
         style={{
           animationDuration: animationDuration[speed],
           width: "fit-content"
@@ -218,12 +199,9 @@ const TechStackSlider = ({
           return (
             <div 
               key={`${item.name}-${index}`} 
-              className={`mx-3 ${variant === "neon" ? "relative group" : ""}`}
+              className="mx-3"
               onClick={() => setSelectedItem(isSelected ? null : item.name)}
             >
-              {variant === "neon" && (
-                <div className={`absolute inset-0 blur-md bg-${glowColors[item.name] || "blue-500"}/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10`}></div>
-              )}
               <Badge 
                 className={getBadgeClasses(item)}
                 variant="outline"
@@ -261,20 +239,53 @@ const Example = () => {
 
   return (
     <div className="space-y-12 py-8 max-w-5xl mx-auto">
-      <div className="bg-black p-8 rounded-xl">
-        <h3 className="text-lg font-semibold mb-4 text-center text-white">Neon Tech Stack</h3>
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-center">Default Style</h3>
         <TechStackSlider 
           direction="ltr" 
           speed="medium" 
           items={techItems} 
-          variant="neon"
-          className="mb-6"
+          variant="default"
         />
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-center">Glow Style</h3>
+        <TechStackSlider 
+          direction="rtl" 
+          speed="medium" 
+          items={techItems} 
+          variant="glow"
+        />
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-center">Neon Style</h3>
+        <TechStackSlider 
+          direction="ltr" 
+          speed="fast" 
+          items={techItems} 
+          variant="neon"
+        />
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-center">Minimal Style</h3>
         <TechStackSlider 
           direction="rtl" 
           speed="slow" 
-          items={techItems.slice().reverse()} 
-          variant="neon"
+          items={techItems} 
+          variant="minimal"
+        />
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-center">Pill Style</h3>
+        <TechStackSlider 
+          direction="ltr" 
+          speed="medium" 
+          items={techItems} 
+          variant="pill"
         />
       </div>
     </div>
