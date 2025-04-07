@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
-  Html5,
+  FileCode,
   FileJson,
   FileType,
   Bot,
@@ -26,7 +26,7 @@ interface SliderProps {
 
 // Map of tech names to their corresponding logo components
 const techLogos: Record<string, React.ReactNode> = {
-  "HTML": <Html5 className="mr-2 h-4 w-4" />,
+  "HTML": <FileCode className="mr-2 h-4 w-4 text-orange-500" />,
   "JavaScript": <FileJson className="mr-2 h-4 w-4 text-yellow-400" />,
   "TypeScript": <FileType className="mr-2 h-4 w-4 text-blue-500" />,
   "Next.js": <Code className="mr-2 h-4 w-4" />,
