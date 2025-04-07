@@ -1,4 +1,4 @@
-// AlternativeHeroSection.tsx
+// AlternativeHeroSection.tsx with enhanced terminal
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -10,7 +10,11 @@ import {
   ExternalLink,
   Code2,
   Sparkles,
-  Monitor
+  Monitor,
+  Terminal,
+  Play,
+  X,
+  CheckCircle2
 } from "lucide-react";
 
 // Helper function to create element with custom props
@@ -18,10 +22,10 @@ const createElement = (type, props = {}, ...children) => {
   return React.createElement(type, props, ...children);
 };
 
-// Custom text scramble effect component
+// Enhanced terminal text scramble effect
 const TextScramble = ({ text }) => {
   const [displayText, setDisplayText] = useState(text);
-  const chars = "!<>-_\\/[]{}—=+*^?#________";
+  const chars = "!<>-_\\/[]{}—=+*^?#_$%&";
   const ref = useRef(null);
   const intervalRef = useRef(null);
   
@@ -57,10 +61,24 @@ const TextScramble = ({ text }) => {
   return createElement("span", { ref }, displayText);
 };
 
+// Cursor blink component for terminal effect
+const BlinkingCursor = () => {
+  return createElement("span", {
+    className: "inline-block w-2 h-4 bg-primary ml-1",
+    style: {
+      animation: "blink 1s step-end infinite"
+    }
+  });
+};
+
 // Main component
 const AlternativeHeroSection = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [terminalCommand, setTerminalCommand] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [terminalHistory, setTerminalHistory] = useState([]);
+  const [currentTab, setCurrentTab] = useState("terminal");
   const heroRef = useRef(null);
   
   // Custom hooks for animations
@@ -86,22 +104,71 @@ const AlternativeHeroSection = () => {
     };
   }, []);
   
-  // Terminal animation text items
-  const [terminalIndex, setTerminalIndex] = useState(0);
-  const terminalTexts = [
-    "npx create-next-app@latest my-portfolio",
-    "npm run dev -- --turbo",
-    "git push origin main",
-    "npm run build"
-  ];
-  
+  // Terminal animation sequence
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTerminalIndex(prev => (prev + 1) % terminalTexts.length);
-    }, 4000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    if (isLoaded) {
+      const commands = [
+        { text: "npm install", delay: 800 },
+        { text: "npx create-next-app@latest my-portfolio --typescript", delay: 2500 },
+        { text: "cd my-portfolio", delay: 1000 },
+        { text: "npm run dev -- --turbo", delay: 1500 },
+        { text: "git add . && git commit -m \"Initial commit\"", delay: 2000 },
+        { text: "git push origin main", delay: 1500 }
+      ];
+      
+      let totalDelay = 1000;
+      
+      commands.forEach((cmd, index) => {
+        // Start typing animation
+        setTimeout(() => {
+          setIsTyping(true);
+          let i = 0;
+          const typeInterval = setInterval(() => {
+            if (i <= cmd.text.length) {
+              setTerminalCommand(cmd.text.substring(0, i));
+              i++;
+            } else {
+              clearInterval(typeInterval);
+              setIsTyping(false);
+              
+              // Add command to history after completing typing
+              setTimeout(() => {
+                let response = "";
+                if (cmd.text.includes("npm install")) {
+                  response = "added 1252 packages in 12.5s";
+                } else if (cmd.text.includes("create-next-app")) {
+                  response = "✅ Creating a new Next.js app in my-portfolio";
+                } else if (cmd.text.includes("npm run dev")) {
+                  response = "ready - started server on 0.0.0.0:3000";
+                } else if (cmd.text.includes("git commit")) {
+                  response = "[main (root-commit) 8f23a21] Initial commit";
+                } else if (cmd.text.includes("git push")) {
+                  response = "Everything up-to-date";
+                }
+                
+                setTerminalHistory(prev => [
+                  ...prev, 
+                  { 
+                    type: "command", 
+                    content: cmd.text,
+                    timestamp: new Date().toLocaleTimeString()
+                  },
+                  { 
+                    type: "response", 
+                    content: response,
+                    timestamp: new Date().toLocaleTimeString()
+                  }
+                ]);
+                setTerminalCommand("");
+              }, 300);
+            }
+          }, 20);
+        }, totalDelay);
+        
+        totalDelay += cmd.delay + cmd.text.length * 20 + 600;
+      });
+    }
+  }, [isLoaded]);
   
   // 3D tilt effect styles based on mouse position
   const getTiltStyle = () => {
@@ -151,6 +218,102 @@ const AlternativeHeroSection = () => {
       50% { opacity: 0; }
     }
     
+    @keyframes scanline {
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+    
+    @keyframes glitch {
+      0% {
+        clip: rect(0, 9999px, 2px, 0);
+        transform: skew(0.65deg);
+      }
+      5% {
+        clip: rect(0, 9999px, 42px, 0);
+        transform: skew(0.4deg);
+      }
+      10% {
+        clip: rect(0, 9999px, 10px, 0);
+        transform: skew(0.25deg);
+      }
+      15% {
+        clip: rect(0, 9999px, 28px, 0);
+        transform: skew(0.65deg);
+      }
+      20% {
+        clip: rect(0, 9999px, 16px, 0);
+        transform: skew(0.15deg);
+      }
+      25% {
+        clip: rect(0, 9999px, 5px, 0);
+        transform: skew(0.55deg);
+      }
+      30% {
+        clip: rect(0, 9999px, 16px, 0);
+        transform: skew(0.85deg);
+      }
+      35% {
+        clip: rect(0, 9999px, 25px, 0);
+        transform: skew(0.35deg);
+      }
+      40% {
+        clip: rect(0, 9999px, 18px, 0);
+        transform: skew(0.45deg);
+      }
+      45% {
+        clip: rect(0, 9999px, 12px, 0);
+        transform: skew(0.65deg);
+      }
+      50% {
+        clip: rect(0, 9999px, 2px, 0);
+        transform: skew(0.25deg);
+      }
+      55% {
+        clip: rect(0, 9999px, 12px, 0);
+        transform: skew(0.65deg);
+      }
+      60% {
+        clip: rect(0, 9999px, 16px, 0);
+        transform: skew(0.25deg);
+      }
+      65% {
+        clip: rect(0, 9999px, 38px, 0);
+        transform: skew(0.75deg);
+      }
+      70% {
+        clip: rect(0, 9999px, 9px, 0);
+        transform: skew(0.35deg);
+      }
+      75% {
+        clip: rect(0, 9999px, 23px, 0);
+        transform: skew(0.05deg);
+      }
+      80% {
+        clip: rect(0, 9999px, 13px, 0);
+        transform: skew(0.45deg);
+      }
+      85% {
+        clip: rect(0, 9999px, 36px, 0);
+        transform: skew(0.2deg);
+      }
+      90% {
+        clip: rect(0, 9999px, 6px, 0);
+        transform: skew(0.65deg);
+      }
+      95% {
+        clip: rect(0, 9999px, 42px, 0);
+        transform: skew(0.15deg);
+      }
+      100% {
+        clip: rect(0, 9999px, 2px, 0);
+        transform: skew(0.65deg);
+      }
+    }
+    
     .noise-bg {
       position: absolute;
       top: 0;
@@ -163,10 +326,10 @@ const AlternativeHeroSection = () => {
     }
     
     .glassmorphism {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(55, 65, 81, 0.3);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     }
     
     .text-gradient {
@@ -192,6 +355,92 @@ const AlternativeHeroSection = () => {
         linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     }
     
+    .scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(to bottom, 
+        rgba(255,255,255,0) 0%,
+        rgba(0,255,196,0.2) 50%, 
+        rgba(255,255,255,0) 100%);
+      opacity: 0.15;
+      animation: scanline 8s linear infinite;
+      z-index: 2;
+    }
+    
+    .crt-effect:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0.12;
+    }
+    
+    .terminal-wrapper:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.4) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .glitch {
+      position: relative;
+    }
+    
+    .glitch:after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #0fe;
+      overflow: hidden;
+      clip: rect(0, 900px, 0, 0);
+      animation: glitch 2s infinite linear alternate-reverse;
+      opacity: 0.8;
+    }
+    
+    .terminal-tabs {
+      display: flex;
+      background: rgba(17, 24, 39, 0.8);
+      border-bottom: 1px solid rgba(75, 85, 99, 0.5);
+    }
+    
+    .terminal-tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 0.8);
+      border-right: 1px solid rgba(75, 85, 99, 0.3);
+      transition: all 0.2s ease;
+    }
+    
+    .terminal-tab.active {
+      background: rgba(0, 0, 0, 0.6);
+      color: rgba(255, 255, 255, 0.95);
+      border-bottom: 2px solid var(--primary);
+      margin-bottom: -1px;
+    }
+    
+    .terminal-tab:hover:not(.active) {
+      background: rgba(31, 41, 55, 0.5);
+    }
+    
     .animate-delay-100 { animation-delay: 100ms; }
     .animate-delay-200 { animation-delay: 200ms; }
     .animate-delay-300 { animation-delay: 300ms; }
@@ -205,25 +454,11 @@ const AlternativeHeroSection = () => {
     "--mouse-y": mousePosition.y,
   };
   
-  // Animated dots for loading effect
-  const dots = Array(3).fill().map((_, i) => {
-    return createElement("span", {
-      key: `dot-${i}`,
-      className: "inline-block w-2 h-2 rounded-full bg-primary mx-[1px]",
-      style: { 
-        animationName: "pulse",
-        animationDuration: "1s",
-        animationIterationCount: "infinite",
-        animationDelay: `${i * 0.2}s`
-      }
-    });
-  });
-  
-  // Create the 3D card that follows mouse movement
-  const create3DCard = () => {
+  // Create terminal with enhanced appearance
+  const createTerminal = () => {
     return createElement("div", {
-      key: "card-3d",
-      className: "glassmorphism relative rounded-2xl overflow-hidden w-full h-full",
+      key: "terminal-3d",
+      className: "glassmorphism relative rounded-md overflow-hidden w-full h-full crt-effect terminal-wrapper",
       style: getTiltStyle()
     }, [
       // Glow effect that follows cursor
@@ -231,100 +466,248 @@ const AlternativeHeroSection = () => {
         key: "glow",
         className: "absolute pointer-events-none",
         style: {
-          background: "radial-gradient(circle at center, rgba(var(--primary-rgb), 0.6) 0%, transparent 50%)",
-          width: "150px",
-          height: "150px",
+          background: "radial-gradient(circle at center, rgba(var(--primary-rgb), 0.4) 0%, transparent 70%)",
+          width: "250px",
+          height: "250px",
           borderRadius: "50%",
-          left: `calc(${mousePosition.x * 100}% - 75px)`,
-          top: `calc(${mousePosition.y * 100}% - 75px)`,
+          left: `calc(${mousePosition.x * 100}% - 125px)`,
+          top: `calc(${mousePosition.y * 100}% - 125px)`,
           opacity: 0.3,
-          filter: "blur(20px)",
+          filter: "blur(30px)",
           transition: "left 0.2s, top 0.2s",
           mixBlendMode: "screen",
+          zIndex: 2
         }
       }),
+      
+      // Scanline effect
+      createElement("div", {
+        key: "scanline",
+        className: "scanline"
+      }),
+      
+      // Terminal tabs
+      createElement("div", {
+        key: "terminal-tabs",
+        className: "terminal-tabs"
+      }, [
+        createElement("div", {
+          key: "tab-terminal",
+          className: `terminal-tab ${currentTab === "terminal" ? "active" : ""}`,
+          onClick: () => setCurrentTab("terminal")
+        }, [
+          createElement(Terminal, { key: "icon", className: "w-3.5 h-3.5" }),
+          "Terminal"
+        ]),
+        createElement("div", {
+          key: "tab-output",
+          className: `terminal-tab ${currentTab === "output" ? "active" : ""}`,
+          onClick: () => setCurrentTab("output")
+        }, [
+          createElement(Play, { key: "icon", className: "w-3.5 h-3.5" }),
+          "Output"
+        ])
+      ]),
       
       // Terminal header
       createElement("div", {
         key: "terminal-header",
-        className: "bg-black/70 p-2 border-b border-gray-700 flex items-center"
+        className: "bg-black/90 p-2 flex items-center justify-between"
       }, [
         createElement("div", {
           key: "dots",
           className: "flex gap-1.5"
         }, [
-          createElement("div", { key: "dot-1", className: "w-3 h-3 rounded-full bg-red-500" }),
-          createElement("div", { key: "dot-2", className: "w-3 h-3 rounded-full bg-yellow-500" }),
-          createElement("div", { key: "dot-3", className: "w-3 h-3 rounded-full bg-green-500" })
+          createElement("div", { 
+            key: "dot-1", 
+            className: "w-3 h-3 rounded-full bg-red-500 relative group cursor-pointer transition-all hover:brightness-110",
+            title: "Close"
+          }, [
+            createElement(X, { 
+              key: "icon", 
+              className: "w-2 h-2 absolute inset-0 m-auto text-red-900 opacity-0 group-hover:opacity-100 transition-opacity" 
+            })
+          ]),
+          createElement("div", { 
+            key: "dot-2", 
+            className: "w-3 h-3 rounded-full bg-yellow-500 relative group cursor-pointer transition-all hover:brightness-110",
+            title: "Minimize"
+          }, [
+            createElement("div", { 
+              key: "icon", 
+              className: "w-1.5 h-0.5 bg-yellow-900 absolute inset-0 m-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+            })
+          ]),
+          createElement("div", { 
+            key: "dot-3", 
+            className: "w-3 h-3 rounded-full bg-green-500 relative group cursor-pointer transition-all hover:brightness-110",
+            title: "Expand"
+          }, [
+            createElement(CheckCircle2, { 
+              key: "icon", 
+              className: "w-2 h-2 absolute inset-0 m-auto text-green-900 opacity-0 group-hover:opacity-100 transition-opacity"
+            })
+          ])
         ]),
         createElement("div", {
           key: "title",
-          className: "mx-auto text-xs text-gray-400"
-        }, "~/portfolio")
+          className: "absolute left-1/2 transform -translate-x-1/2 text-xs text-gray-400 font-mono tracking-wide",
+          "data-text": "~/portfolio",
+          style: {
+            textShadow: "0 0 2px rgba(0,255,196,0.4), 0 0 4px rgba(0,255,196,0.2)"
+          }
+        }, "~/portfolio"),
+        createElement("div", {
+          key: "terminal-date",
+          className: "text-xs text-gray-500 font-mono"
+        }, new Date().toLocaleTimeString())
       ]),
       
       // Terminal body
       createElement("div", {
         key: "terminal-body",
-        className: "bg-black/80 p-6 font-mono text-sm h-[calc(100%-40px)] overflow-hidden"
+        className: "bg-black/90 p-4 font-mono text-sm h-[calc(100%-78px)] overflow-auto no-scrollbar relative"
       }, [
-        createElement("div", {
-          key: "welcome",
-          className: `mb-4 text-gray-400 ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-300`
-        }, [
-          createElement("span", { key: "line-1", className: "block mb-1 text-green-400" }, "// Welcome to my portfolio"),
-          createElement("span", { key: "line-2", className: "block mb-1" }, "// Crafting digital experiences with code")
-        ]),
-        
-        createElement("div", {
-          key: "command-line",
-          className: `flex items-start mb-6 ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-500 delay-300`
-        }, [
-          createElement("span", { key: "prompt", className: "text-green-400 mr-2" }, "➜"),
-          createElement("span", { key: "path", className: "text-blue-400 mr-2" }, "~/portfolio"),
-          createElement(TextScramble, { key: "command", text: terminalTexts[terminalIndex] })
-        ]),
-        
-        // Project preview
-        createElement("div", {
-          key: "project-preview",
-          className: `mt-6 ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-700 delay-500`
-        }, [
+        // Conditional content based on selected tab
+        currentTab === "terminal" ? [
+          // Terminal welcome message
           createElement("div", {
-            key: "preview-header",
-            className: "text-gray-400 mb-2 flex items-center"
+            key: "welcome",
+            className: `mb-4 text-gray-400 ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-300`
           }, [
-            createElement(Code2, { key: "code-icon", className: "w-4 h-4 mr-2 text-primary" }),
-            "Latest Projects:"
+            createElement("div", { 
+              key: "system-info", 
+              className: "mb-2 flex flex-col space-y-0.5" 
+            }, [
+              createElement("span", { 
+                key: "line-0", 
+                className: "text-green-400 text-base glitch", 
+                "data-text": "Welcome to DevTerminal v3.5.0"
+              }, "Welcome to DevTerminal v3.5.0"),
+              createElement("span", { 
+                key: "line-1", 
+                className: "text-blue-400 flex items-center text-xs" 
+              }, [
+                "OS: ", 
+                createElement("span", { key: "os", className: "ml-1 text-gray-300" }, "NextOS v14.0.1")
+              ]),
+              createElement("span", { 
+                key: "line-2", 
+                className: "text-blue-400 flex items-center text-xs" 
+              }, [
+                "NODE: ", 
+                createElement("span", { key: "node", className: "ml-1 text-gray-300" }, "v18.17.0")
+              ]),
+              createElement("span", { 
+                key: "line-3", 
+                className: "text-blue-400 flex items-center text-xs" 
+              }, [
+                "USER: ", 
+                createElement("span", { key: "user", className: "ml-1 text-gray-300" }, "developer@portfolio")
+              ])
+            ]),
+            createElement("div", {
+              key: "divider",
+              className: "w-full my-2 border-t border-gray-800 opacity-50"
+            }),
+            createElement("span", { 
+              key: "motivation", 
+              className: "block mb-1 text-green-400 opacity-80" 
+            }, "// Crafting digital experiences with clean code"),
+            createElement("span", { 
+              key: "hint", 
+              className: "block mb-1 text-gray-500 text-xs" 
+            }, "// Type 'help' for available commands")
           ]),
           
+          // Terminal history (commands and responses)
+          ...terminalHistory.map((item, index) => {
+            if (item.type === "command") {
+              return createElement("div", {
+                key: `history-cmd-${index}`,
+                className: "flex mb-1 text-gray-300"
+              }, [
+                createElement("span", { key: "prompt", className: "text-green-400 mr-2" }, "➜"),
+                createElement("span", { key: "path", className: "text-blue-400 mr-2" }, "~/portfolio"),
+                createElement("span", { key: "command", className: "text-gray-300" }, item.content)
+              ]);
+            } else {
+              return createElement("div", {
+                key: `history-resp-${index}`,
+                className: "pl-10 mb-2 text-gray-400 text-xs font-light"
+              }, item.content);
+            }
+          }),
+          
+          // Current command line
           createElement("div", {
-            key: "projects",
-            className: "space-y-2"
+            key: "current-command",
+            className: "flex items-start"
+          }, [
+            createElement("span", { key: "prompt", className: "text-green-400 mr-2" }, "➜"),
+            createElement("span", { key: "path", className: "text-blue-400 mr-2" }, "~/portfolio"),
+            createElement("span", { key: "command-text", className: "text-gray-300" }, terminalCommand),
+            !isTyping && createElement(BlinkingCursor, { key: "cursor" })
+          ])
+        ] : [
+          // Output tab content
+          createElement("div", {
+            key: "output-preview",
+            className: "text-sm text-gray-300 bg-gray-900/50 p-4 rounded-md border border-gray-800/50"
           }, [
             createElement("div", {
-              key: "project-1",
-              className: "bg-gray-800/50 p-3 rounded-md border border-gray-700/50 hover:border-primary/50 transition-all cursor-pointer flex justify-between items-center"
+              key: "preview-header",
+              className: "mb-2 text-gray-300 border-b border-gray-700/50 pb-2 flex items-center"
             }, [
-              createElement("div", { key: "project-info" }, [
-                createElement("div", { key: "project-name", className: "font-medium text-white" }, "Portfolio Website"),
-                createElement("div", { key: "project-tech", className: "text-xs text-gray-400" }, "Next.js • TypeScript • Tailwind")
-              ]),
-              createElement(ChevronRight, { key: "chevron", className: "w-4 h-4 text-gray-400" })
+              createElement(Monitor, { key: "monitor-icon", className: "w-4 h-4 mr-2 text-primary" }),
+              "Development Server"
             ]),
-            
             createElement("div", {
-              key: "project-2",
-              className: "bg-gray-800/50 p-3 rounded-md border border-gray-700/50 hover:border-primary/50 transition-all cursor-pointer flex justify-between items-center"
+              key: "output-content",
+              className: "text-xs text-gray-400 font-mono space-y-1"
             }, [
-              createElement("div", { key: "project-info" }, [
-                createElement("div", { key: "project-name", className: "font-medium text-white" }, "E-commerce App"),
-                createElement("div", { key: "project-tech", className: "text-xs text-gray-400" }, "React • Node.js • MongoDB")
+              createElement("div", { key: "line-1", className: "text-blue-400" }, "ready - started server on 0.0.0.0:3000"),
+              createElement("div", { key: "line-2" }, "event - compiled client and server successfully in 248 ms (17 modules)"),
+              createElement("div", { key: "line-3", className: "text-green-500" }, "✓ Ready in 352ms")
+            ]),
+            createElement("div", {
+              key: "preview-stats",
+              className: "mt-4 grid grid-cols-2 gap-2 text-xs"
+            }, [
+              createElement("div", {
+                key: "stat-1",
+                className: "bg-gray-800/50 p-2 rounded-md flex flex-col"
+              }, [
+                createElement("span", { key: "label", className: "text-gray-500" }, "Build Time"),
+                createElement("span", { key: "value", className: "text-white font-medium" }, "352ms")
               ]),
-              createElement(ChevronRight, { key: "chevron", className: "w-4 h-4 text-gray-400" })
+              createElement("div", {
+                key: "stat-2",
+                className: "bg-gray-800/50 p-2 rounded-md flex flex-col"
+              }, [
+                createElement("span", { key: "label", className: "text-gray-500" }, "Memory Usage"),
+                createElement("span", { key: "value", className: "text-white font-medium" }, "124 MB")
+              ]),
+              createElement("div", {
+                key: "stat-3",
+                className: "bg-gray-800/50 p-2 rounded-md flex flex-col"
+              }, [
+                createElement("span", { key: "label", className: "text-gray-500" }, "Total Size"),
+                createElement("span", { key: "value", className: "text-white font-medium" }, "4.2 MB")
+              ]),
+              createElement("div", {
+                key: "stat-4",
+                className: "bg-gray-800/50 p-2 rounded-md flex flex-col"
+              }, [
+                createElement("span", { key: "label", className: "text-gray-500" }, "Status"),
+                createElement("span", { key: "value", className: "text-green-400 font-medium flex items-center" }, [
+                  createElement(CheckCircle2, { key: "icon", className: "w-3 h-3 mr-1" }),
+                  "Online"
+                ])
+              ])
             ])
           ])
-        ])
+        ]
       ])
     ]);
   };
@@ -470,12 +853,12 @@ const AlternativeHeroSection = () => {
           createSocialLinks()
         ]),
         
-        // Right column (3D Card)
+        // Right column (Enhanced Terminal)
         createElement("div", {
           key: "right-column",
-          className: `w-full h-[450px] ${isLoaded ? "opacity-100" : "opacity-0"} transition-all duration-700 delay-500`,
+          className: `w-full h-[500px] ${isLoaded ? "opacity-100" : "opacity-0"} transition-all duration-700 delay-500`,
           style: isLoaded ? { animation: "fadeIn 0.8s ease forwards", animationDelay: "500ms" } : {}
-        }, create3DCard())
+        }, createTerminal())
       ])
     ]),
     
