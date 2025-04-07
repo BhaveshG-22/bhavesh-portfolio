@@ -153,15 +153,15 @@ const TechStackSlider = ({
       case "glow":
         return `${baseClasses} ${isActive ? 'scale-110 -translate-y-1' : 'hover:scale-110 hover:-translate-y-1'} rounded-full ${itemColor} text-white border-none transform`;
       case "neon":
-        return `${baseClasses} bg-black/80 text-white border ${isActive ? 'border-current scale-105' : 'border-current/50 hover:border-current hover:scale-105'} rounded-md`;
+        return `${baseClasses} bg-gray-900/60 text-white border ${isActive ? 'border-current scale-105' : 'border-current/50 hover:border-current hover:scale-105'} rounded-md`;
       case "minimal":
         return `${baseClasses} bg-transparent ${isActive ? 'bg-gray-100 dark:bg-gray-800 scale-105 border-gray-300 dark:border-gray-600' : 'hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105 hover:border-gray-300 dark:hover:border-gray-600'} rounded-lg border border-gray-200 dark:border-gray-700`;
       case "floating":
-        return `${baseClasses} ${isActive ? 'translate-y-[-8px] scale-110' : 'hover:translate-y-[-8px] hover:scale-110'} bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transform transition-transform duration-500`;
+        return `${baseClasses} ${isActive ? 'translate-y-[-8px] scale-110' : 'hover:translate-y-[-8px] hover:scale-110'} bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-100 dark:border-gray-700 transform transition-transform duration-500`;
       case "glassmorphic":
-        return `${baseClasses} backdrop-blur-lg bg-white/20 dark:bg-black/20 ${isActive ? 'bg-white/30 dark:bg-black/30 scale-110' : 'hover:bg-white/30 dark:hover:bg-black/30 hover:scale-110'} border border-white/50 dark:border-white/10 rounded-xl`;
+        return `${baseClasses} backdrop-blur-lg bg-white/20 dark:bg-gray-800/70 ${isActive ? 'bg-white/30 dark:bg-gray-700/80 scale-110' : 'hover:bg-white/30 dark:hover:bg-gray-700/80 hover:scale-110'} border border-white/50 dark:border-white/10 rounded-xl`;
       default:
-        return `${baseClasses} bg-white/10 backdrop-blur-md dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 ${isActive ? 'scale-110 border-gray-300 dark:border-gray-700' : 'hover:scale-110 hover:border-gray-300 dark:hover:border-gray-700'}`;
+        return `${baseClasses} bg-white/10 dark:bg-gray-800/70 backdrop-blur-md rounded-xl border border-gray-200 dark:border-gray-800 ${isActive ? 'scale-110 border-gray-300 dark:border-gray-700' : 'hover:scale-110 hover:border-gray-300 dark:hover:border-gray-700'}`;
     }
   };
 
@@ -199,13 +199,15 @@ const TechStackSlider = ({
   return (
     <div 
       ref={containerRef}
-      className={`w-full overflow-hidden relative py-6 before:absolute before:left-0 before:z-10 before:w-12 before:h-full before:bg-gradient-to-r before:from-white dark:before:from-black before:to-transparent after:absolute after:right-0 after:z-10 after:w-12 after:h-full after:bg-gradient-to-l after:from-white dark:after:from-black after:to-transparent ${className}`}
+      className={`w-full overflow-hidden relative py-6 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
         if (!autoplay) setActiveItem(null);
       }}
     >
+      {/* Removed the before/after pseudo-elements with dark gradients */}
+      
       {!autoplay && (
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700">
           <MousePointer className="h-3 w-3" />
