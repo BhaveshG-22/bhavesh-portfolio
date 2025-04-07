@@ -11,7 +11,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div className="mb-6 md:mb-0">
             <a href="#hero" className="text-2xl font-bold text-gradient">
-              DevPortfolio
+              BhaveshG.dev
             </a>
             <p className="text-sm text-muted-foreground mt-2 max-w-sm">
               Crafting innovative web solutions with a focus on performance,
@@ -43,7 +43,7 @@ const Footer = () => {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {currentYear} DevPortfolio. All rights reserved.
+              © {currentYear} BhaveshG.dev. All rights reserved.
             </p>
           </div>
         </div>

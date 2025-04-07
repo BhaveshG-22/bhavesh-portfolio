@@ -38,9 +38,41 @@ const SkillsSection = () => {
     },
   ];
 
-  // Tech stacks for sliders
-  const frontendTech = ["React", "Next.js", "Vue", "Angular", "TypeScript", "JavaScript", "HTML5", "CSS3", "Tailwind CSS", "Material UI", "Chakra UI", "Redux", "React Query", "Webpack", "Vite"];
-  const backendTech = ["Node.js", "Express", "NestJS", "Django", "Flask", "Ruby on Rails", "Spring Boot", "FastAPI", "GraphQL", "REST", "PHP", "Laravel", "ASP.NET Core", "PostgreSQL", "MongoDB"];
+  // Tech stacks for sliders with logos
+  const frontendTech = [
+    { name: "HTML" },
+    { name: "JavaScript" },
+    { name: "TypeScript" },
+    { name: "Next.js" },
+    { name: "React" },
+    { name: "TailwindCSS" },
+    { name: "Vue" }, 
+    { name: "Angular" }, 
+    { name: "Material UI" }, 
+    { name: "Chakra UI" }, 
+    { name: "Redux" }, 
+    { name: "React Query" },
+    { name: "Webpack" },
+    { name: "Vite" }
+  ];
+  
+  const backendTech = [
+    { name: "Node.js" },
+    { name: "Express" },
+    { name: "Prisma" },
+    { name: "Firebase" },
+    { name: "Nginx" },
+    { name: "TensorFlow" },
+    { name: "NestJS" },
+    { name: "Django" },
+    { name: "Flask" },
+    { name: "Ruby on Rails" },
+    { name: "Spring Boot" },
+    { name: "FastAPI" },
+    { name: "GraphQL" },
+    { name: "PostgreSQL" },
+    { name: "MongoDB" }
+  ];
 
   return (
     <section id="skills" className="section-padding relative bg-muted/30">
@@ -48,7 +80,7 @@ const SkillsSection = () => {
       
       <div className="max-container relative z-10">
         <div className="flex flex-col items-center text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">My Skills</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Tools that I have used</h2>
           <div className="w-20 h-1.5 bg-primary rounded-full mb-8" />
           <p className="text-lg text-muted-foreground max-w-3xl">
             I've acquired a diverse range of skills throughout my journey as a full-stack developer.

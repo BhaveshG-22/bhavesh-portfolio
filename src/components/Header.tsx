@@ -40,7 +40,7 @@ const Header = () => {
     >
       <div className="max-container flex items-center justify-between">
         <a href="#hero" className="text-xl font-bold text-gradient">
-          DevPortfolio
+          BhaveshG.dev
         </a>
 
         {/* Desktop Navigation */}
