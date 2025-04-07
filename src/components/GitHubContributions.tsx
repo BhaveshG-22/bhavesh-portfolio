@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { CalendarIcon, HelpCircle } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { 
   Tooltip,
   TooltipContent,
@@ -85,26 +85,26 @@ const GitHubContributions = () => {
     .flatMap(month => month.days)
     .reduce((sum, day) => sum + day.count, 0);
     
-  // Get color for contribution level - updated for the dark theme look
+  // Get color for contribution level - updated with more seamless gradient
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
-        return "bg-gray-800/80 hover:bg-gray-700/80";
+        return "bg-gray-800 hover:bg-gray-700";
       case 1:
-        return "bg-teal-900/80 hover:bg-teal-800/90";
+        return "bg-teal-900 hover:bg-teal-800";
       case 2:
-        return "bg-teal-700/80 hover:bg-teal-600/90"; 
+        return "bg-teal-700 hover:bg-teal-600"; 
       case 3:
-        return "bg-teal-500/80 hover:bg-teal-400/90";
+        return "bg-teal-500 hover:bg-teal-400";
       case 4:
-        return "bg-teal-300/80 hover:bg-teal-200/90";
+        return "bg-teal-300 hover:bg-teal-200";
       default:
-        return "bg-gray-800/80 hover:bg-gray-700/80";
+        return "bg-gray-800 hover:bg-gray-700";
     }
   };
   
   return (
-    <div className="bg-gray-900/95 rounded-xl p-6 w-full mx-auto border border-gray-800">
+    <div className="bg-gray-900 rounded-xl p-6 w-full mx-auto border border-gray-800 shadow-xl">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h3 className="text-xl font-bold flex items-center gap-2 text-white">
@@ -150,8 +150,8 @@ const GitHubContributions = () => {
         </div>
       </div>
       
-      <div className="relative overflow-x-auto pb-4 w-full">
-        <div className="w-full min-w-[720px]">
+      <div className="relative w-full pb-4">
+        <div className="w-full">
           <div className="flex mb-2">
             <div className="w-8 shrink-0"></div>
             <div className="grow grid grid-cols-12 gap-1">
@@ -189,12 +189,7 @@ const GitHubContributions = () => {
             ))}
           </div>
           
-          <div className="flex justify-between mt-5 text-sm">
-            <button className="flex items-center gap-1 text-gray-400 hover:text-gray-300 transition-colors">
-              <HelpCircle className="h-4 w-4" />
-              Learn how we count contributions
-            </button>
-            
+          <div className="flex justify-end mt-5 text-sm">
             <div className="flex items-center gap-2 text-gray-400">
               <span>Less</span>
               <div className="flex gap-1">
