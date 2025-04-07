@@ -30,12 +30,6 @@ const SkillsSection = () => {
   // Tech stacks for sliders with standard Lucide icons
   const frontendTech = [
     { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
-    { name: "HTML", icon: Globe, color: "bg-orange-500" },
     { name: "CSS", icon: Braces, color: "bg-blue-500" },
     { name: "JavaScript", icon: FileCode, color: "bg-yellow-500" },
     { name: "TypeScript", icon: Code, color: "bg-blue-600" },
