@@ -115,15 +115,15 @@
   }
   
   .text-gradient-light {
-    @apply bg-gradient-to-r from-white to-primary/80 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-portfolio-blue to-primary/80 bg-clip-text text-transparent dark:bg-gradient-to-r dark:from-white dark:to-primary/80;
   }
   
   .text-gradient-bright {
-    @apply bg-gradient-to-r from-white via-primary/90 to-portfolio-purple/90 bg-clip-text text-transparent drop-shadow-sm;
+    @apply bg-gradient-to-r from-portfolio-blue via-primary/90 to-portfolio-purple/90 bg-clip-text text-transparent drop-shadow-sm dark:bg-gradient-to-r dark:from-white dark:via-primary/90 dark:to-portfolio-purple/90;
   }
   
   .text-teal-gradient {
-    @apply bg-gradient-to-r from-teal-400 to-teal-200 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent dark:from-teal-400 dark:to-teal-200;
   }
 
   .section-padding {
@@ -135,23 +135,23 @@
   }
   
   .glassmorphism {
-    @apply backdrop-blur-xl bg-white/20 dark:bg-white/10 border border-white/30 dark:border-white/20 shadow-lg;
+    @apply backdrop-blur-xl bg-white/70 dark:bg-white/20 border border-white/50 dark:border-white/30 shadow-lg;
   }
   
   .glassmorphism-card {
-    @apply backdrop-blur-md bg-white/30 dark:bg-white/15 border border-white/40 dark:border-white/20 shadow-xl;
+    @apply backdrop-blur-md bg-white/80 dark:bg-white/15 border border-white/60 dark:border-white/20 shadow-xl;
   }
   
   .glassmorphism-light {
-    @apply backdrop-blur-sm bg-white/50 dark:bg-white/10 border border-white/40 dark:border-white/20 shadow-md;
+    @apply backdrop-blur-sm bg-white/80 dark:bg-white/10 border border-white/60 dark:border-white/20 shadow-md;
   }
 
   .glass-morphism {
-    @apply backdrop-blur-xl bg-black/20 border border-white/20 dark:border-white/10 shadow-lg;
+    @apply backdrop-blur-xl bg-white/50 dark:bg-black/20 border border-white/40 dark:border-white/10 shadow-lg;
   }
   
   .project-card {
-    @apply bg-black/40 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden transition-all hover:border-teal-500/30;
+    @apply bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl overflow-hidden transition-all hover:border-teal-500/30;
   }
   
   .project-image {

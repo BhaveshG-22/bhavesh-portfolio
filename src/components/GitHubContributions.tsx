@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   Tooltip,
@@ -98,17 +99,17 @@ const GitHubContributions = () => {
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
-        return "bg-gray-800 border-gray-700";
+        return "bg-gray-100 border-gray-200 dark:bg-gray-800 dark:border-gray-700";
       case 1:
-        return "bg-teal-900 border-teal-800";
+        return "bg-teal-100 border-teal-200 dark:bg-teal-900 dark:border-teal-800";
       case 2:
-        return "bg-teal-700 border-teal-600"; 
+        return "bg-teal-300 border-teal-400 dark:bg-teal-700 dark:border-teal-600"; 
       case 3:
-        return "bg-teal-500 border-teal-400";
+        return "bg-teal-500 border-teal-600 dark:bg-teal-500 dark:border-teal-400";
       case 4:
-        return "bg-teal-300 border-teal-200";
+        return "bg-teal-600 border-teal-700 dark:bg-teal-300 dark:border-teal-200";
       default:
-        return "bg-gray-800 border-gray-700";
+        return "bg-gray-100 border-gray-200 dark:bg-gray-800 dark:border-gray-700";
     }
   };
   
@@ -126,9 +127,9 @@ const GitHubContributions = () => {
   const visibleMonths = getVisibleMonths();
   
   return (
-    <div className="w-full bg-black rounded-lg border border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4">
+    <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4">
       {/* Month labels */}
-      <div className="flex justify-between mb-1 text-xs text-gray-400">
+      <div className="flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-400">
         {visibleMonths.map((month, index) => (
           <div key={index} className="text-center">
             {month}
@@ -153,7 +154,7 @@ const GitHubContributions = () => {
                         )}
                       />
                     </TooltipTrigger>
-                    <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200 text-xs py-1 px-2">
+                    <TooltipContent className="bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-xs py-1 px-2">
                       {day.count === 0 ? "No" : day.count} contribution{day.count !== 1 ? 's' : ''} on {day.date}
                     </TooltipContent>
                   </Tooltip>
@@ -164,14 +165,14 @@ const GitHubContributions = () => {
       </div>
       
       {/* Bottom section */}
-      <div className="flex justify-between items-center mt-3 text-xs text-gray-300">
+      <div className="flex justify-between items-center mt-3 text-xs text-gray-700 dark:text-gray-300">
         <div>
           1,362 contributions in the last year
         </div>
         
         {/* Legend */}
         <div className="flex items-center gap-1">
-          <span className="text-gray-400">Less</span>
+          <span className="text-gray-500 dark:text-gray-400">Less</span>
           <div className="flex gap-1">
             {[0, 1, 2, 3, 4].map((level) => (
               <div 
@@ -183,7 +184,7 @@ const GitHubContributions = () => {
               />
             ))}
           </div>
-          <span className="text-gray-400">More</span>
+          <span className="text-gray-500 dark:text-gray-400">More</span>
         </div>
       </div>
     </div>
