@@ -26,16 +26,13 @@ import {
 } from "lucide-react";
 
 const SkillsSection = () => {
-  // Tech stacks split into smaller groups to prevent overflow
-  const frontendTechGroup1 = [
+  // Two tech stacks for front-end and back-end
+  const frontendTech = [
     { name: "HTML", logo: <Globe className="h-4 w-4" />, color: "bg-orange-500" },
     { name: "CSS", logo: <Braces className="h-4 w-4" />, color: "bg-blue-500" },
     { name: "JavaScript", logo: <FileCode className="h-4 w-4" />, color: "bg-yellow-500" },
     { name: "TypeScript", logo: <Code className="h-4 w-4" />, color: "bg-blue-600" },
-    { name: "React", logo: <Webhook className="h-4 w-4" />, color: "bg-cyan-500" }
-  ];
-  
-  const frontendTechGroup2 = [
+    { name: "React", logo: <Webhook className="h-4 w-4" />, color: "bg-cyan-500" },
     { name: "Next.js", logo: <Milestone className="h-4 w-4" />, color: "bg-black" },
     { name: "TailwindCSS", logo: <Layers className="h-4 w-4" />, color: "bg-cyan-400" },
     { name: "Vue", logo: <Box className="h-4 w-4" />, color: "bg-green-500" },
@@ -43,23 +40,17 @@ const SkillsSection = () => {
     { name: "Svelte", logo: <Zap className="h-4 w-4" />, color: "bg-orange-600" }
   ];
   
-  const backendTechGroup1 = [
+  const backendTech = [
     { name: "Node.js", logo: <Server className="h-4 w-4" />, color: "bg-green-600" },
     { name: "Express", logo: <Activity className="h-4 w-4" />, color: "bg-gray-700" },
     { name: "Python", logo: <FileCog className="h-4 w-4" />, color: "bg-blue-500" },
     { name: "Flask", logo: <Terminal className="h-4 w-4" />, color: "bg-black" },
-    { name: "MongoDB", logo: <Database className="h-4 w-4" />, color: "bg-green-700" }
-  ];
-  
-  const backendTechGroup2 = [
+    { name: "MongoDB", logo: <Database className="h-4 w-4" />, color: "bg-green-700" },
     { name: "Firebase", logo: <Cloud className="h-4 w-4" />, color: "bg-yellow-600" },
     { name: "TensorFlow", logo: <LineChart className="h-4 w-4" />, color: "bg-orange-500" },
     { name: "C++", logo: <Cpu className="h-4 w-4" />, color: "bg-blue-600" },
     { name: "Nginx", logo: <Network className="h-4 w-4" />, color: "bg-green-500" },
-    { name: "Keras", logo: <BarChart className="h-4 w-4" />, color: "bg-red-500" }
-  ];
-  
-  const backendTechGroup3 = [
+    { name: "Keras", logo: <BarChart className="h-4 w-4" />, color: "bg-red-500" },
     { name: "Solidity", logo: <Lock className="h-4 w-4" />, color: "bg-gray-800" },
     { name: "Bun", logo: <Rocket className="h-4 w-4" />, color: "bg-pink-500" },
     { name: "Arch Linux", logo: <HardDrive className="h-4 w-4" />, color: "bg-blue-800" }
@@ -79,45 +70,24 @@ const SkillsSection = () => {
           </p>
         </div>
         
-        {/* Tech stack sliders - distributed into more rows to prevent overflow */}
+        {/* Just two tech stack sliders - one flowing each direction */}
         <div className="mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-4">
-          <div className="mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground mb-1 ml-4">Front-end Technologies</h3>
+          <div className="mb-8">
+            <h3 className="text-sm font-medium text-muted-foreground mb-2 ml-4">Front-end Technologies</h3>
             <TechStackSlider 
               direction="ltr" 
               speed="medium" 
-              items={frontendTechGroup1} 
-              variant="glassmorphic"
-              className="mb-2" 
-            />
-            <TechStackSlider 
-              direction="rtl" 
-              speed="medium" 
-              items={frontendTechGroup2} 
+              items={frontendTech} 
               variant="glassmorphic"
             />
           </div>
           
-          <div className="mt-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-1 ml-4">Back-end & Other Technologies</h3>
-            <TechStackSlider 
-              direction="ltr" 
-              speed="medium" 
-              items={backendTechGroup1} 
-              variant="glassmorphic"
-              className="mb-2" 
-            />
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2 ml-4">Back-end & Other Technologies</h3>
             <TechStackSlider 
               direction="rtl" 
               speed="medium" 
-              items={backendTechGroup2} 
-              variant="glassmorphic"
-              className="mb-2" 
-            />
-            <TechStackSlider 
-              direction="ltr" 
-              speed="medium" 
-              items={backendTechGroup3} 
+              items={backendTech} 
               variant="glassmorphic"
             />
           </div>
