@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { FileCode, FileJson, FileType, Bot, Server, Layers, Flame, Code, Cpu, Zap, Star, MousePointer } from "lucide-react";
+
 interface TechItem {
   name: string;
   logo?: React.ReactNode;
   color?: string;
   description?: string;
 }
+
 interface SliderProps {
   direction: "ltr" | "rtl";
   speed?: "slow" | "medium" | "fast";
@@ -84,6 +86,7 @@ const techLogos: Record<string, {
     description: "Open-source machine learning framework"
   }
 };
+
 const TechStackSlider = ({
   direction,
   speed = "medium",
@@ -103,6 +106,7 @@ const TechStackSlider = ({
     medium: "25s",
     fast: "15s"
   };
+  
   useEffect(() => {
     if (sliderRef.current) {
       const sliderWidth = sliderRef.current.scrollWidth / 2;
@@ -116,10 +120,11 @@ const TechStackSlider = ({
 
   // Generate badge classes based on variant - removing shadow styles
   const getBadgeClasses = (item: TechItem) => {
-    const baseClasses = "px-4 py-2 text-sm font-medium flex items-center gap-2 transition-all duration-300";
+    const baseClasses = "px-3 py-1.5 text-sm font-medium flex items-center gap-2 transition-all duration-300";
     const itemName = item.name;
     const itemColor = item.color || techLogos[itemName]?.color || "bg-gradient-to-r from-gray-800 to-gray-600";
     const isActive = activeItem === itemName;
+    
     switch (variant) {
       case "glow":
         return `${baseClasses} ${isActive ? 'scale-110 -translate-y-1' : 'hover:scale-110 hover:-translate-y-1'} rounded-full ${itemColor} text-white border-none transform`;
@@ -135,19 +140,24 @@ const TechStackSlider = ({
         return `${baseClasses} bg-white/10 backdrop-blur-md dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 ${isActive ? 'scale-110 border-gray-300 dark:border-gray-700' : 'hover:scale-110 hover:border-gray-300 dark:hover:border-gray-700'}`;
     }
   };
+  
   const sliderAnimationClasses = `
     animate-marquee 
     ${direction === "rtl" ? "animate-marquee-reverse" : ""} 
     ${isHovered || !autoplay ? "paused" : "running"}
   `.trim();
+  
   const handleItemClick = (name: string) => {
     setActiveItem(activeItem === name ? null : name);
   };
+  
   const getDescriptionPanel = () => {
     if (!showDescription || !activeItem) return null;
     const item = techLogos[activeItem];
     if (!item) return null;
-    return <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 z-20 w-64 p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm mb-2">
+    
+    return (
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 z-20 w-64 p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm mb-2">
         <div className="flex items-center gap-2 mb-1">
           <span className={`flex items-center justify-center w-6 h-6 rounded-full ${item.color} text-white`}>
             {item.icon}
@@ -156,21 +166,30 @@ const TechStackSlider = ({
         </div>
         <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-inherit border-r border-b border-gray-200 dark:border-gray-700"></div>
-      </div>;
+      </div>
+    );
   };
-  return <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => {
-    setIsHovered(false);
-    if (!autoplay) setActiveItem(null);
-  }} className="">
-      {!autoplay && <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700">
+  
+  return (
+    <div 
+      onMouseEnter={() => setIsHovered(true)} 
+      onMouseLeave={() => {
+        setIsHovered(false);
+        if (!autoplay) setActiveItem(null);
+      }} 
+      className=""
+    >
+      {!autoplay && (
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700">
           <MousePointer className="h-3 w-3" />
           <span>Hover and click to explore</span>
-        </div>}
+        </div>
+      )}
       
       <style jsx>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
-          100% { transform: translateX(calc(var(--slider-width) * -1)); }
+          100% { transform: translateX(var(--slider-width)); }
         }
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
@@ -199,35 +218,52 @@ const TechStackSlider = ({
         }
       `}</style>
       
-      <div ref={sliderRef} className={`flex items-center whitespace-nowrap ${sliderAnimationClasses}`} style={{
-      animationDuration: animationDuration[speed],
-      width: "fit-content"
-    }}>
+      <div 
+        ref={sliderRef} 
+        className={`flex items-center whitespace-nowrap ${sliderAnimationClasses}`} 
+        style={{
+          animationDuration: animationDuration[speed],
+          width: "fit-content"
+        }}
+      >
         {allItems.map((item, index) => {
-        const itemName = item.name;
-        const logoInfo = techLogos[itemName] || {
-          icon: <Cpu className="h-4 w-4" />,
-          color: "bg-gradient-to-r from-gray-800 to-gray-600",
-          description: "Technology component"
-        };
-        const isActive = activeItem === itemName;
-        return <div key={`${itemName}-${index}`} className={`mx-3 tech-item relative ${variant === "floating" && isActive ? "animate-float" : ""}`} onClick={() => handleItemClick(itemName)}>
+          const itemName = item.name;
+          const logoInfo = techLogos[itemName] || {
+            icon: <Cpu className="h-4 w-4" />,
+            color: "bg-gradient-to-r from-gray-800 to-gray-600",
+            description: "Technology component"
+          };
+          const isActive = activeItem === itemName;
+          
+          return (
+            <div 
+              key={`${itemName}-${index}`} 
+              className={`mx-2 tech-item relative ${variant === "floating" && isActive ? "animate-float" : ""}`} 
+              onClick={() => handleItemClick(itemName)}
+            >
               {showDescription && isActive && getDescriptionPanel()}
               
               <Badge className={getBadgeClasses(item)} variant="outline">
-                {variant === "neon" ? <span className={`flex items-center justify-center w-6 h-6 rounded-full bg-current/20 text-current`}>
+                {variant === "neon" ? (
+                  <span className={`flex items-center justify-center w-5 h-5 rounded-full bg-current/20 text-current`}>
                     {item.logo || logoInfo.icon}
-                  </span> : <span className={`flex items-center justify-center w-6 h-6 rounded-full ${variant === "minimal" ? "" : logoInfo.color} text-white`}>
+                  </span>
+                ) : (
+                  <span className={`flex items-center justify-center w-5 h-5 rounded-full ${variant === "minimal" ? "" : logoInfo.color} text-white`}>
                     {item.logo || logoInfo.icon}
-                  </span>}
+                  </span>
+                )}
                 
-                <span>{itemName}</span>
+                <span className="truncate max-w-[80px]">{itemName}</span>
                 
-                {isActive && <Star className="h-3 w-3 ml-1 text-yellow-400" />}
+                {isActive && <Star className="h-3 w-3 ml-1 text-yellow-400 shrink-0" />}
               </Badge>
-            </div>;
-      })}
+            </div>
+          );
+        })}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default TechStackSlider;
