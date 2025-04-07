@@ -1,10 +1,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { LucideIcon } from "lucide-react";
 
 interface TechItem {
   name: string;
-  logo?: React.ReactNode;
+  icon?: LucideIcon;
   color?: string;
 }
 
@@ -100,15 +101,16 @@ const TechStackSlider = ({
         }}
       >
         {allItems.map((item, index) => {
+          const IconComponent = item.icon;
           return (
             <div key={`${item.name}-${index}`} className="mx-3">
               <Badge 
                 className={getBadgeClasses(item)}
                 variant="outline"
               >
-                {item.logo && (
+                {IconComponent && (
                   <span className={`flex items-center justify-center w-6 h-6 rounded-full p-1 ${variant === "minimal" ? "" : (item.color || "bg-gradient-to-r from-gray-800 to-gray-600")} text-white shadow-inner`}>
-                    {item.logo}
+                    <IconComponent className="w-4 h-4" />
                   </span>
                 )}
                 <span>{item.name}</span>
