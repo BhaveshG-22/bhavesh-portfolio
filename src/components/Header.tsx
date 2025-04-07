@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Github, Linkedin, Mail } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,6 +58,7 @@ const Header = () => {
             ))}
           </ul>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 <Github className="h-5 w-5" />
@@ -77,14 +79,16 @@ const Header = () => {
         </nav>
 
         {/* Mobile Navigation */}
-        <Button
-          variant="ghost"
-          className="md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        </div>
 
         {/* Mobile Menu */}
         {isOpen && (

@@ -134,6 +134,10 @@
   .glassmorphism-light {
     @apply backdrop-blur-sm bg-white/40 border border-white/30 shadow-md;
   }
+
+  .glass-morphism {
+    @apply backdrop-blur-xl bg-black/20 border border-white/10 shadow-lg;
+  }
   
   .grid-cell {
     @apply w-[15px] h-[15px] rounded-sm transition-all duration-200;

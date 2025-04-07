@@ -18,14 +18,16 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <GitHubContributions />
+        <div className="glassmorphism dark:glass-morphism p-6 rounded-lg">
+          <GitHubContributions />
+        </div>
         
         <div className="mt-12 flex justify-center">
           <a 
             href="https://github.com" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="glassmorphism-light px-6 py-3 rounded-full flex items-center gap-2 hover:bg-white/30 transition-all"
+            className="glassmorphism-light dark:glassmorphism px-6 py-3 rounded-full flex items-center gap-2 hover:bg-white/30 dark:hover:bg-white/10 transition-all"
           >
             <Github className="h-5 w-5" />
             View my GitHub Profile
