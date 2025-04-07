@@ -122,4 +122,20 @@
   .max-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+  
+  .glassmorphism {
+    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg;
+  }
+  
+  .glassmorphism-card {
+    @apply backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 dark:border-white/10 shadow-xl;
+  }
+  
+  .glassmorphism-light {
+    @apply backdrop-blur-sm bg-white/40 border border-white/30 shadow-md;
+  }
+  
+  .grid-cell {
+    @apply w-[15px] h-[15px] rounded-sm transition-all duration-200;
+  }
 }

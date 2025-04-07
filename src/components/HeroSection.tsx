@@ -13,7 +13,7 @@ const HeroSection = () => {
       
       <div className="max-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center z-10">
         <div className="flex flex-col space-y-6 animate-fade-in">
-          <span className="text-sm md:text-base font-medium text-primary px-4 py-2 bg-primary/10 rounded-full w-fit">
+          <span className="text-sm md:text-base font-medium text-primary px-4 py-2 bg-primary/10 rounded-full w-fit glassmorphism-light">
             Full-Stack Web Developer
           </span>
           
@@ -27,13 +27,13 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-wrap gap-4 pt-4">
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="glassmorphism">
               <a href="#projects">
                 View My Work
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            <Button variant="outline" size="lg" asChild className="glassmorphism-light">
               <a href="#contact">Contact Me</a>
             </Button>
           </div>
@@ -41,7 +41,7 @@ const HeroSection = () => {
         
         <div className="relative w-full h-[400px] lg:h-[500px] p-4">
           <div className="absolute inset-0 bg-gradient-to-tr from-portfolio-blue to-portfolio-purple rounded-lg opacity-20 blur-xl"></div>
-          <div className="absolute inset-4 bg-white dark:bg-portfolio-blue/40 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-center p-8">
+          <div className="absolute inset-4 glassmorphism rounded-lg flex items-center justify-center p-8">
             <div className="relative w-full h-full bg-white/5 rounded-md border border-white/10 backdrop-blur-sm p-4 overflow-hidden">
               <div className="absolute top-2 left-2 flex gap-1">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>

@@ -1,10 +1,11 @@
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Github, ExternalLink, ChevronRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 type Project = {
   id: number;
@@ -99,46 +100,48 @@ const ProjectsSection = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="all" className="mb-12">
-          <div className="flex justify-center">
-            <TabsList>
-              <TabsTrigger value="all">All Projects</TabsTrigger>
-              <TabsTrigger value="frontend">Frontend</TabsTrigger>
-              <TabsTrigger value="backend">Backend</TabsTrigger>
-              <TabsTrigger value="fullstack">Full Stack</TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <TabsContent value="all" className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.slice(0, visibleProjects).map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
+        <div className="glassmorphism rounded-xl p-4 mb-12">
+          <Tabs defaultValue="all" className="mb-8">
+            <div className="flex justify-center">
+              <TabsList className="glassmorphism-light">
+                <TabsTrigger value="all">All Projects</TabsTrigger>
+                <TabsTrigger value="frontend">Frontend</TabsTrigger>
+                <TabsTrigger value="backend">Backend</TabsTrigger>
+                <TabsTrigger value="fullstack">Full Stack</TabsTrigger>
+              </TabsList>
             </div>
-          </TabsContent>
-          
-          {["frontend", "backend", "fullstack"].map((category) => (
-            <TabsContent key={category} value={category} className="mt-8">
+            
+            <TabsContent value="all" className="mt-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects
-                  .filter((project) => project.category === category)
-                  .slice(0, visibleProjects)
-                  .map((project) => (
-                    <ProjectCard key={project.id} project={project} />
-                  ))}
+                {projects.slice(0, visibleProjects).map((project) => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
               </div>
             </TabsContent>
-          ))}
-        </Tabs>
-        
-        {visibleProjects < projects.length && (
-          <div className="flex justify-center">
-            <Button onClick={showMoreProjects} variant="outline" size="lg">
-              Load More Projects
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
-          </div>
-        )}
+            
+            {["frontend", "backend", "fullstack"].map((category) => (
+              <TabsContent key={category} value={category} className="mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {projects
+                    .filter((project) => project.category === category)
+                    .slice(0, visibleProjects)
+                    .map((project) => (
+                      <ProjectCard key={project.id} project={project} />
+                    ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+          
+          {visibleProjects < projects.length && (
+            <div className="flex justify-center">
+              <Button onClick={showMoreProjects} variant="outline" size="lg" className="glassmorphism-light">
+                Load More Projects
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -146,7 +149,7 @@ const ProjectsSection = () => {
 
 const ProjectCard = ({ project }: { project: Project }) => {
   return (
-    <Card className="group overflow-hidden">
+    <Card className="group overflow-hidden glassmorphism-card border-0">
       <div className="relative h-48 w-full overflow-hidden">
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors z-10" />
         <img
@@ -155,7 +158,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
-      <CardContent className="p-6">
+      <div className="p-6">
         <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
           {project.title}
         </h3>
@@ -164,31 +167,31 @@ const ProjectCard = ({ project }: { project: Project }) => {
         </p>
         <div className="flex flex-wrap gap-2 mb-4">
           {project.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
+            <Badge key={tag} variant="outline" className="text-xs glassmorphism-light">
               {tag}
             </Badge>
           ))}
           {project.tags.length > 3 && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs glassmorphism-light">
               +{project.tags.length - 3}
             </Badge>
           )}
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild className="glassmorphism-light">
             <a href={project.github} target="_blank" rel="noreferrer">
               <Github className="mr-1 h-4 w-4" />
               Code
             </a>
           </Button>
-          <Button size="sm" asChild>
+          <Button size="sm" asChild className="glassmorphism">
             <a href={project.demo} target="_blank" rel="noreferrer">
               <ExternalLink className="mr-1 h-4 w-4" />
               Live Demo
             </a>
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 };

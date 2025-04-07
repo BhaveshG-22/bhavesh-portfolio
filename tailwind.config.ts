@@ -118,6 +118,9 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
 				'fade-out': 'fade-out 0.3s ease-out',
+			},
+			gridTemplateColumns: {
+				'52': 'repeat(52, minmax(0, 1fr))',
 			}
 		}
 	},
