@@ -103,7 +103,7 @@ const ProjectsSection = () => {
         <div className="glassmorphism rounded-xl p-4 mb-12">
           <Tabs defaultValue="all" className="mb-8">
             <div className="flex justify-center">
-              <TabsList className="glassmorphism-light">
+              <TabsList className="glassmorphism-light tabs-with-underline">
                 <TabsTrigger value="all">All Projects</TabsTrigger>
                 <TabsTrigger value="frontend">Frontend</TabsTrigger>
                 <TabsTrigger value="backend">Backend</TabsTrigger>

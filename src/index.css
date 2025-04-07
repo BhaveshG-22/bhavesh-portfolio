@@ -142,4 +142,52 @@
   .grid-cell {
     @apply w-[15px] h-[15px] rounded-sm transition-all duration-200;
   }
+
+  /* Sliding Underline for Tabs */
+  .tabs-with-underline {
+    @apply relative inline-flex;
+  }
+
+  .tabs-with-underline [data-state="active"] {
+    @apply relative text-primary transition-colors duration-300;
+  }
+
+  .tabs-with-underline [data-state="active"]::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full transition-all duration-300;
+    animation: slide-in 0.3s ease-out forwards;
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Sliding Tech Stack Animation */
+  @keyframes slide {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(var(--slider-width));
+    }
+  }
+
+  .animate-slide {
+    animation: slide var(--animation-duration) linear infinite;
+  }
+
+  .animate-slide-reverse {
+    animation: slide var(--animation-duration) linear infinite reverse;
+  }
+
+  .pause-animation {
+    animation-play-state: paused;
+  }
 }
