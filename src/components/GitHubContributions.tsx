@@ -6,221 +6,187 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 
 type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
-interface ContributionDay {
+interface ContributionData {
   date: string;
   count: number;
   level: ContributionLevel;
 }
 
-interface MonthData {
-  name: string;
-  days: ContributionDay[];
-}
-
 const GitHubContributions = () => {
-  const [year] = useState("2025");
-  const [columns, setColumns] = useState(53); // Default number of columns
+  const [data, setData] = useState<ContributionData[]>([]);
+  const [visibleWeeks, setVisibleWeeks] = useState(52);
   
-  // Handle responsive behavior
   useEffect(() => {
+    // Generate contribution data that matches the example
+    generateData();
+    
+    // Handle responsive sizing
     const handleResize = () => {
-      // Adjust columns based on screen width
-      if (window.innerWidth < 640) { // Small screens
-        setColumns(26);
-      } else if (window.innerWidth < 1024) { // Medium screens
-        setColumns(39);
-      } else { // Large screens
-        setColumns(53);
+      if (window.innerWidth < 640) {
+        setVisibleWeeks(26); // Show ~6 months on mobile
+      } else if (window.innerWidth < 1024) {
+        setVisibleWeeks(39); // Show ~9 months on tablets
+      } else {
+        setVisibleWeeks(52); // Show full year on desktop
       }
     };
     
-    // Set initial columns
     handleResize();
-    
-    // Add resize listener
     window.addEventListener('resize', handleResize);
     
-    // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Generate mock contribution data using the months from the image
-  const generateMockData = (): MonthData[] => {
+  // Generate contribution data that mimics the screenshot
+  const generateData = () => {
     const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
-    const mockData: MonthData[] = [];
+    const daysPerWeek = 7;
+    const weeksInYear = 52;
+    const contributions: ContributionData[] = [];
     
-    months.forEach((month) => {
-      const daysInMonth = 31; // Simplified for visual consistency
-      const days: ContributionDay[] = [];
+    // Pre-defined contribution density pattern to match screenshot
+    // Higher values = more contributions in that part of the year
+    const densityPattern = [
+      0.2, 0.3, 0.3, 0.2, 0.3, 0.4, 0.4, 0.3, 0.5, 0.6, 0.5, 0.6
+    ];
+    
+    // Generate data for each day in the year
+    for (let week = 0; week < weeksInYear; week++) {
+      const monthIndex = Math.floor((week / weeksInYear) * 12);
+      const density = densityPattern[monthIndex];
       
-      for (let i = 1; i <= daysInMonth; i++) {
-        let level: ContributionLevel = 0;
-        let count = 0;
+      for (let day = 0; day < daysPerWeek; day++) {
+        // Calculate date
+        const dayOfYear = week * 7 + day;
+        const monthOffset = Math.floor(dayOfYear / 30);
+        const dayInMonth = (dayOfYear % 30) + 1;
+        const month = months[monthOffset % 12];
+        const year = month === "Jan" || month === "Feb" || month === "Mar" ? "2025" : "2024";
         
-        // Generate random contribution data with a pattern
+        // Determine contribution level based on random chance + density pattern
+        let level: ContributionLevel = 0;
         const rand = Math.random();
-        if (rand > 0.8) {
-          if (rand > 0.95) {
-            count = Math.floor(Math.random() * 10) + 10;
-            level = 4;
-          } else if (rand > 0.9) {
-            count = Math.floor(Math.random() * 5) + 5;
-            level = 3;
-          } else if (rand > 0.85) {
-            count = Math.floor(Math.random() * 3) + 2;
-            level = 2;
-          } else {
-            count = 1;
-            level = 1;
-          }
+        
+        if (rand < density * 0.5) {
+          level = 1;
+        } else if (rand < density * 0.6) {
+          level = 2;
+        } else if (rand < density * 0.7) {
+          level = 3;
+        } else if (rand < density * 0.75) {
+          level = 4;
         }
         
-        days.push({
-          date: `${month} ${i}, ${month === "Jan" || month === "Feb" || month === "Mar" ? "2025" : "2024"}`,
+        // Create contribution count based on level
+        const count = level === 0 ? 0 : level * Math.floor(Math.random() * 4 + 1);
+        
+        contributions.push({
+          date: `${month} ${dayInMonth}, ${year}`,
           count,
-          level,
+          level
         });
       }
-      
-      mockData.push({
-        name: month,
-        days,
-      });
-    });
+    }
     
-    return mockData;
+    setData(contributions);
   };
   
-  const contributionsData = generateMockData();
-  const totalContributions = 1362; // Exactly as in the image
-    
-  // Get color for contribution level - using the teal colors from the image
+  // Get color for contribution level to match the teal colors in the image
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
-        return "bg-gray-800 hover:bg-gray-700";
+        return "bg-gray-800 border-gray-700";
       case 1:
-        return "bg-teal-900 hover:bg-teal-800";
+        return "bg-teal-900 border-teal-800";
       case 2:
-        return "bg-teal-700 hover:bg-teal-600"; 
+        return "bg-teal-700 border-teal-600"; 
       case 3:
-        return "bg-teal-500 hover:bg-teal-400";
+        return "bg-teal-500 border-teal-400";
       case 4:
-        return "bg-teal-300 hover:bg-teal-200";
+        return "bg-teal-300 border-teal-200";
       default:
-        return "bg-gray-800 hover:bg-gray-700";
+        return "bg-gray-800 border-gray-700";
     }
   };
-
-  // Calculate which months to display based on columns
+  
+  // Get visible data based on current visible weeks setting
+  const visibleData = data.slice(-visibleWeeks * 7);
+  
+  // Get visible months based on visible weeks
   const getVisibleMonths = () => {
-    if (columns === 53) return contributionsData;
-    if (columns === 39) return contributionsData.slice(3); // Last 9 months
-    return contributionsData.slice(6); // Last 6 months for smallest screens
+    const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
+    if (visibleWeeks === 52) return months;
+    if (visibleWeeks === 39) return months.slice(3); // 9 months
+    return months.slice(6); // 6 months
   };
-
+  
   const visibleMonths = getVisibleMonths();
   
   return (
-    <Card className="bg-black rounded-lg border border-gray-800 shadow-xl overflow-hidden w-full">
-      <CardContent className="p-2 sm:p-3 md:p-5">
-        <div className="w-full">
-          {/* Month labels at the top - responsive */}
-          <div className="grid gap-1 mb-2 text-xs text-gray-400" 
-               style={{ gridTemplateColumns: `repeat(${visibleMonths.length}, minmax(0, 1fr))` }}>
-            {visibleMonths.map((month, index) => (
-              <div key={index} className="text-center text-[10px] sm:text-xs">
-                {month.name}
-              </div>
-            ))}
+    <div className="w-full bg-black rounded-lg border border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4">
+      {/* Month labels */}
+      <div className="flex justify-between mb-1 text-xs text-gray-400">
+        {visibleMonths.map((month, index) => (
+          <div key={index} className="text-center">
+            {month}
           </div>
-          
-          {/* Contribution grid - responsive */}
-          <div className="grid gap-[1px] sm:gap-[2px]" 
-               style={{ 
-                 gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-                 gridTemplateRows: `repeat(7, 1fr)`
-               }}>
-            {Array.from({ length: 7 }).map((_, rowIndex) => (
-              <React.Fragment key={rowIndex}>
-                {Array.from({ length: columns }).map((_, colIndex) => {
-                  // Calculate level based on position to create a pattern similar to the image
-                  let level: ContributionLevel = 0;
-                  
-                  // Create a semi-random but visually consistent pattern
-                  const patternValue = (rowIndex * columns + colIndex) % 12;
-                  if (patternValue === 2 || patternValue === 5 || patternValue === 8) {
-                    level = (Math.random() > 0.4 ? 
-                      Math.floor(Math.random() * 4) as ContributionLevel : 
-                      0) as ContributionLevel;
-                  }
-                  
-                  // Set some specific patterns to match the image
-                  if ((rowIndex === 2 && colIndex % 7 === 3) || 
-                      (rowIndex === 3 && colIndex % 8 === 2) ||
-                      (rowIndex === 4 && colIndex % 5 === 1)) {
-                    level = Math.floor(Math.random() * 3 + 1) as ContributionLevel;
-                  }
-                  
-                  // Convert column index to month and day based on visible months
-                  const monthIndex = Math.floor(colIndex / (columns / visibleMonths.length));
-                  const month = visibleMonths[monthIndex < visibleMonths.length ? monthIndex : visibleMonths.length - 1];
-                  const dayInMonth = Math.floor((colIndex % (columns / visibleMonths.length)) * 7) + rowIndex;
-                  const date = month ? `${month.name} ${dayInMonth > 31 ? 31 : dayInMonth}, ${month.name === "Jan" || month.name === "Feb" || month.name === "Mar" ? "2025" : "2024"}` : "";
-                  const count = level === 0 ? 0 : level * Math.floor(Math.random() * 3 + 1);
-                  
-                  return (
-                    <TooltipProvider key={`${rowIndex}-${colIndex}`}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div 
-                            className={cn(
-                              "w-2 h-2 sm:w-3 sm:h-3 rounded-sm", 
-                              getContributionColor(level)
-                            )} 
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200 text-xs">
-                          {level === 0 ? "No" : count} contribution{count !== 1 ? 's' : ''} on {date}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  );
-                })}
-              </React.Fragment>
-            ))}
+        ))}
+      </div>
+      
+      {/* Contribution grid */}
+      <div className="grid grid-rows-7 grid-flow-col gap-1">
+        {Array.from({ length: 7 }).map((_, rowIndex) => (
+          <div key={rowIndex} className="flex gap-1">
+            {visibleData
+              .filter((_, index) => index % 7 === rowIndex)
+              .map((day, colIndex) => (
+                <TooltipProvider key={colIndex}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={cn(
+                          "w-3 h-3 sm:w-4 sm:h-4 rounded-sm border border-opacity-10",
+                          getContributionColor(day.level)
+                        )}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200 text-xs py-1 px-2">
+                      {day.count === 0 ? "No" : day.count} contribution{day.count !== 1 ? 's' : ''} on {day.date}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
           </div>
-          
-          {/* Bottom section with total contributions count and legend - responsive */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-5 text-xs sm:text-sm text-gray-300 gap-2">
-            <div>
-              {totalContributions} contributions in the last year
-            </div>
-            
-            {/* Legend matching the image */}
-            <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-400">
-              <span>Less</span>
-              <div className="flex gap-1">
-                {[0, 1, 2, 3, 4].map((level) => (
-                  <div 
-                    key={level} 
-                    className={cn(
-                      "w-[8px] h-[8px] sm:w-[10px] sm:h-[10px] rounded-sm", 
-                      getContributionColor(level as ContributionLevel)
-                    )}
-                  />
-                ))}
-              </div>
-              <span>More</span>
-            </div>
-          </div>
+        ))}
+      </div>
+      
+      {/* Bottom section */}
+      <div className="flex justify-between items-center mt-3 text-xs text-gray-300">
+        <div>
+          1,362 contributions in the last year
         </div>
-      </CardContent>
-    </Card>
+        
+        {/* Legend */}
+        <div className="flex items-center gap-1">
+          <span className="text-gray-400">Less</span>
+          <div className="flex gap-1">
+            {[0, 1, 2, 3, 4].map((level) => (
+              <div 
+                key={level} 
+                className={cn(
+                  "w-3 h-3 rounded-sm border border-opacity-10", 
+                  getContributionColor(level as ContributionLevel)
+                )}
+              />
+            ))}
+          </div>
+          <span className="text-gray-400">More</span>
+        </div>
+      </div>
+    </div>
   );
 };
 
