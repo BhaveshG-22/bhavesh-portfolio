@@ -71,8 +71,8 @@ const SkillsSection = () => {
           </p>
         </div>
 
-        {/* Tech stack sliders */}
-        <div className="mb-12 glassmorphism rounded-xl p-4">
+        {/* Tech stack sliders - removed shadow class */}
+        <div className="mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-4">
           <TechStackSlider direction="ltr" speed="medium" items={frontendTech} />
           <TechStackSlider direction="rtl" speed="medium" items={backendTech} />
         </div>

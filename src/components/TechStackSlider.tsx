@@ -127,7 +127,7 @@ const TechStackSlider = ({
   // Duplicate items to create continuous loop
   const allItems = [...items, ...items];
   
-  // Generate badge classes based on variant
+  // Generate badge classes based on variant - removing shadow styles
   const getBadgeClasses = (item: TechItem) => {
     const baseClasses = "px-4 py-2 text-sm font-medium flex items-center gap-2 transition-all duration-300";
     const itemName = item.name;
@@ -136,21 +136,20 @@ const TechStackSlider = ({
     
     switch(variant) {
       case "glow":
-        return `${baseClasses} shadow-md ${isActive ? 'shadow-lg shadow-current/40 scale-110 -translate-y-1' : 'hover:shadow-lg hover:shadow-current/20 hover:scale-110 hover:-translate-y-1'} rounded-full ${itemColor} text-white border-none transform`;
+        return `${baseClasses} ${isActive ? 'scale-110 -translate-y-1' : 'hover:scale-110 hover:-translate-y-1'} rounded-full ${itemColor} text-white border-none transform`;
       case "neon":
-        return `${baseClasses} bg-black/80 text-white border ${isActive ? 'border-current shadow-inner shadow-current/30 scale-105' : 'border-current/50 hover:border-current hover:shadow-inner hover:shadow-current/30 hover:scale-105'} rounded-md`;
+        return `${baseClasses} bg-black/80 text-white border ${isActive ? 'border-current scale-105' : 'border-current/50 hover:border-current hover:scale-105'} rounded-md`;
       case "minimal":
         return `${baseClasses} bg-transparent ${isActive ? 'bg-gray-100 dark:bg-gray-800 scale-105 border-gray-300 dark:border-gray-600' : 'hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105 hover:border-gray-300 dark:hover:border-gray-600'} rounded-lg border border-gray-200 dark:border-gray-700`;
       case "floating":
-        return `${baseClasses} ${isActive ? 'shadow-xl translate-y-[-8px] scale-110' : 'hover:shadow-xl hover:translate-y-[-8px] hover:scale-110'} bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-lg transform transition-transform duration-500`;
+        return `${baseClasses} ${isActive ? 'translate-y-[-8px] scale-110' : 'hover:translate-y-[-8px] hover:scale-110'} bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transform transition-transform duration-500`;
       case "glassmorphic":
-        return `${baseClasses} backdrop-blur-lg bg-white/20 dark:bg-black/20 ${isActive ? 'bg-white/30 dark:bg-black/30 scale-110 shadow-lg' : 'hover:bg-white/30 dark:hover:bg-black/30 hover:scale-110 hover:shadow-lg'} border border-white/50 dark:border-white/10 rounded-xl shadow-sm`;
+        return `${baseClasses} backdrop-blur-lg bg-white/20 dark:bg-black/20 ${isActive ? 'bg-white/30 dark:bg-black/30 scale-110' : 'hover:bg-white/30 dark:hover:bg-black/30 hover:scale-110'} border border-white/50 dark:border-white/10 rounded-xl`;
       default:
-        return `${baseClasses} bg-white/10 backdrop-blur-md dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm ${isActive ? 'shadow-md scale-110 border-gray-300 dark:border-gray-700' : 'hover:shadow-md hover:scale-110 hover:border-gray-300 dark:hover:border-gray-700'}`;
+        return `${baseClasses} bg-white/10 backdrop-blur-md dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 ${isActive ? 'scale-110 border-gray-300 dark:border-gray-700' : 'hover:scale-110 hover:border-gray-300 dark:hover:border-gray-700'}`;
     }
   };
 
-  // Custom animation styles
   const sliderAnimationClasses = `
     animate-marquee 
     ${direction === "rtl" ? "animate-marquee-reverse" : ""} 
@@ -168,7 +167,7 @@ const TechStackSlider = ({
     if (!item) return null;
     
     return (
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 z-20 w-64 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 text-sm mb-2">
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 z-20 w-64 p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm mb-2">
         <div className="flex items-center gap-2 mb-1">
           <span className={`flex items-center justify-center w-6 h-6 rounded-full ${item.color} text-white`}>
             {item.icon}
@@ -191,7 +190,7 @@ const TechStackSlider = ({
       }}
     >
       {!autoplay && (
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-1 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700">
           <MousePointer className="h-3 w-3" />
           <span>Hover and click to explore</span>
         </div>
