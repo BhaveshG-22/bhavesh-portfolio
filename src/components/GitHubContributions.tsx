@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { CalendarIcon } from "lucide-react";
 import { 
   Tooltip,
   TooltipContent,
@@ -23,39 +22,34 @@ interface MonthData {
 }
 
 const GitHubContributions = () => {
-  const [year, setYear] = useState("2025");
+  const [year] = useState("2025");
   
-  // Generate mock contribution data
+  // Generate mock contribution data - simplified for a cleaner look
   const generateMockData = (): MonthData[] => {
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    
-    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    // Use only 6 months to match the image
+    const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep"];
     const mockData: MonthData[] = [];
     
     months.forEach((month, monthIndex) => {
-      const daysInMonth = new Date(2025, monthIndex + 1, 0).getDate();
+      const daysInMonth = new Date(2025, monthIndex + 4, 0).getDate(); // Starting from April (month 4)
       const days: ContributionDay[] = [];
       
       for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(2025, monthIndex, i);
-        const weekDay = weekdays[date.getDay()];
+        const date = new Date(2025, monthIndex + 3, i);
         
-        // Generate random contribution count, weighted to have more zeros and ones
+        // Generate random contribution count with more zeros for a sparse look like in the image
         const rand = Math.random();
         let count = 0;
         let level: ContributionLevel = 0;
         
-        if (rand > 0.6) {
+        if (rand > 0.75) {
           if (rand > 0.95) {
             count = Math.floor(Math.random() * 10) + 10;
             level = 4;
-          } else if (rand > 0.85) {
+          } else if (rand > 0.9) {
             count = Math.floor(Math.random() * 5) + 5;
             level = 3;
-          } else if (rand > 0.75) {
+          } else if (rand > 0.85) {
             count = Math.floor(Math.random() * 3) + 2;
             level = 2;
           } else {
@@ -65,7 +59,7 @@ const GitHubContributions = () => {
         }
         
         days.push({
-          date: `${month} ${i}, 2025 (${weekDay})`,
+          date: `${month} ${i}, 2025`,
           count,
           level,
         });
@@ -81,21 +75,19 @@ const GitHubContributions = () => {
   };
   
   const contributionsData = generateMockData();
-  const totalContributions = contributionsData
-    .flatMap(month => month.days)
-    .reduce((sum, day) => sum + day.count, 0);
+  const totalContributions = 1362; // Hardcoded to match the image
     
-  // Get color for contribution level - styled for dark theme
+  // Get color for contribution level - styled for dark theme with teal-blue colors
   const getContributionColor = (level: ContributionLevel) => {
     switch (level) {
       case 0:
         return "bg-gray-800/60 hover:bg-gray-700/60";
       case 1:
-        return "bg-teal-900/80 hover:bg-teal-800/80";
+        return "bg-teal-900 hover:bg-teal-800";
       case 2:
-        return "bg-teal-600/80 hover:bg-teal-500/80"; 
+        return "bg-teal-700 hover:bg-teal-600"; 
       case 3:
-        return "bg-teal-400/80 hover:bg-teal-300/80";
+        return "bg-teal-500 hover:bg-teal-400";
       case 4:
         return "bg-teal-300 hover:bg-teal-200";
       default:
@@ -104,36 +96,10 @@ const GitHubContributions = () => {
   };
   
   return (
-    <div className="bg-gray-900/95 rounded-xl p-6 max-w-md mx-auto border border-gray-800/50">
-      <div className="flex flex-col space-y-4 mb-6">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-gray-400" />
-          <h3 className="text-xl font-semibold text-white">
-            {totalContributions} contributions in the last year
-          </h3>
-        </div>
-        
-        <div className="flex items-center gap-2 pt-1">
-          {["2025", "2024", "2023"].map((yearBtn) => (
-            <button
-              key={yearBtn}
-              className={cn(
-                "px-4 py-2 rounded-md transition-colors text-sm font-medium",
-                year === yearBtn 
-                  ? "bg-gray-700 text-white" 
-                  : "bg-gray-800/80 hover:bg-gray-700/80 text-gray-300"
-              )}
-              onClick={() => setYear(yearBtn)}
-            >
-              {yearBtn}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="w-full pb-4">
+    <div className="bg-black rounded-lg p-6 max-w-full mx-auto border border-gray-800">
+      <div className="w-full">
         {/* Month labels */}
-        <div className="grid grid-cols-12 gap-1 mb-2 text-xs text-gray-500">
+        <div className="grid grid-cols-6 gap-1 mb-2 text-xs text-gray-500">
           {contributionsData.map((month, index) => (
             <div key={index} className="text-center">
               {month.name}
@@ -141,42 +107,52 @@ const GitHubContributions = () => {
           ))}
         </div>
         
-        {/* Contribution grid */}
+        {/* Contribution grid - simplified to match the image */}
         <div className="space-y-1">
-          {["Mon", "Wed", "Fri"].map((day, dayIndex) => (
-            <div key={dayIndex} className="flex items-center">
-              <div className="w-8 text-xs text-gray-500">{day}</div>
-              <div className="grow grid grid-cols-52 gap-1">
+          {Array.from({ length: 7 }).map((_, rowIndex) => (
+            <div key={rowIndex} className="flex">
+              <div className="grow grid grid-cols-[repeat(180,minmax(0,1fr))] gap-[2px]">
                 {contributionsData.flatMap((month) => 
-                  month.days
-                    .filter((_, i) => i % 7 === dayIndex * 2)
-                    .map((day, index) => (
-                      <TooltipProvider key={index}>
+                  month.days.map((day, dayIndex) => {
+                    // Generate a pattern similar to the image
+                    let level: ContributionLevel = 0;
+                    if ((rowIndex + dayIndex) % 7 === 3 || (rowIndex * dayIndex) % 11 === 2) {
+                      level = Math.floor(Math.random() * 4) as ContributionLevel;
+                      if (level > 0) level = (level % 3 + 1) as ContributionLevel;
+                    }
+                    
+                    return (
+                      <TooltipProvider key={`${month.name}-${dayIndex}`}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className={cn("grid-cell", getContributionColor(day.level))} />
+                            <div className={cn("w-[10px] h-[10px] rounded-[1px]", getContributionColor(level))} />
                           </TooltipTrigger>
                           <TooltipContent className="bg-gray-800 border-gray-700 text-gray-200">
-                            {day.count} contribution{day.count !== 1 ? 's' : ''} on {day.date}
+                            {level === 0 ? "No" : level} contribution{level !== 1 ? 's' : ''} on {day.date}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    ))
+                    );
+                  })
                 )}
               </div>
             </div>
           ))}
         </div>
         
-        {/* Legend */}
-        <div className="flex justify-center mt-6 text-xs">
-          <div className="flex items-center gap-2 text-gray-400">
+        <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
+          <div className="text-sm text-gray-300">
+            {totalContributions} contributions in the last year
+          </div>
+          
+          {/* Legend - centered like in the image */}
+          <div className="flex items-center gap-2 text-xs text-gray-400">
             <span>Less</span>
             <div className="flex gap-1">
               {[0, 1, 2, 3, 4].map((level) => (
                 <div 
                   key={level} 
-                  className={cn("grid-cell", getContributionColor(level as ContributionLevel))}
+                  className={cn("w-[10px] h-[10px] rounded-[1px]", getContributionColor(level as ContributionLevel))}
                 />
               ))}
             </div>

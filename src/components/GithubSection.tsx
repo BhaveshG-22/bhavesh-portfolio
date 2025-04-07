@@ -1,10 +1,11 @@
 
 import { Github } from "lucide-react";
 import GitHubContributions from "@/components/GitHubContributions";
+import { Button } from "./ui/button";
 
 const GithubSection = () => {
   return (
-    <section id="github" className="section-padding bg-gray-900 dark:bg-gray-950">
+    <section id="github" className="section-padding bg-gray-950">
       <div className="max-container">
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 flex items-center gap-2 text-white">
@@ -20,20 +21,27 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <div className="w-full max-w-md mx-auto">
+        <div className="w-full max-w-5xl mx-auto">
           <GitHubContributions />
         </div>
         
         <div className="mt-8 flex justify-center">
-          <a 
-            href="https://github.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-blue-700/90 hover:bg-blue-600/90 text-white px-8 py-3 rounded-full flex items-center gap-2 transition-all shadow-lg"
+          <Button 
+            variant="default"
+            size="lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full"
+            asChild
           >
-            <Github className="h-5 w-5" />
-            View my GitHub Profile
-          </a>
+            <a 
+              href="https://github.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <Github className="h-5 w-5" />
+              View my GitHub Profile
+            </a>
+          </Button>
         </div>
       </div>
     </section>
