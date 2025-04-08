@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Github, Linkedin, Mail } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Link } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -29,11 +30,12 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { title: "Home", href: "#hero" },
-    { title: "About", href: "#about" },
-    { title: "Skills", href: "#skills" },
-    { title: "Projects", href: "#projects" },
-    { title: "Contact", href: "#contact" },
+    { title: "Home", href: "/" },
+    { title: "About", href: "/#about" },
+    { title: "Skills", href: "/#skills" },
+    { title: "Projects", href: "/#projects" },
+    { title: "Blog", href: "/blog" },
+    { title: "Contact", href: "/#contact" },
   ];
 
   return (
@@ -45,23 +47,32 @@ const Header = () => {
       }`}
     >
       <div className="max-container flex items-center justify-between">
-        <a href="#hero" className="text-xl font-bold hover:text-primary transition-colors">
+        <Link to="/" className="text-xl font-bold hover:text-primary transition-colors">
           <span className="text-gradient-light font-poppins">
             BhaveshG.dev
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <ul className="flex items-center gap-6">
             {navItems.map((item) => (
               <li key={item.title}>
-                <a
-                  href={item.href}
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                >
-                  {item.title}
-                </a>
+                {item.href.startsWith('/#') ? (
+                  <a
+                    href={item.href}
+                    className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <Link
+                    to={item.href}
+                    className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                  >
+                    {item.title}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -111,12 +122,21 @@ const Header = () => {
                 <nav className="flex-1 flex flex-col justify-center items-center space-y-8 py-8">
                   {navItems.map((item) => (
                     <SheetClose asChild key={item.title}>
-                      <a
-                        href={item.href}
-                        className="text-2xl font-medium text-foreground/70 hover:text-foreground transition-colors"
-                      >
-                        {item.title}
-                      </a>
+                      {item.href.startsWith('/#') ? (
+                        <a
+                          href={item.href}
+                          className="text-2xl font-medium text-foreground/70 hover:text-foreground transition-colors"
+                        >
+                          {item.title}
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          className="text-2xl font-medium text-foreground/70 hover:text-foreground transition-colors"
+                        >
+                          {item.title}
+                        </Link>
+                      )}
                     </SheetClose>
                   ))}
                 </nav>
