@@ -143,14 +143,23 @@ export const resetCategories = async (): Promise<string[]> => {
     .delete()
     .not("name", "in", '("all","frontend","backend","fullstack")');
   
-  // Make sure default categories exist (idempotent operation)
+  // Make sure default categories exist - by checking and adding any missing ones
   const defaultCategories = ["all", "frontend", "backend", "fullstack"];
   
+  // Get existing categories 
+  const { data: existingCategoriesData } = await supabase
+    .from("project_categories")
+    .select("name");
+    
+  const existingCategories = (existingCategoriesData || []).map(cat => cat.name);
+  
+  // Add any missing default categories
   for (const category of defaultCategories) {
-    await supabase
-      .from("project_categories")
-      .upsert({ name: category })
-      .onConflict("name");
+    if (!existingCategories.includes(category)) {
+      await supabase
+        .from("project_categories")
+        .insert({ name: category });
+    }
   }
   
   return fetchCategories();
