@@ -43,8 +43,8 @@ serve(async (req) => {
 
     // Send the notification email
     const emailResponse = await resend.emails.send({
-      from: "Contact Form <onboarding@resend.dev>", // Update with your verified domain later
-      to: "contact@example.com", // Replace with your actual email address
+      from: "Contact Form <trial@trial.dev>", // Update with your verified domain later
+      to: "bgavali@algomau.ca", // Replace with your actual email address
       subject: `[Contact Form] ${subject}`,
       html: htmlContent,
       reply_to: email,
