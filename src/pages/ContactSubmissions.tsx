@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/AdminSidebar";
 
+// Define type for contact submission that matches the database schema
 type ContactSubmission = {
   id: string;
   name: string;
@@ -43,13 +44,15 @@ const ContactSubmissions = () => {
     const fetchSubmissions = async () => {
       try {
         const { data, error } = await supabase
-          .from('contact_submissions' as any)
+          .from('contact_submissions')
           .select("*")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        // Use type assertion to ensure the data is treated as ContactSubmission[]
-        setSubmissions(data as unknown as ContactSubmission[]);
+        
+        // Properly type the data received from Supabase
+        setSubmissions(data as ContactSubmission[]);
+        console.log("Fetched submissions:", data);
       } catch (error: any) {
         toast.error(`Failed to fetch submissions: ${error.message}`);
         console.error("Error fetching submissions:", error);
@@ -64,8 +67,8 @@ const ContactSubmissions = () => {
   const updateStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
-        .from('contact_submissions' as any)
-        .update({ status } as any)
+        .from('contact_submissions')
+        .update({ status })
         .eq("id", id);
       
       if (error) throw error;
