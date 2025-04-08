@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,9 +27,10 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
+      // Use type assertion to work around TypeScript limitations
       const { error } = await supabase
-        .from("contact_submissions")
-        .insert([formData]);
+        .from('contact_submissions' as any)
+        .insert([formData as any]);
       
       if (error) throw error;
 

@@ -39,12 +39,13 @@ const ContactSubmissions = () => {
     const fetchSubmissions = async () => {
       try {
         const { data, error } = await supabase
-          .from("contact_submissions")
+          .from('contact_submissions' as any)
           .select("*")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setSubmissions(data || []);
+        // Use type assertion to ensure the data is treated as ContactSubmission[]
+        setSubmissions(data as unknown as ContactSubmission[]);
       } catch (error: any) {
         toast.error(`Failed to fetch submissions: ${error.message}`);
         console.error("Error fetching submissions:", error);
@@ -59,8 +60,8 @@ const ContactSubmissions = () => {
   const updateStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
-        .from("contact_submissions")
-        .update({ status })
+        .from('contact_submissions' as any)
+        .update({ status } as any)
         .eq("id", id);
       
       if (error) throw error;
