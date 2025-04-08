@@ -86,11 +86,31 @@ const AlternativeHeroSection = () => {
   const [userInput, setUserInput] = useState("");
   const [allowUserInput, setAllowUserInput] = useState(false);
   const [showCoffeeBreak, setShowCoffeeBreak] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsVisible, setSuggestionsVisible] = useState(false);
+  const [tabPressCount, setTabPressCount] = useState(0);
   const inputRef = useRef(null);
   const terminalRef = useRef(null);
   const heroRef = useRef(null);
   
   // Available terminal commands
+  const availableCommands = [
+    "help", 
+    "clear", 
+    "projects", 
+    "skills", 
+    "about", 
+    "contact", 
+    "github", 
+    "coffee",
+    "portfolio",
+    "personal",
+    "professional",
+    "python",
+    "programming",
+    "profile"
+  ];
+  
   const commands = {
     help: () => ({
       type: "response",
@@ -102,7 +122,10 @@ const AlternativeHeroSection = () => {
 - about: About me
 - contact: Contact information
 - github: Visit my GitHub profile
-- coffee: Take a coffee break`
+- coffee: Take a coffee break
+- portfolio: View portfolio details
+- professional: View professional experience
+- personal: View personal information`
     }),
     clear: () => {
       setTerminalHistory([]);
@@ -149,16 +172,95 @@ Twitter: @developer`
         content: "☕ Taking a short coffee break... ☕"
       };
     },
+    portfolio: () => ({
+      type: "response",
+      content: `My portfolio highlights:
+- 5+ years of development experience
+- 20+ successful projects delivered
+- Expertise in modern web technologies
+- Focus on performance and accessibility`
+    }),
+    professional: () => ({
+      type: "response",
+      content: `Professional Experience:
+- Senior Developer at Tech Solutions Inc. (2020-Present)
+- Web Developer at Digital Innovations (2018-2020)
+- Freelance Developer (2016-2018)`
+    }),
+    personal: () => ({
+      type: "response",
+      content: `A bit about me:
+I enjoy hiking, photography, and contributing to open source projects in my spare time. Always learning something new!`
+    }),
+    python: () => ({
+      type: "response",
+      content: `Python Experience:
+- Data analysis with pandas & numpy
+- Web development with Django & FastAPI
+- Automation scripts and tooling
+- Machine learning projects with scikit-learn`
+    }),
+    programming: () => ({
+      type: "response",
+      content: `Programming Languages:
+- JavaScript/TypeScript (Expert)
+- Python (Advanced)
+- Java (Intermediate)
+- Go (Beginner)
+- SQL (Advanced)`
+    }),
+    profile: () => ({
+      type: "response",
+      content: `Professional Profile:
+Full Stack Developer with expertise in building scalable web applications. Passionate about clean code, user experience, and solving complex problems.`
+    }),
     unknown: (cmd) => ({
       type: "response",
       content: `Command not found: ${cmd}. Type 'help' for available commands.`
     })
   };
 
+  // Find matching command suggestions based on user input
+  const findSuggestions = (input) => {
+    const trimmedInput = input.trim().toLowerCase();
+    if (!trimmedInput) return [];
+    
+    return availableCommands.filter(cmd => 
+      cmd.toLowerCase().startsWith(trimmedInput)
+    );
+  };
+
+  // Auto complete with tab key
+  const handleTabCompletion = () => {
+    const matchingSuggestions = findSuggestions(userInput);
+    
+    if (matchingSuggestions.length === 1) {
+      // If only one suggestion, autocomplete it
+      setUserInput(matchingSuggestions[0]);
+      setSuggestionsVisible(false);
+    } else if (matchingSuggestions.length > 1) {
+      // If multiple suggestions
+      setSuggestions(matchingSuggestions);
+      setSuggestionsVisible(true);
+      
+      if (tabPressCount > 0 && matchingSuggestions.length > 0) {
+        // Cycle through suggestions on repeated tab presses
+        const currentIndex = tabPressCount % matchingSuggestions.length;
+        setUserInput(matchingSuggestions[currentIndex]);
+      }
+      
+      setTabPressCount(prev => prev + 1);
+    }
+  };
+
   // Process user input command
   const processCommand = (cmd) => {
     const trimmedCmd = cmd.trim().toLowerCase();
     const commandFn = commands[trimmedCmd] || commands.unknown;
+    
+    // Reset tab press count and hide suggestions on command execution
+    setTabPressCount(0);
+    setSuggestionsVisible(false);
     
     // Add command to history
     setTerminalHistory(prev => [
@@ -287,6 +389,20 @@ Twitter: @developer`
       });
     }
   }, [isLoaded]);
+
+  // Update suggestions when user input changes
+  useEffect(() => {
+    const matchingSuggestions = findSuggestions(userInput);
+    setSuggestions(matchingSuggestions);
+    
+    // Hide suggestions if no input or no matches
+    if (!userInput || matchingSuggestions.length === 0) {
+      setSuggestionsVisible(false);
+    }
+    
+    // Reset tab press count when input changes manually (not via tab)
+    setTabPressCount(0);
+  }, [userInput]);
   
   // Auto-scroll to bottom when terminal content changes
   useEffect(() => {
@@ -309,6 +425,25 @@ Twitter: @developer`
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       processCommand(userInput);
+    } else if (e.key === 'Tab') {
+      e.preventDefault(); // Prevent focus change
+      handleTabCompletion();
+    } else if (e.key === 'Escape') {
+      // Hide suggestions on escape
+      setSuggestionsVisible(false);
+      setTabPressCount(0);
+    } else {
+      // If typing normally, hide suggestions temporarily
+      setSuggestionsVisible(false);
+    }
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion) => {
+    setUserInput(suggestion);
+    setSuggestionsVisible(false);
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
   
@@ -599,6 +734,41 @@ Twitter: @developer`
     .animate-delay-300 { animation-delay: 300ms; }
     .animate-delay-400 { animation-delay: 400ms; }
     .animate-delay-500 { animation-delay: 500ms; }
+    
+    .suggestions-list {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.95);
+      border: 1px solid rgba(75, 85, 99, 0.5);
+      border-radius: 4px;
+      padding: 0.25rem 0;
+      z-index: 50;
+      max-height: 200px;
+      overflow-y: auto;
+      width: auto;
+      min-width: 150px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      margin-top: 4px;
+      left: 220px;
+    }
+    
+    .suggestion-item {
+      padding: 0.25rem 1rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    
+    .suggestion-item:hover, .suggestion-item.active {
+      background: rgba(59, 130, 246, 0.3);
+    }
+    
+    .suggestion-hint {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      padding-top: 4px;
+      font-size: 0.75rem;
+      color: rgba(156, 163, 175, 0.8);
+    }
   `;
   
   // CSS variables for dynamic styling
@@ -819,7 +989,7 @@ Twitter: @developer`
           // Current command line
           createElement("div", {
             key: "current-command",
-            className: "flex items-start"
+            className: "flex items-start relative"
           }, [
             createElement("span", { key: "prompt", className: "text-green-400 mr-2" }, "➜"),
             createElement("span", { key: "path", className: "text-blue-400 mr-2" }, "~/portfolio"),
@@ -827,7 +997,7 @@ Twitter: @developer`
             allowUserInput ? 
               createElement("div", { 
                 key: "user-input-container",
-                className: "flex-grow text-gray-300 focus-within:outline-none"
+                className: "flex-grow text-gray-300 focus-within:outline-none relative"
               }, [
                 createElement("input", {
                   key: "user-input",
@@ -837,12 +1007,30 @@ Twitter: @developer`
                   onChange: (e) => setUserInput(e.target.value),
                   onKeyDown: handleKeyPress,
                   className: "bg-transparent border-none outline-none text-gray-300 w-full",
-                  placeholder: "Type a command...",
+                  placeholder: "Type a command... (press Tab for completion)",
                   autoComplete: "off",
                   autoCorrect: "off",
                   autoCapitalize: "off",
                   spellCheck: "false"
-                })
+                }),
+                
+                // Tab completion suggestion hint
+                userInput && !suggestionsVisible && suggestions.length > 0 && createElement("div", {
+                  key: "completion-hint",
+                  className: "suggestion-hint"
+                }, "Press TAB to autocomplete"),
+                
+                // Suggestions dropdown
+                suggestionsVisible && suggestions.length > 0 && createElement("div", {
+                  key: "suggestions-dropdown",
+                  className: "suggestions-list"
+                }, 
+                  suggestions.map((suggestion, idx) => createElement("div", {
+                    key: `suggestion-${idx}`,
+                    className: `suggestion-item text-gray-300 ${idx === tabPressCount % suggestions.length ? "active bg-blue-800/30" : ""}`,
+                    onClick: () => handleSuggestionClick(suggestion)
+                  }, suggestion))
+                )
               ]) : 
               createElement(React.Fragment, { key: "animated-text" }, [
                 createElement("span", { key: "command-text", className: "text-gray-300" }, terminalCommand),
@@ -1135,4 +1323,3 @@ Twitter: @developer`
 };
 
 export default AlternativeHeroSection;
-
