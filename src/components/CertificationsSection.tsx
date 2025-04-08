@@ -1,5 +1,5 @@
 
-import { BadgeCheck, Award, Certificate } from "lucide-react";
+import { BadgeCheck, Award, Bookmark } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -71,7 +71,7 @@ const CertificationsSection = () => {
                   {index === 0 ? (
                     <Award className="h-5 w-5 text-white" />
                   ) : (
-                    <Certificate className="h-5 w-5 text-white" />
+                    <Bookmark className="h-5 w-5 text-white" />
                   )}
                 </div>
               </div>
