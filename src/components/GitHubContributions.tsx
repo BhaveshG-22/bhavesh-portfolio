@@ -6,8 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { mockGithubData } from "@/data/mockGithubData";
 
@@ -37,6 +42,7 @@ interface GitHubContributionsProps {
 const GitHubContributions = ({ username: propUsername }: GitHubContributionsProps) => {
   const [contributionData, setContributionData] = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDay, setSelectedDay] = useState<ContributionDay | null>(null);
   
   useEffect(() => {
     // Use the mock data directly without fetching
@@ -155,6 +161,14 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     return months.filter((_, index) => index % 2 === 0);
   };
   
+  const handleContributionClick = (day: ContributionDay) => {
+    setSelectedDay(day);
+  };
+  
+  const closeSelectedDay = () => {
+    setSelectedDay(null);
+  };
+  
   if (loading) {
     return (
       <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-20 flex justify-center items-center">
@@ -218,21 +232,48 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
                 }
                 
                 return (
-                  <TooltipProvider key={`${weekIndex}-${dayOfWeekIndex}`}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div
-                          className={cn(
-                            "w-3 h-3 sm:w-3 sm:h-3 rounded-sm border border-opacity-10",
-                            getContributionColor(day.level || 0)
-                          )}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-xs py-1 px-2">
-                        {day.contributionCount === 0 ? "No" : day.contributionCount} contribution{day.contributionCount !== 1 ? 's' : ''} on {formatDate(day.date)}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Popover key={`${weekIndex}-${dayOfWeekIndex}`}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={cn(
+                          "w-3 h-3 sm:w-3 sm:h-3 rounded-sm border border-opacity-10",
+                          getContributionColor(day.level || 0),
+                          "hover:ring-2 hover:ring-teal-300 dark:hover:ring-teal-600 hover:ring-opacity-50 focus:outline-none focus:ring-2 focus:ring-teal-400 transition-all"
+                        )}
+                        onClick={() => handleContributionClick(day)}
+                        aria-label={`${day.contributionCount} contributions on ${formatDate(day.date)}`}
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
+                      <div className="flex flex-col">
+                        <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-100 dark:border-gray-700">
+                          <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                            {formatDate(day.date)}
+                          </h4>
+                          <div 
+                            className={cn(
+                              "w-4 h-4 rounded-sm",
+                              getContributionColor(day.level || 0)
+                            )} 
+                          />
+                        </div>
+                        <div className="py-1 text-center">
+                          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            {day.contributionCount}
+                          </span>
+                          <p className="text-gray-500 dark:text-gray-400">
+                            contribution{day.contributionCount !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        {day.contributionCount > 0 && (
+                          <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            <Info className="h-3.5 w-3.5 mr-1" />
+                            <span>Click to view details</span>
+                          </div>
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
