@@ -14,6 +14,7 @@ import Blog from "./pages/Blog";
 import Projects from "./pages/Projects";
 import SecretBlogAdd from "./pages/SecretBlogAdd";
 import Login from "./pages/Login";
+import ContactSubmissions from "./pages/ContactSubmissions";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,14 @@ const App = () => (
                 element={
                   <ProtectedRoute adminOnly>
                     <SecretBlogAdd />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/contact-submissions" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <ContactSubmissions />
                   </ProtectedRoute>
                 } 
               />
