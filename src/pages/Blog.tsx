@@ -60,8 +60,10 @@ const Blog = () => {
   } = useQuery({
     queryKey: ["blogPosts"],
     queryFn: fetchVisibleBlogPosts,
-    onError: (error) => {
-      console.error("Error in React Query fetchVisibleBlogPosts:", error);
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error in React Query fetchVisibleBlogPosts:", error);
+      }
     }
   });
   
@@ -80,8 +82,10 @@ const Blog = () => {
   } = useQuery({
     queryKey: ["blogCategories"],
     queryFn: fetchCategories,
-    onError: (error) => {
-      console.error("Error in React Query fetchCategories:", error);
+    meta: {
+      onError: (error: Error) => {
+        console.error("Error in React Query fetchCategories:", error);
+      }
     }
   });
   

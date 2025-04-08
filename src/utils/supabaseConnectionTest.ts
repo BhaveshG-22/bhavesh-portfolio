@@ -10,7 +10,7 @@ export const testSupabaseConnection = async () => {
   
   try {
     // Test general connection
-    const { data: healthData, error: healthError } = await supabase.rpc('get_project_ref');
+    const { data: healthData, error: healthError } = await supabase.from('blog_posts').select('count').limit(1);
     
     if (healthError) {
       return {

@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type BlogPost = {
@@ -39,11 +40,11 @@ export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
   }
 };
 
-// Fetch only visible blog posts
+// Fetch only visible blog posts with improved logging
 export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
   console.log("Fetching visible blog posts...");
   try {
-    // Use a type assertion to tell TypeScript this is a valid query
+    console.log("Making Supabase request to fetch visible blog posts");
     const { data, error } = await supabase
       .from("blog_posts")
       .select("*")
@@ -57,7 +58,12 @@ export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
     }
     
     console.log(`Successfully fetched ${data?.length || 0} visible blog posts`);
-    console.log("First visible blog post (if any):", data && data.length > 0 ? data[0] : "No blog posts");
+    if (data && data.length > 0) {
+      console.log("First visible blog post:", data[0]);
+    } else {
+      console.log("No visible blog posts found");
+    }
+    
     return (data || []) as BlogPost[];
   } catch (error) {
     console.error("Unexpected error in fetchVisibleBlogPosts:", error);
@@ -65,11 +71,11 @@ export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
   }
 };
 
-// Fetch all categories
+// Fetch all categories with improved logging
 export const fetchCategories = async (): Promise<string[]> => {
   console.log("Fetching blog categories...");
   try {
-    // Use a type assertion to tell TypeScript this is a valid query
+    console.log("Making Supabase request to fetch blog categories");
     const { data, error } = await supabase
       .from("blog_categories")
       .select("name")
@@ -81,6 +87,12 @@ export const fetchCategories = async (): Promise<string[]> => {
     }
     
     console.log(`Successfully fetched ${data?.length || 0} blog categories`);
+    if (data && data.length > 0) {
+      console.log("Categories:", data.map(cat => cat.name).join(", "));
+    } else {
+      console.log("No blog categories found");
+    }
+    
     return ((data as { name: string }[] || []).map(category => category.name));
   } catch (error) {
     console.error("Unexpected error in fetchCategories:", error);
