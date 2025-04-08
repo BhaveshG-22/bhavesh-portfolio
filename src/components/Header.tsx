@@ -20,7 +20,7 @@ export const Header = ({ activeSection }: HeaderProps) => {
   };
 
   return (
-    <header className="fixed top-0 w-full z-30 bg-black/90 backdrop-blur-sm border-b border-white/5">
+    <header className="fixed top-0 w-full z-30 backdrop-blur-sm border-b border-white/5">
       <div className="max-container flex items-center justify-between h-16 px-4">
         <Link
           to="/#hero"
@@ -87,13 +87,13 @@ export const Header = ({ activeSection }: HeaderProps) => {
             <ThemeToggle />
             
             <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100 dark:hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100/20 dark:hover:bg-white/10">
                 <Github className="h-5 w-5" />
               </Button>
             </a>
             
             <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100 dark:hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100/20 dark:hover:bg-white/10">
                 <Linkedin className="h-5 w-5" />
               </Button>
             </a>
@@ -123,7 +123,7 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="flex flex-col pt-16">
+            <SheetContent side="right" className="flex flex-col pt-16 bg-background/80 backdrop-blur-md">
               <nav className="flex flex-col items-start gap-6">
                 <Link
                   to="/#hero"
