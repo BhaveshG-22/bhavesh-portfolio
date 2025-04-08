@@ -20,7 +20,7 @@ export type BlogPost = {
 export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts" as any)
+    .from("blog_posts")
     .select("*")
     .order("is_default", { ascending: false })
     .order("id");
@@ -30,14 +30,14 @@ export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
     throw new Error(error.message);
   }
   
-  return data as BlogPost[] || [];
+  return (data || []) as BlogPost[];
 };
 
 // Fetch only visible blog posts
 export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts" as any)
+    .from("blog_posts")
     .select("*")
     .eq("hidden", false)
     .order("is_default", { ascending: false })
@@ -48,14 +48,14 @@ export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
     throw new Error(error.message);
   }
   
-  return data as BlogPost[] || [];
+  return (data || []) as BlogPost[];
 };
 
 // Fetch all categories
 export const fetchCategories = async (): Promise<string[]> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_categories" as any)
+    .from("blog_categories")
     .select("name")
     .order("id");
   
@@ -64,14 +64,14 @@ export const fetchCategories = async (): Promise<string[]> => {
     throw new Error(error.message);
   }
   
-  return (data as { name: string }[] || []).map(category => category.name);
+  return ((data as { name: string }[] || []).map(category => category.name));
 };
 
 // Add a new blog post
 export const addBlogPost = async (blogPost: Omit<BlogPost, "id" | "created_at" | "updated_at">): Promise<BlogPost> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts" as any)
+    .from("blog_posts")
     .insert([blogPost])
     .select()
     .single();
@@ -88,7 +88,7 @@ export const addBlogPost = async (blogPost: Omit<BlogPost, "id" | "created_at" |
 export const updateBlogPost = async (id: number, updates: Partial<Omit<BlogPost, "id" | "created_at" | "updated_at">>): Promise<BlogPost> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts" as any)
+    .from("blog_posts")
     .update(updates)
     .eq("id", id)
     .select()
@@ -106,7 +106,7 @@ export const updateBlogPost = async (id: number, updates: Partial<Omit<BlogPost,
 export const deleteBlogPost = async (id: number): Promise<void> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { error } = await supabase
-    .from("blog_posts" as any)
+    .from("blog_posts")
     .delete()
     .eq("id", id);
   
@@ -125,7 +125,7 @@ export const toggleBlogVisibility = async (id: number, isHidden: boolean): Promi
 export const addCategory = async (name: string): Promise<string> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_categories" as any)
+    .from("blog_categories")
     .insert([{ name }])
     .select()
     .single();
@@ -142,7 +142,7 @@ export const addCategory = async (name: string): Promise<string> => {
 export const deleteCategory = async (name: string): Promise<void> => {
   // Use a type assertion to tell TypeScript this is a valid query
   const { error } = await supabase
-    .from("blog_categories" as any)
+    .from("blog_categories")
     .delete()
     .eq("name", name);
   
@@ -156,7 +156,7 @@ export const deleteCategory = async (name: string): Promise<void> => {
 export const resetCategories = async (): Promise<string[]> => {
   // First delete all non-default categories
   await supabase
-    .from("blog_categories" as any)
+    .from("blog_categories")
     .delete()
     .not("name", "in", '("All","React","TypeScript","CSS","UI/UX","JavaScript")');
   
@@ -165,16 +165,16 @@ export const resetCategories = async (): Promise<string[]> => {
   
   // Get existing categories
   const { data: existingCategoriesData } = await supabase
-    .from("blog_categories" as any)
+    .from("blog_categories")
     .select("name");
     
-  const existingCategories = (existingCategoriesData as { name: string }[] || []).map(cat => cat.name);
+  const existingCategories = ((existingCategoriesData as { name: string }[] || []).map(cat => cat.name));
   
   // Add any missing default categories
   for (const category of defaultCategories) {
     if (!existingCategories.includes(category)) {
       await supabase
-        .from("blog_categories" as any)
+        .from("blog_categories")
         .insert({ name: category });
     }
   }
