@@ -14,15 +14,28 @@ interface ApiResponse {
   contributionDays: ContributionDay[];
 }
 
+// CORS headers for cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Content-Type': 'application/json'
+};
+
 serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+  
   try {
     const url = new URL(req.url);
     const username = url.searchParams.get("username");
     
     if (!username) {
+      console.error("Error: Username is required");
       return new Response(JSON.stringify({ error: "Username is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -37,35 +50,57 @@ serve(async (req: Request) => {
     
     // Check if GitHub token is available
     if (!githubToken) {
+      console.error("Error: GitHub token is required but not configured");
       return new Response(JSON.stringify({ error: "GitHub token is required but not configured" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
     
     // Call the external contributions API
     const contributionsApiUrl = `https://54p3k92j7i.execute-api.us-east-1.amazonaws.com/api/contributions?username=${username}${githubToken ? `&token=${githubToken}` : ''}`;
     
-    // Log the API URL for debugging
-    console.log(`Calling GitHub contributions API: ${contributionsApiUrl}`);
+    // Log the API URL for debugging (without the token)
+    console.log(`Calling GitHub contributions API for user ${username}`);
     
     const response = await fetch(contributionsApiUrl);
+    const contentType = response.headers.get('content-type');
     
     if (!response.ok) {
       console.error(`API error: ${response.status} ${response.statusText}`);
+      console.error(`Content-Type: ${contentType}`);
+      
+      if (contentType && contentType.includes('text/html')) {
+        const text = await response.text();
+        console.error(`Received HTML response instead of JSON: ${text.substring(0, 200)}...`);
+      }
       
       // Generate fallback data
       const fallbackData = generateFallbackData(username);
       
       return new Response(JSON.stringify({
         ...fallbackData,
-        error: "Failed to fetch from GitHub API, using simulated data",
+        error: `Failed to fetch from GitHub API (status: ${response.status}), using simulated data`,
       }), {
         status: 200,
-        headers: { 
-          "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=1800" // Cache for 30 minutes
-        },
+        headers: corsHeaders,
+      });
+    }
+    
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error(`Invalid content type: ${contentType}`);
+      const text = await response.text();
+      console.error(`Non-JSON response: ${text.substring(0, 200)}...`);
+      
+      // Generate fallback data
+      const fallbackData = generateFallbackData(username);
+      
+      return new Response(JSON.stringify({
+        ...fallbackData,
+        error: "API returned non-JSON response, using simulated data",
+      }), {
+        status: 200,
+        headers: corsHeaders,
       });
     }
     
@@ -73,23 +108,21 @@ serve(async (req: Request) => {
     
     return new Response(JSON.stringify(data), {
       status: 200,
-      headers: { 
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=1800" // Cache for 30 minutes
-      },
+      headers: corsHeaders,
     });
   } catch (error) {
     console.error("Error fetching GitHub contributions:", error);
     
-    // Generate fallback data with the default username
-    const fallbackData = generateFallbackData("octocat");
+    // Generate fallback data with the provided username or default to "octocat"
+    const username = new URL(req.url).searchParams.get("username") || "octocat";
+    const fallbackData = generateFallbackData(username);
     
     return new Response(JSON.stringify({
       ...fallbackData,
-      error: "Internal server error, using simulated data"
+      error: `Internal server error: ${error.message}, using simulated data`
     }), {
       status: 200, // Still return 200 with fallback data
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });

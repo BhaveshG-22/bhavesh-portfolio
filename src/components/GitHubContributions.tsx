@@ -85,6 +85,8 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         // Call our Supabase Edge Function proxy
         const functionUrl = `/functions/v1/github-contributions?username=${username}`;
         
+        console.log('Calling GitHub contributions API:', `${window.location.origin}${functionUrl}`);
+        
         const response = await fetch(`${window.location.origin}${functionUrl}`, {
           method: 'GET',
           headers: {
@@ -94,7 +96,16 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         });
         
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Error response (${response.status}):`, errorText);
           throw new Error(`Error fetching GitHub contributions: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('Non-JSON response:', text.substring(0, 200));
+          throw new Error('Invalid response format');
         }
         
         const data = await response.json() as ContributionData;
@@ -106,9 +117,8 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         // Check if the API returned an error but still provided fallback data
         if (data.error) {
           setError(data.error);
-          // Fix: Update toast to use the correct format for Sonner
-          toast(data.error, {
-            description: "Displaying simulated GitHub contribution data",
+          toast.error("GitHub API Error", {
+            description: data.error
           });
         }
         
@@ -153,6 +163,10 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         
         // Generate fallback data if the API fails
         generateFallbackData();
+        
+        toast.error("GitHub API Error", {
+          description: "Failed to load contributions. Using simulated data instead."
+        });
       }
     };
     
