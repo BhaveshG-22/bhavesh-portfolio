@@ -15,6 +15,12 @@ import ProjectsList from "@/components/admin/ProjectsList";
 const SecretProjectAdd = () => {
   const { isAdmin } = useAuth();
 
+  // Fix: Change the function to return a Promise<void>
+  const handleProjectAdded = async (): Promise<void> => {
+    // This is just a placeholder function that returns a resolved promise
+    return Promise.resolve();
+  };
+
   if (!isAdmin) {
     return <div className="flex items-center justify-center h-screen bg-background text-foreground">Access Denied</div>;
   }
@@ -36,7 +42,7 @@ const SecretProjectAdd = () => {
               
               <div className="grid gap-8">
                 <div className="bg-card rounded-lg border border-border/60 p-6 shadow-md"> {/* Enhanced card styling */}
-                  <ProjectForm onProjectAdded={() => {}} />
+                  <ProjectForm onProjectAdded={handleProjectAdded} />
                 </div>
                 <Separator />
                 <ProjectsList />

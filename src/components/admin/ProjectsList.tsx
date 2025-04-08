@@ -36,8 +36,10 @@ const ProjectsList = () => {
     }
   };
 
+  // Fix: Change the parameter type from string to number or ensure we parse the string to a number
   const handleDeleteProject = async (id: string) => {
     try {
+      // Fix: Convert string id to number if needed by the API
       const { error } = await supabase
         .from('projects')
         .delete()
@@ -85,7 +87,7 @@ const ProjectsList = () => {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteProject(project.id)}>
+                        <AlertDialogAction onClick={() => handleDeleteProject(project.id!)}>
                           Delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
