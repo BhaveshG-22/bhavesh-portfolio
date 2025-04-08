@@ -14,13 +14,12 @@ const GithubSection = () => {
         const { data, error } = await supabase
           .from("github_settings")
           .select("github_username")
-          .single();
+          .maybeSingle();
           
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error("Error fetching GitHub username:", error);
         } else if (data) {
-          // Cast data to have the github_username property
-          setGithubUsername((data as { github_username: string }).github_username);
+          setGithubUsername(data.github_username);
         }
       } catch (err) {
         console.error("Error:", err);

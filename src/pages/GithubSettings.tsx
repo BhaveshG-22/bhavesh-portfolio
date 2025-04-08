@@ -41,21 +41,20 @@ export default function GithubSettings() {
     async function loadSettings() {
       try {
         setLoading(true);
-        // Using .from("github_settings") as unknown as any to bypass TypeScript error
         const { data, error } = await supabase
           .from("github_settings")
           .select("id, github_username")
-          .single();
+          .maybeSingle();
           
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error("Error loading GitHub settings:", error);
           toast.error("Failed to load GitHub settings");
           return;
         }
         
         if (data) {
-          setSettingsId((data as GitHubSettings).id);
-          form.setValue("githubUsername", (data as GitHubSettings).github_username);
+          setSettingsId(data.id);
+          form.setValue("githubUsername", data.github_username);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -73,16 +72,36 @@ export default function GithubSettings() {
     try {
       setSaving(true);
       
-      // Update username in database
-      const { error: updateError } = await supabase
-        .from("github_settings")
-        .update({ github_username: values.githubUsername })
-        .eq("id", settingsId);
+      let savedSettingsId = settingsId;
+      
+      if (!settingsId) {
+        // Create new settings if none exist
+        const { data: newSettings, error: insertError } = await supabase
+          .from("github_settings")
+          .insert({ github_username: values.githubUsername })
+          .select('id')
+          .single();
+          
+        if (insertError) {
+          console.error("Error creating GitHub settings:", insertError);
+          toast.error("Failed to save GitHub settings");
+          return;
+        }
         
-      if (updateError) {
-        console.error("Error updating GitHub settings:", updateError);
-        toast.error("Failed to save GitHub settings");
-        return;
+        savedSettingsId = newSettings.id;
+        setSettingsId(newSettings.id);
+      } else {
+        // Update existing settings
+        const { error: updateError } = await supabase
+          .from("github_settings")
+          .update({ github_username: values.githubUsername })
+          .eq("id", settingsId);
+          
+        if (updateError) {
+          console.error("Error updating GitHub settings:", updateError);
+          toast.error("Failed to save GitHub settings");
+          return;
+        }
       }
       
       // If GitHub token is provided, call the edge function to save it

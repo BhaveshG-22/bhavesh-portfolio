@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Tooltip,
@@ -55,13 +54,15 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
           const { data, error } = await supabase
             .from("github_settings")
             .select("github_username")
-            .single();
+            .maybeSingle();
             
-          if (error) {
+          if (error && error.code !== 'PGRST116') {
             console.error("Error fetching GitHub username:", error);
             setUsername("octocat"); // Default fallback
           } else if (data) {
-            setUsername((data as GitHubSettings).github_username);
+            setUsername(data.github_username);
+          } else {
+            setUsername("octocat"); // Default fallback
           }
         } catch (err) {
           console.error("Error:", err);
