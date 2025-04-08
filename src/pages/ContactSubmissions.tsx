@@ -42,20 +42,33 @@ const ContactSubmissions = () => {
 
   useEffect(() => {
     const fetchSubmissions = async () => {
+      setLoading(true);
       try {
+        console.log("Fetching contact submissions...");
         const { data, error } = await supabase
           .from('contact_submissions')
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error:", error);
+          throw error;
+        }
         
-        // Properly type the data received from Supabase
-        setSubmissions(data as ContactSubmission[]);
-        console.log("Fetched submissions:", data);
+        console.log("Raw response from Supabase:", data);
+        
+        if (data && Array.isArray(data)) {
+          // Properly type the data received from Supabase
+          setSubmissions(data as ContactSubmission[]);
+          console.log("Submissions set to state:", data.length, "items found");
+        } else {
+          console.warn("No submissions data or invalid format received:", data);
+          setSubmissions([]);
+        }
       } catch (error: any) {
         toast.error(`Failed to fetch submissions: ${error.message}`);
         console.error("Error fetching submissions:", error);
+        setSubmissions([]);
       } finally {
         setLoading(false);
       }
