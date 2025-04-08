@@ -54,7 +54,9 @@ const SecretProjectAdd = () => {
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setProjects(data as Project[]);
+        
+        // Safely convert to Project[] type using type assertion
+        setProjects((data || []) as unknown as Project[]);
       } catch (error: any) {
         toast.error(`Failed to fetch projects: ${error.message}`);
         console.error("Error fetching projects:", error);
@@ -103,7 +105,9 @@ const SecretProjectAdd = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setProjects(data as Project[]);
+      
+      // Safely convert to Project[] type using type assertion
+      setProjects((data || []) as unknown as Project[]);
     } catch (error: any) {
       toast.error(`Failed to fetch projects: ${error.message}`);
       console.error("Error fetching projects:", error);
