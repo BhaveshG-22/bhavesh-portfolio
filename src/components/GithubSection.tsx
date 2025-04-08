@@ -2,36 +2,10 @@
 import { Github } from "lucide-react";
 import GitHubContributions from "@/components/GitHubContributions";
 import { Button } from "./ui/button";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 const GithubSection = () => {
-  const [githubUsername, setGithubUsername] = useState<string | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    async function fetchUsername() {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from("github_settings")
-          .select("github_username")
-          .maybeSingle();
-          
-        if (error && error.code !== 'PGRST116') {
-          console.error("Error fetching GitHub username:", error);
-        } else if (data) {
-          setGithubUsername(data.github_username);
-        }
-      } catch (err) {
-        console.error("Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    fetchUsername();
-  }, []);
+  // Hard-coded username to match our mock data
+  const githubUsername = "hkirat";
   
   return (
     <section id="github" className="section-padding bg-gray-100 dark:bg-black py-20">
@@ -61,7 +35,7 @@ const GithubSection = () => {
             asChild
           >
             <a 
-              href={`https://github.com/${githubUsername || 'octocat'}`}
+              href={`https://github.com/${githubUsername}`}
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2"
