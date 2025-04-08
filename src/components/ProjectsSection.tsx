@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github } from "lucide-react";
@@ -13,6 +14,7 @@ type Project = {
   demo: string;
   category: string;
   hidden?: boolean;
+  isDefault?: boolean;
 };
 
 const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
@@ -33,6 +35,7 @@ const ProjectsSection = () => {
       github: "https://github.com",
       demo: "https://demo.com",
       category: "fullstack",
+      isDefault: true,
     },
     {
       id: 2,
@@ -43,6 +46,7 @@ const ProjectsSection = () => {
       github: "https://github.com",
       demo: "https://demo.com",
       category: "frontend",
+      isDefault: true,
     },
     {
       id: 3,
@@ -53,6 +57,7 @@ const ProjectsSection = () => {
       github: "https://github.com",
       demo: "https://demo.com",
       category: "fullstack",
+      isDefault: true,
     },
     {
       id: 4,
@@ -63,20 +68,29 @@ const ProjectsSection = () => {
       github: "https://github.com",
       demo: "https://demo.com",
       category: "fullstack",
+      isDefault: true,
     },
   ];
 
   // Load projects and categories from local storage on component mount
   useEffect(() => {
     try {
+      // Check for edited default projects first
+      const editedDefaultProjects = JSON.parse(localStorage.getItem("defaultProjects") || "null");
+      
+      // Use edited defaults if they exist, otherwise use the original defaults
+      const finalDefaultProjects = editedDefaultProjects || defaultProjects;
+      
       // Load custom projects from localStorage
       const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
       
-      // Filter out hidden projects
-      const visibleCustomProjects = customProjects.filter((project: Project) => !project.hidden);
+      // Combine default projects with visible custom projects - filter out hidden projects
+      const visibleProjects = [
+        ...finalDefaultProjects.filter((p: Project) => !p.hidden),
+        ...customProjects.filter((p: Project) => !p.hidden)
+      ];
       
-      // Combine default projects with visible custom projects
-      setProjects([...defaultProjects, ...visibleCustomProjects]);
+      setProjects(visibleProjects);
       
       // Load custom categories if they exist
       const savedCategories = JSON.parse(localStorage.getItem("projectCategories") || "null");
