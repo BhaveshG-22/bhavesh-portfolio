@@ -35,8 +35,19 @@ serve(async (req: Request) => {
     // Get the GitHub token from environment variables
     const githubToken = Deno.env.get("GITHUB_TOKEN");
     
+    // Check if GitHub token is available
+    if (!githubToken) {
+      return new Response(JSON.stringify({ error: "GitHub token is required but not configured" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    
     // Call the external contributions API
     const contributionsApiUrl = `https://54p3k92j7i.execute-api.us-east-1.amazonaws.com/api/contributions?username=${username}${githubToken ? `&token=${githubToken}` : ''}`;
+    
+    // Log the API URL for debugging
+    console.log(`Calling GitHub contributions API: ${contributionsApiUrl}`);
     
     const response = await fetch(contributionsApiUrl);
     
