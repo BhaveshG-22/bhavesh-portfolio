@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export type BlogPost = {
@@ -18,53 +17,75 @@ export type BlogPost = {
 
 // Fetch all blog posts
 export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
-  // Use a type assertion to tell TypeScript this is a valid query
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .order("is_default", { ascending: false })
-    .order("id");
-  
-  if (error) {
-    console.error("Error fetching blog posts:", error);
-    throw new Error(error.message);
+  console.log("Fetching all blog posts...");
+  try {
+    // Use a type assertion to tell TypeScript this is a valid query
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .order("is_default", { ascending: false })
+      .order("id");
+    
+    if (error) {
+      console.error("Error fetching blog posts:", error);
+      throw new Error(`Error fetching blog posts: ${error.message}`);
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} blog posts`);
+    return (data || []) as BlogPost[];
+  } catch (error) {
+    console.error("Unexpected error in fetchBlogPosts:", error);
+    throw error;
   }
-  
-  return (data || []) as BlogPost[];
 };
 
 // Fetch only visible blog posts
 export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
-  // Use a type assertion to tell TypeScript this is a valid query
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("hidden", false)
-    .order("is_default", { ascending: false })
-    .order("id");
-  
-  if (error) {
-    console.error("Error fetching visible blog posts:", error);
-    throw new Error(error.message);
+  console.log("Fetching visible blog posts...");
+  try {
+    // Use a type assertion to tell TypeScript this is a valid query
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("hidden", false)
+      .order("is_default", { ascending: false })
+      .order("id");
+    
+    if (error) {
+      console.error("Error fetching visible blog posts:", error);
+      throw new Error(`Error fetching visible blog posts: ${error.message}`);
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} visible blog posts`);
+    console.log("First visible blog post (if any):", data && data.length > 0 ? data[0] : "No blog posts");
+    return (data || []) as BlogPost[];
+  } catch (error) {
+    console.error("Unexpected error in fetchVisibleBlogPosts:", error);
+    throw error;
   }
-  
-  return (data || []) as BlogPost[];
 };
 
 // Fetch all categories
 export const fetchCategories = async (): Promise<string[]> => {
-  // Use a type assertion to tell TypeScript this is a valid query
-  const { data, error } = await supabase
-    .from("blog_categories")
-    .select("name")
-    .order("id");
-  
-  if (error) {
-    console.error("Error fetching blog categories:", error);
-    throw new Error(error.message);
+  console.log("Fetching blog categories...");
+  try {
+    // Use a type assertion to tell TypeScript this is a valid query
+    const { data, error } = await supabase
+      .from("blog_categories")
+      .select("name")
+      .order("id");
+    
+    if (error) {
+      console.error("Error fetching blog categories:", error);
+      throw new Error(`Error fetching blog categories: ${error.message}`);
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} blog categories`);
+    return ((data as { name: string }[] || []).map(category => category.name));
+  } catch (error) {
+    console.error("Unexpected error in fetchCategories:", error);
+    throw error;
   }
-  
-  return ((data as { name: string }[] || []).map(category => category.name));
 };
 
 // Add a new blog post

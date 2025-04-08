@@ -5,49 +5,100 @@ import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, FileText, Search } from "lucide-react";
+import { BookOpen, FileText, Search, Bug } from "lucide-react";
 import { fetchVisibleBlogPosts, fetchCategories, type BlogPost } from "@/services/blogService";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [connectionStatus, setConnectionStatus] = useState<"checking" | "success" | "error">("checking");
+  const [rawPosts, setRawPosts] = useState<any[]>([]);
+  
+  // Check Supabase connection directly
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        // Try to fetch directly from the blog_posts table to test the connection
+        const { data, error } = await supabase
+          .from("blog_posts")
+          .select("*")
+          .limit(5);
+        
+        if (error) {
+          console.error("Supabase connection test error:", error);
+          setConnectionStatus("error");
+          toast.error(`Supabase connection error: ${error.message}`);
+        } else {
+          console.log("Supabase connection test successful. Raw data:", data);
+          setConnectionStatus("success");
+          setRawPosts(data || []);
+          if (data && data.length === 0) {
+            toast.info("Connected to Supabase but no blog posts found in database.");
+          } else {
+            toast.success(`Connected to Supabase. Found ${data?.length || 0} raw blog posts.`);
+          }
+        }
+      } catch (err) {
+        console.error("Unexpected error testing Supabase connection:", err);
+        setConnectionStatus("error");
+        toast.error(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    };
+    
+    checkConnection();
+  }, []);
   
   // Fetch blog posts from Supabase using React Query
   const { 
     data: blogPosts = [],
     isLoading: isLoadingPosts,
-    isError: isPostsError 
+    isError: isPostsError,
+    error: postsError
   } = useQuery({
     queryKey: ["blogPosts"],
-    queryFn: fetchVisibleBlogPosts
+    queryFn: fetchVisibleBlogPosts,
+    onError: (error) => {
+      console.error("Error in React Query fetchVisibleBlogPosts:", error);
+    }
   });
+  
+  useEffect(() => {
+    if (blogPosts.length > 0) {
+      console.log("Blog posts from React Query:", blogPosts);
+    }
+  }, [blogPosts]);
   
   // Fetch categories from Supabase using React Query
   const { 
     data: categories = ["All"],
     isLoading: isLoadingCategories,
-    isError: isCategoriesError 
+    isError: isCategoriesError,
+    error: categoriesError
   } = useQuery({
     queryKey: ["blogCategories"],
-    queryFn: fetchCategories
+    queryFn: fetchCategories,
+    onError: (error) => {
+      console.error("Error in React Query fetchCategories:", error);
+    }
   });
   
   // Show toast error if data fetch fails
   useEffect(() => {
     if (isPostsError) {
-      toast.error("Failed to load blog posts");
+      toast.error(`Failed to load blog posts: ${postsError instanceof Error ? postsError.message : 'Unknown error'}`);
     }
     if (isCategoriesError) {
-      toast.error("Failed to load categories");
+      toast.error(`Failed to load categories: ${categoriesError instanceof Error ? categoriesError.message : 'Unknown error'}`);
     }
-  }, [isPostsError, isCategoriesError]);
+  }, [isPostsError, isCategoriesError, postsError, categoriesError]);
 
   // Filter posts based on search query and category
   const filteredPosts = blogPosts.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+                          post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === "All" || post.category === activeCategory;
     
     return matchesSearch && matchesCategory;
@@ -64,6 +115,28 @@ const Blog = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Thoughts, stories and ideas about web development, design and technology
             </p>
+          </div>
+
+          {/* Connection Status Debug (visible temporarily) */}
+          <div className="mb-4 p-4 rounded-md border border-dashed">
+            <div className="flex items-center gap-2 mb-2">
+              <Bug className="h-4 w-4 text-primary" />
+              <span className="font-semibold">Supabase Connection:</span>
+              <span className={connectionStatus === "success" ? "text-green-500" : connectionStatus === "error" ? "text-red-500" : "text-yellow-500"}>
+                {connectionStatus === "checking" ? "Checking..." : connectionStatus === "success" ? "Connected" : "Error"}
+              </span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Raw posts in DB: {rawPosts.length}, React Query posts: {blogPosts.length}
+            </div>
+            {rawPosts.length > 0 && (
+              <details className="mt-2">
+                <summary className="cursor-pointer text-sm text-primary">Show first raw post data</summary>
+                <pre className="text-xs mt-2 p-2 bg-muted/50 rounded overflow-auto max-h-40">
+                  {JSON.stringify(rawPosts[0], null, 2)}
+                </pre>
+              </details>
+            )}
           </div>
 
           {/* Search and Filter */}
