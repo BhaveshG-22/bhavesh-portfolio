@@ -32,8 +32,8 @@ const AboutSection = () => {
               <div className="relative glassmorphism-card rounded-xl p-1.5 h-full">
                 <AspectRatio ratio={1/1} className="rounded-lg overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" 
-                    alt="Developer" 
+                    src="/lovable-uploads/089c2863-e6f0-4ce5-8967-1b826cc6804a.png" 
+                    alt="Developer Portrait" 
                     className="object-cover w-full h-full transition-all duration-700 group-hover:scale-105"
                   />
                 </AspectRatio>
@@ -46,7 +46,7 @@ const AboutSection = () => {
             <div className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 h-full">
               <div className="mb-6 flex items-start">
                 <Avatar className="h-16 w-16 mr-4 ring-2 ring-primary/30">
-                  <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
+                  <AvatarImage src="/lovable-uploads/089c2863-e6f0-4ce5-8967-1b826cc6804a.png" alt="Profile" />
                   <AvatarFallback>BG</AvatarFallback>
                 </Avatar>
                 <div>
