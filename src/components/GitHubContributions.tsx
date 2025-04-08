@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -16,14 +17,18 @@ interface ContributionData {
   level: ContributionLevel;
 }
 
-const GitHubContributions = () => {
+interface GitHubContributionsProps {
+  username?: string;
+}
+
+const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps) => {
   const [data, setData] = useState<ContributionData[]>([]);
   const [visibleWeeks, setVisibleWeeks] = useState(52);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalContributions, setTotalContributions] = useState<number>(0);
   
   useEffect(() => {
-    // Generate contribution data that matches the example
-    generateData();
-    
     // Handle responsive sizing
     const handleResize = () => {
       if (window.innerWidth < 640) {
@@ -41,15 +46,109 @@ const GitHubContributions = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Generate contribution data that mimics the screenshot
-  const generateData = () => {
+  useEffect(() => {
+    const fetchGitHubContributions = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // GitHub API endpoint for user contributions (past year)
+        const currentDate = new Date();
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
+        
+        const fromDate = oneYearAgo.toISOString().split('T')[0];
+        const toDate = currentDate.toISOString().split('T')[0];
+        
+        // GitHub API V3 endpoint for user activity
+        const response = await fetch(`https://api.github.com/users/${username}/events?per_page=100`);
+        
+        if (!response.ok) {
+          throw new Error(`GitHub API request failed with status: ${response.status}`);
+        }
+        
+        const eventsData = await response.json();
+        
+        // Process the GitHub events data into our contribution format
+        const contributionsMap = new Map<string, number>();
+        let total = 0;
+        
+        // Count contributions by date
+        eventsData.forEach((event: any) => {
+          const date = event.created_at.split('T')[0];
+          const currentCount = contributionsMap.get(date) || 0;
+          
+          // Count different event types differently
+          let increment = 0;
+          if (event.type === 'PushEvent') {
+            // Each commit in a push counts
+            increment = event.payload.commits?.length || 1;
+          } else if (['PullRequestEvent', 'IssuesEvent', 'IssueCommentEvent'].includes(event.type)) {
+            increment = 1;
+          }
+          
+          if (increment > 0) {
+            contributionsMap.set(date, currentCount + increment);
+            total += increment;
+          }
+        });
+        
+        // Fill in the past year with dates, including those with no contributions
+        const contributionData: ContributionData[] = [];
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setFullYear(endDate.getFullYear() - 1);
+        
+        // Generate dates for the past year
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+          const dateStr = d.toISOString().split('T')[0];
+          const count = contributionsMap.get(dateStr) || 0;
+          
+          // Determine level based on count
+          let level: ContributionLevel = 0;
+          if (count > 0) {
+            if (count >= 10) level = 4;
+            else if (count >= 6) level = 3;
+            else if (count >= 3) level = 2;
+            else level = 1;
+          }
+          
+          // Format date for display
+          const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+          const displayDate = new Date(dateStr).toLocaleDateString('en-US', options);
+          
+          contributionData.push({
+            date: displayDate,
+            count,
+            level
+          });
+        }
+        
+        setData(contributionData);
+        setTotalContributions(total);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error fetching GitHub contributions:", err);
+        setError(err.message || "Failed to fetch GitHub contributions");
+        setLoading(false);
+        
+        // Fallback to generated data if API fails
+        generateFallbackData();
+      }
+    };
+    
+    fetchGitHubContributions();
+  }, [username]);
+  
+  // Generate fallback contribution data if the API fails
+  const generateFallbackData = () => {
     const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
     const daysPerWeek = 7;
     const weeksInYear = 52;
     const contributions: ContributionData[] = [];
+    let total = 0;
     
-    // Pre-defined contribution density pattern to match screenshot
-    // Higher values = more contributions in that part of the year
+    // Pre-defined contribution density pattern
     const densityPattern = [
       0.2, 0.3, 0.3, 0.2, 0.3, 0.4, 0.4, 0.3, 0.5, 0.6, 0.5, 0.6
     ];
@@ -83,6 +182,7 @@ const GitHubContributions = () => {
         
         // Create contribution count based on level
         const count = level === 0 ? 0 : level * Math.floor(Math.random() * 4 + 1);
+        total += count;
         
         contributions.push({
           date: `${month} ${dayInMonth}, ${year}`,
@@ -93,6 +193,7 @@ const GitHubContributions = () => {
     }
     
     setData(contributions);
+    setTotalContributions(total);
   };
   
   // Get color for contribution level to match the teal colors in the image
@@ -125,6 +226,28 @@ const GitHubContributions = () => {
   };
   
   const visibleMonths = getVisibleMonths();
+  
+  if (loading) {
+    return (
+      <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-20 flex justify-center items-center">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-8 w-8 text-teal-500 animate-spin mb-2" />
+          <p className="text-gray-600 dark:text-gray-400">Loading GitHub contributions...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-10 flex justify-center items-center">
+        <div className="flex flex-col items-center text-center">
+          <p className="text-red-500 mb-2">Error loading GitHub contributions</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Showing simulated data instead</p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4">
@@ -167,7 +290,7 @@ const GitHubContributions = () => {
       {/* Bottom section */}
       <div className="flex justify-between items-center mt-3 text-xs text-gray-700 dark:text-gray-300">
         <div>
-          1,362 contributions in the last year
+          {totalContributions.toLocaleString()} contributions in the last year
         </div>
         
         {/* Legend */}

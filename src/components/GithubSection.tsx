@@ -4,6 +4,9 @@ import GitHubContributions from "@/components/GitHubContributions";
 import { Button } from "./ui/button";
 
 const GithubSection = () => {
+  // You can change the GitHub username here
+  const githubUsername = "bgavali"; // Replace with the actual GitHub username
+  
   return (
     <section id="github" className="section-padding bg-gray-100 dark:bg-black py-20">
       <div className="max-container">
@@ -21,7 +24,7 @@ const GithubSection = () => {
         </div>
         
         <div className="w-full max-w-5xl mx-auto">
-          <GitHubContributions />
+          <GitHubContributions username={githubUsername} />
         </div>
         
         <div className="mt-10 flex justify-center">
@@ -32,7 +35,7 @@ const GithubSection = () => {
             asChild
           >
             <a 
-              href="https://github.com" 
+              href={`https://github.com/${githubUsername}`}
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2"
