@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Trash, Eye, EyeOff, Plus, X, Edit, Save } from "lucide-react";
+import { Trash, Eye, EyeOff, Plus, X, Edit, Save, Loader2 } from "lucide-react";
 import {
   Tabs,
   TabsContent,
@@ -18,23 +19,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type Project = {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  github: string;
-  demo: string;
-  category: string;
-  hidden?: boolean;
-  isDefault?: boolean;
-};
+import {
+  Project,
+  fetchProjects,
+  fetchCategories,
+  addProject,
+  updateProject,
+  deleteProject,
+  toggleProjectVisibility,
+  addCategory,
+  deleteCategory,
+  resetCategories
+} from "@/services/projectService";
 
 // For editing purposes, we need a separate type with tags as string
 type ProjectEditForm = Omit<Project, 'tags'> & {
-  tags: string | string[];
+  tags: string;
 };
 
 // Changed to preserve casing in default categories
@@ -56,77 +56,32 @@ const SecretProjectAdd = () => {
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [newCategory, setNewCategory] = useState("");
   const [editingProject, setEditingProject] = useState<ProjectEditForm | null>(null);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   // Load all projects and categories on component mount
   useEffect(() => {
-    try {
-      // Get default projects from the ProjectsSection component
-      const defaultProjects = [
-        {
-          id: 1,
-          title: "E-commerce Platform",
-          description: "A full-stack e-commerce application with product listings, cart functionality, user authentication, and payment processing.",
-          image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-          tags: ["React", "Node.js", "MongoDB", "Express", "Redux"],
-          github: "https://github.com",
-          demo: "https://demo.com",
-          category: "fullstack",
-          isDefault: true,
-        },
-        {
-          id: 2,
-          title: "Task Management App",
-          description: "A productivity tool for teams to manage projects, tasks, and deadlines with real-time updates.",
-          image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-          tags: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS"],
-          github: "https://github.com",
-          demo: "https://demo.com",
-          category: "frontend",
-          isDefault: true,
-        },
-        {
-          id: 3,
-          title: "Real-time Chat Application",
-          description: "A messaging platform with real-time communication, user presence, and media sharing capabilities.",
-          image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-          tags: ["React", "Socket.io", "Node.js", "MongoDB", "Express"],
-          github: "https://github.com",
-          demo: "https://demo.com",
-          category: "fullstack",
-          isDefault: true,
-        },
-        {
-          id: 4,
-          title: "Content Management System",
-          description: "A customizable CMS for creating and managing digital content with user roles and permissions.",
-          image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-          tags: ["React", "GraphQL", "PostgreSQL", "NestJS"],
-          github: "https://github.com",
-          demo: "https://demo.com",
-          category: "fullstack",
-          isDefault: true,
-        },
-      ];
-      
-      // Try to load saved default projects first to preserve any edits
-      const savedDefaultProjects = JSON.parse(localStorage.getItem("defaultProjects") || "null");
-      const finalDefaultProjects = savedDefaultProjects || defaultProjects;
-      
-      // Load custom projects from localStorage
-      const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
-      
-      // Combine all projects
-      setAllProjects([...finalDefaultProjects, ...customProjects]);
-      
-      // Load custom categories if they exist
-      const savedCategories = JSON.parse(localStorage.getItem("projectCategories") || "null");
-      if (savedCategories) {
-        setCategories(savedCategories);
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Load projects and categories from Supabase
+        const [projectsData, categoriesData] = await Promise.all([
+          fetchProjects(),
+          fetchCategories()
+        ]);
+        
+        setAllProjects(projectsData);
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Error loading projects or categories:", error);
+        toast.error("Failed to load data. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error loading projects or categories:", error);
-      toast.error("Failed to load projects or categories");
-    }
+    };
+    
+    loadData();
   }, []);
 
   const handleChange = (
@@ -145,27 +100,27 @@ const SecretProjectAdd = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // Get existing projects from local storage or use empty array
-      const existingProjects = JSON.parse(
-        localStorage.getItem("customProjects") || "[]"
-      );
+      setIsSubmitting(true);
       
-      // Create new project with unique ID
+      // Create new project
       const newProject = {
-        ...formData,
-        id: Date.now(),
-        tags: formData.tags.split(",").map(tag => tag.trim())
+        title: formData.title,
+        description: formData.description,
+        image: formData.image,
+        tags: formData.tags.split(",").map(tag => tag.trim()),
+        github: formData.github,
+        demo: formData.demo,
+        category: formData.category,
+        hidden: false,
+        is_default: false
       };
       
-      // Save updated projects list to local storage
-      localStorage.setItem(
-        "customProjects",
-        JSON.stringify([...existingProjects, newProject])
-      );
+      // Add project to Supabase
+      const addedProject = await addProject(newProject);
       
       toast.success("Project added successfully!");
       
@@ -180,48 +135,25 @@ const SecretProjectAdd = () => {
         category: "frontend",
       });
       
-      // Refresh project list
-      const updatedCustomProjects = [...existingProjects, newProject];
-      setAllProjects(prev => {
-        const defaultProjects = prev.filter(p => p.isDefault);
-        return [...defaultProjects, ...updatedCustomProjects];
-      });
+      // Update state with new project
+      setAllProjects(prev => [...prev, addedProject]);
     } catch (error) {
       toast.error("Failed to add project");
       console.error("Error saving project:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleToggleVisibility = (project: Project) => {
+  const handleToggleVisibility = async (project: Project) => {
     try {
-      if (project.isDefault) {
-        // Handle default project visibility toggling
-        const defaultProjects = allProjects.filter(p => p.isDefault);
-        const updatedDefaultProjects = defaultProjects.map(p => 
-          p.id === project.id ? { ...p, hidden: !p.hidden } : p
-        );
-        
-        localStorage.setItem("defaultProjects", JSON.stringify(updatedDefaultProjects));
-        
-        // Update all projects
-        const customProjects = allProjects.filter(p => !p.isDefault);
-        setAllProjects([...updatedDefaultProjects, ...customProjects]);
-      } else {
-        // Handle custom project visibility toggling
-        const customProjects = JSON.parse(
-          localStorage.getItem("customProjects") || "[]"
-        );
-        
-        const updatedProjects = customProjects.map((p: Project) => 
-          p.id === project.id ? { ...p, hidden: !p.hidden } : p
-        );
-        
-        localStorage.setItem("customProjects", JSON.stringify(updatedProjects));
-        
-        // Update all projects
-        const defaultProjects = allProjects.filter(p => p.isDefault);
-        setAllProjects([...defaultProjects, ...updatedProjects]);
-      }
+      // Toggle project visibility
+      const updatedProject = await toggleProjectVisibility(project.id, !!project.hidden);
+      
+      // Update local state
+      setAllProjects(prev => 
+        prev.map(p => p.id === project.id ? updatedProject : p)
+      );
       
       toast.success(`Project ${project.hidden ? 'shown' : 'hidden'} successfully`);
     } catch (error) {
@@ -230,7 +162,7 @@ const SecretProjectAdd = () => {
     }
   };
 
-  const handleDeleteProject = (projectId: number) => {
+  const handleDeleteProject = async (projectId: number) => {
     try {
       const projectToDelete = allProjects.find(p => p.id === projectId);
       
@@ -239,23 +171,15 @@ const SecretProjectAdd = () => {
         return;
       }
       
-      if (projectToDelete.isDefault) {
+      if (projectToDelete.is_default) {
         toast.error("Default projects cannot be deleted");
         return;
       }
       
-      // Get existing projects
-      const existingProjects = JSON.parse(
-        localStorage.getItem("customProjects") || "[]"
-      );
+      // Delete project from Supabase
+      await deleteProject(projectId);
       
-      // Filter out the deleted project
-      const updatedProjects = existingProjects.filter((p: Project) => p.id !== projectId);
-      
-      // Save to local storage
-      localStorage.setItem("customProjects", JSON.stringify(updatedProjects));
-      
-      // Update state
+      // Update local state
       setAllProjects(prev => prev.filter(p => p.id !== projectId));
       
       toast.success("Project deleted successfully");
@@ -266,7 +190,7 @@ const SecretProjectAdd = () => {
   };
 
   const startEditing = (project: Project) => {
-    // If project has tags as an array, convert to comma-separated string for editing
+    // Convert tags array to string for editing
     const projectForEditing: ProjectEditForm = {
       ...project,
       tags: Array.isArray(project.tags) ? project.tags.join(", ") : project.tags
@@ -278,7 +202,7 @@ const SecretProjectAdd = () => {
     setEditingProject(null);
   };
 
-  const saveEditedProject = () => {
+  const saveEditedProject = async () => {
     if (!editingProject) return;
     
     try {
@@ -287,39 +211,21 @@ const SecretProjectAdd = () => {
         ? editingProject.tags.split(',').map(tag => tag.trim()) 
         : editingProject.tags;
         
-      const processedProject: Project = {
-        ...editingProject,
-        tags: tagsArray
-      };
+      // Update project in Supabase
+      const updatedProject = await updateProject(editingProject.id, {
+        title: editingProject.title,
+        description: editingProject.description,
+        image: editingProject.image,
+        tags: tagsArray,
+        github: editingProject.github,
+        demo: editingProject.demo,
+        category: editingProject.category,
+      });
       
-      if (editingProject.isDefault) {
-        // Update default project
-        const defaultProjects = allProjects.filter(p => p.isDefault);
-        const updatedDefaultProjects = defaultProjects.map(p => 
-          p.id === editingProject.id ? processedProject : p
-        );
-        
-        localStorage.setItem("defaultProjects", JSON.stringify(updatedDefaultProjects));
-        
-        // Update all projects
-        const customProjects = allProjects.filter(p => !p.isDefault);
-        setAllProjects([...updatedDefaultProjects, ...customProjects]);
-      } else {
-        // Update custom project
-        const customProjects = JSON.parse(
-          localStorage.getItem("customProjects") || "[]"
-        );
-        
-        const updatedProjects = customProjects.map((p: Project) => 
-          p.id === editingProject.id ? processedProject : p
-        );
-        
-        localStorage.setItem("customProjects", JSON.stringify(updatedProjects));
-        
-        // Update all projects
-        const defaultProjects = allProjects.filter(p => p.isDefault);
-        setAllProjects([...defaultProjects, ...updatedProjects]);
-      }
+      // Update local state
+      setAllProjects(prev => 
+        prev.map(p => p.id === editingProject.id ? updatedProject : p)
+      );
       
       setEditingProject(null);
       toast.success("Project updated successfully");
@@ -329,36 +235,27 @@ const SecretProjectAdd = () => {
     }
   };
 
-  // Modified to preserve original case
-  const addCategory = () => {
+  const handleAddCategory = async () => {
     if (!newCategory.trim()) {
       toast.error("Category name cannot be empty");
       return;
     }
     
-    // Check case insensitively for duplicates, but preserve original case for storage
+    // Check case insensitively for duplicates
     if (categories.some(cat => cat.toLowerCase() === newCategory.trim().toLowerCase())) {
       toast.error("Category already exists");
       return;
     }
     
     try {
-      // Add new category preserving case
-      const updatedCategories = [...categories];
-      if (updatedCategories[0] === "all") {
-        // Insert after "all" while preserving case
-        updatedCategories.splice(1, 0, newCategory.trim());
-      } else {
-        updatedCategories.unshift(newCategory.trim());
-      }
+      // Add new category to Supabase
+      await addCategory(newCategory.trim());
       
-      // Save to local storage
-      localStorage.setItem("projectCategories", JSON.stringify(updatedCategories));
-      
-      // Update state
+      // Refresh categories
+      const updatedCategories = await fetchCategories();
       setCategories(updatedCategories);
-      setNewCategory("");
       
+      setNewCategory("");
       toast.success("Category added successfully");
     } catch (error) {
       toast.error("Failed to add category");
@@ -366,7 +263,7 @@ const SecretProjectAdd = () => {
     }
   };
 
-  const deleteCategory = (category: string) => {
+  const handleDeleteCategory = async (category: string) => {
     if (category === "all") {
       toast.error("Cannot delete the 'all' category");
       return;
@@ -380,12 +277,11 @@ const SecretProjectAdd = () => {
     }
     
     try {
-      const updatedCategories = categories.filter(c => c !== category);
+      // Delete category from Supabase
+      await deleteCategory(category);
       
-      // Save to local storage
-      localStorage.setItem("projectCategories", JSON.stringify(updatedCategories));
-      
-      // Update state
+      // Refresh categories
+      const updatedCategories = await fetchCategories();
       setCategories(updatedCategories);
       
       toast.success(`Category "${category}" deleted successfully`);
@@ -395,11 +291,12 @@ const SecretProjectAdd = () => {
     }
   };
 
-  const resetCategories = () => {
+  const handleResetCategories = async () => {
     try {
-      // Reset to default categories
-      localStorage.setItem("projectCategories", JSON.stringify(DEFAULT_CATEGORIES));
-      setCategories(DEFAULT_CATEGORIES);
+      // Reset to default categories in Supabase
+      const resetCategoriesList = await resetCategories();
+      setCategories(resetCategoriesList);
+      
       toast.success("Categories reset to default");
     } catch (error) {
       toast.error("Failed to reset categories");
@@ -410,10 +307,21 @@ const SecretProjectAdd = () => {
   // Show all projects, both custom and default
   const projectsList = [...allProjects].sort((a, b) => {
     // Sort by default first, then by ID
-    if (a.isDefault && !b.isDefault) return -1;
-    if (!a.isDefault && b.isDefault) return 1;
+    if (a.is_default && !b.is_default) return -1;
+    if (!a.is_default && b.is_default) return 1;
     return a.id - b.id;
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white py-20 px-4 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+          <p className="text-teal-400">Loading project data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-white py-20 px-4">
@@ -552,8 +460,17 @@ const SecretProjectAdd = () => {
                   >
                     Back to Home
                   </Button>
-                  <Button type="submit" variant="default">
-                    Add Project
+                  <Button 
+                    type="submit" 
+                    variant="default"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding...
+                      </>
+                    ) : "Add Project"}
                   </Button>
                 </div>
               </form>
@@ -669,7 +586,7 @@ const SecretProjectAdd = () => {
                       <div className="flex justify-between">
                         <h3 className="text-lg font-medium">
                           {project.title}
-                          {project.isDefault && <span className="ml-2 text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded">Default</span>}
+                          {project.is_default && <span className="ml-2 text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded">Default</span>}
                         </h3>
                         <div className="flex gap-2">
                           <Button 
@@ -687,7 +604,7 @@ const SecretProjectAdd = () => {
                           >
                             {project.hidden ? <Eye size={18} /> : <EyeOff size={18} />}
                           </Button>
-                          {!project.isDefault && (
+                          {!project.is_default && (
                             <Button 
                               variant="ghost" 
                               size="icon"
@@ -737,7 +654,7 @@ const SecretProjectAdd = () => {
                     placeholder="Enter category name"
                     className="bg-gray-800 border-gray-700"
                   />
-                  <Button onClick={addCategory}>
+                  <Button onClick={handleAddCategory}>
                     <Plus className="h-4 w-4 mr-1" /> Add
                   </Button>
                 </div>
@@ -754,7 +671,7 @@ const SecretProjectAdd = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => deleteCategory(category)}
+                            onClick={() => handleDeleteCategory(category)}
                             className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
                           >
                             <X className="h-4 w-4" />
@@ -775,7 +692,7 @@ const SecretProjectAdd = () => {
                 </Button>
                 <Button 
                   variant="destructive" 
-                  onClick={resetCategories}
+                  onClick={handleResetCategories}
                 >
                   Reset to Defaults
                 </Button>
