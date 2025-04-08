@@ -19,28 +19,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type BlogPost = {
-  id: number;
-  title: string;
-  excerpt: string;
-  content: string;
-  date: string;
-  category: string;
-  image: string;
-  readTime: string;
-  hidden?: boolean;
-  isDefault?: boolean;
-};
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { 
+  fetchBlogPosts, 
+  fetchCategories, 
+  addBlogPost,
+  updateBlogPost,
+  deleteBlogPost,
+  toggleBlogVisibility,
+  addCategory,
+  deleteCategory,
+  resetCategories,
+  type BlogPost
+} from "@/services/blogService";
 
 // For editing purposes, we need a separate type
 type BlogEditForm = BlogPost;
 
-// Default categories with preserved casing
-const DEFAULT_CATEGORIES = ["All", "React", "TypeScript", "CSS", "UI/UX", "JavaScript"];
-
 const SecretBlogAdd = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
   const [formData, setFormData] = useState({
     title: "",
     excerpt: "",
@@ -48,85 +47,41 @@ const SecretBlogAdd = () => {
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     category: "React",
     image: "",
-    readTime: "5 min read"
+    read_time: "5 min read"
   });
   
-  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [newCategory, setNewCategory] = useState("");
   const [editingBlog, setEditingBlog] = useState<BlogEditForm | null>(null);
 
-  // Load all blog posts and categories on component mount
+  // Fetch blog posts using React Query
+  const { 
+    data: allBlogPosts = [],
+    isLoading: isLoadingPosts,
+    isError: isPostsError 
+  } = useQuery({
+    queryKey: ["allBlogPosts"],
+    queryFn: fetchBlogPosts
+  });
+  
+  // Fetch categories using React Query
+  const { 
+    data: categories = ["All"],
+    isLoading: isLoadingCategories,
+    isError: isCategoriesError 
+  } = useQuery({
+    queryKey: ["blogCategories"],
+    queryFn: fetchCategories
+  });
+
+  // Show toast error if data fetch fails
   useEffect(() => {
-    try {
-      // Get default blog posts from the Blog component
-      const defaultBlogPosts = [
-        {
-          id: 1,
-          title: "Getting Started with React",
-          excerpt: "Learn the basics of React and how to build your first component.",
-          content: "React is a popular JavaScript library for building user interfaces. This guide will walk you through setting up your first React project and creating components.",
-          date: "April 2, 2025",
-          category: "React",
-          image: "/placeholder.svg",
-          readTime: "5 min read",
-          isDefault: true,
-        },
-        {
-          id: 2,
-          title: "Advanced TypeScript Patterns",
-          excerpt: "Discover advanced TypeScript patterns to improve your code quality and maintainability.",
-          content: "TypeScript offers powerful type features that can greatly enhance your code. This article explores advanced patterns like discriminated unions, utility types, and more.",
-          date: "March 28, 2025",
-          category: "TypeScript",
-          image: "/placeholder.svg",
-          readTime: "8 min read",
-          isDefault: true,
-        },
-        {
-          id: 3,
-          title: "Mastering Tailwind CSS",
-          excerpt: "Take your CSS skills to the next level with advanced Tailwind techniques.",
-          content: "Tailwind CSS provides a utility-first approach to styling. Learn how to customize your Tailwind setup and create complex layouts efficiently.",
-          date: "March 20, 2025",
-          category: "CSS",
-          image: "/placeholder.svg",
-          readTime: "6 min read",
-          isDefault: true,
-        },
-        {
-          id: 4,
-          title: "Building Responsive UIs",
-          excerpt: "Learn how to create responsive user interfaces that work on any device.",
-          content: "Responsive design is crucial for modern web applications. This guide covers principles and techniques for creating UIs that adapt to different screen sizes.",
-          date: "March 15, 2025",
-          category: "UI/UX",
-          image: "/placeholder.svg", 
-          readTime: "7 min read",
-          isDefault: true,
-        }
-      ];
-      
-      // Try to load saved default blog posts first to preserve any edits
-      const savedDefaultBlogPosts = JSON.parse(localStorage.getItem("defaultBlogPosts") || "null");
-      const finalDefaultBlogPosts = savedDefaultBlogPosts || defaultBlogPosts;
-      
-      // Load custom blog posts from localStorage
-      const customBlogPosts = JSON.parse(localStorage.getItem("customBlogPosts") || "[]");
-      
-      // Combine all blog posts
-      setAllBlogPosts([...finalDefaultBlogPosts, ...customBlogPosts]);
-      
-      // Load custom categories if they exist
-      const savedCategories = JSON.parse(localStorage.getItem("blogCategories") || "null");
-      if (savedCategories) {
-        setCategories(savedCategories);
-      }
-    } catch (error) {
-      console.error("Error loading blog posts or categories:", error);
-      toast.error("Failed to load blog posts or categories");
+    if (isPostsError) {
+      toast.error("Failed to load blog posts");
     }
-  }, []);
+    if (isCategoriesError) {
+      toast.error("Failed to load categories");
+    }
+  }, [isPostsError, isCategoriesError]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -144,28 +99,18 @@ const SecretBlogAdd = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // Get existing blog posts from local storage or use empty array
-      const existingBlogPosts = JSON.parse(
-        localStorage.getItem("customBlogPosts") || "[]"
-      );
-      
-      // Create new blog post with unique ID
-      const newBlogPost = {
-        ...formData,
-        id: Date.now()
-      };
-      
-      // Save updated blog posts list to local storage
-      localStorage.setItem(
-        "customBlogPosts",
-        JSON.stringify([...existingBlogPosts, newBlogPost])
-      );
+      // Add new blog post to Supabase
+      await addBlogPost(formData);
       
       toast.success("Blog post added successfully!");
+      
+      // Invalidate cache to refresh blog posts list
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
       
       // Reset the form
       setFormData({
@@ -175,14 +120,7 @@ const SecretBlogAdd = () => {
         date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         category: "React",
         image: "",
-        readTime: "5 min read"
-      });
-      
-      // Refresh blog post list
-      const updatedCustomBlogPosts = [...existingBlogPosts, newBlogPost];
-      setAllBlogPosts(prev => {
-        const defaultBlogPosts = prev.filter(p => p.isDefault);
-        return [...defaultBlogPosts, ...updatedCustomBlogPosts];
+        read_time: "5 min read"
       });
     } catch (error) {
       toast.error("Failed to add blog post");
@@ -190,36 +128,13 @@ const SecretBlogAdd = () => {
     }
   };
 
-  const handleToggleVisibility = (blog: BlogPost) => {
+  const handleToggleVisibility = async (blog: BlogPost) => {
     try {
-      if (blog.isDefault) {
-        // Handle default blog post visibility toggling
-        const defaultBlogPosts = allBlogPosts.filter(p => p.isDefault);
-        const updatedDefaultBlogPosts = defaultBlogPosts.map(p => 
-          p.id === blog.id ? { ...p, hidden: !p.hidden } : p
-        );
-        
-        localStorage.setItem("defaultBlogPosts", JSON.stringify(updatedDefaultBlogPosts));
-        
-        // Update all blog posts
-        const customBlogPosts = allBlogPosts.filter(p => !p.isDefault);
-        setAllBlogPosts([...updatedDefaultBlogPosts, ...customBlogPosts]);
-      } else {
-        // Handle custom blog post visibility toggling
-        const customBlogPosts = JSON.parse(
-          localStorage.getItem("customBlogPosts") || "[]"
-        );
-        
-        const updatedBlogPosts = customBlogPosts.map((p: BlogPost) => 
-          p.id === blog.id ? { ...p, hidden: !p.hidden } : p
-        );
-        
-        localStorage.setItem("customBlogPosts", JSON.stringify(updatedBlogPosts));
-        
-        // Update all blog posts
-        const defaultBlogPosts = allBlogPosts.filter(p => p.isDefault);
-        setAllBlogPosts([...defaultBlogPosts, ...updatedBlogPosts]);
-      }
+      await toggleBlogVisibility(blog.id, blog.hidden || false);
+      
+      // Invalidate cache to refresh blog posts list
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
       
       toast.success(`Blog post ${blog.hidden ? 'shown' : 'hidden'} successfully`);
     } catch (error) {
@@ -228,7 +143,7 @@ const SecretBlogAdd = () => {
     }
   };
 
-  const handleDeleteBlog = (blogId: number) => {
+  const handleDeleteBlog = async (blogId: number) => {
     try {
       const blogToDelete = allBlogPosts.find(p => p.id === blogId);
       
@@ -237,24 +152,16 @@ const SecretBlogAdd = () => {
         return;
       }
       
-      if (blogToDelete.isDefault) {
+      if (blogToDelete.is_default) {
         toast.error("Default blog posts cannot be deleted");
         return;
       }
       
-      // Get existing blog posts
-      const existingBlogPosts = JSON.parse(
-        localStorage.getItem("customBlogPosts") || "[]"
-      );
+      await deleteBlogPost(blogId);
       
-      // Filter out the deleted blog post
-      const updatedBlogPosts = existingBlogPosts.filter((p: BlogPost) => p.id !== blogId);
-      
-      // Save to local storage
-      localStorage.setItem("customBlogPosts", JSON.stringify(updatedBlogPosts));
-      
-      // Update state
-      setAllBlogPosts(prev => prev.filter(p => p.id !== blogId));
+      // Invalidate cache to refresh blog posts list
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
       
       toast.success("Blog post deleted successfully");
     } catch (error) {
@@ -271,38 +178,16 @@ const SecretBlogAdd = () => {
     setEditingBlog(null);
   };
 
-  const saveEditedBlog = () => {
+  const saveEditedBlog = async () => {
     if (!editingBlog) return;
     
     try {
-      if (editingBlog.isDefault) {
-        // Update default blog post
-        const defaultBlogPosts = allBlogPosts.filter(p => p.isDefault);
-        const updatedDefaultBlogPosts = defaultBlogPosts.map(p => 
-          p.id === editingBlog.id ? editingBlog : p
-        );
-        
-        localStorage.setItem("defaultBlogPosts", JSON.stringify(updatedDefaultBlogPosts));
-        
-        // Update all blog posts
-        const customBlogPosts = allBlogPosts.filter(p => !p.isDefault);
-        setAllBlogPosts([...updatedDefaultBlogPosts, ...customBlogPosts]);
-      } else {
-        // Update custom blog post
-        const customBlogPosts = JSON.parse(
-          localStorage.getItem("customBlogPosts") || "[]"
-        );
-        
-        const updatedBlogPosts = customBlogPosts.map((p: BlogPost) => 
-          p.id === editingBlog.id ? editingBlog : p
-        );
-        
-        localStorage.setItem("customBlogPosts", JSON.stringify(updatedBlogPosts));
-        
-        // Update all blog posts
-        const defaultBlogPosts = allBlogPosts.filter(p => p.isDefault);
-        setAllBlogPosts([...defaultBlogPosts, ...updatedBlogPosts]);
-      }
+      const { id, ...updates } = editingBlog;
+      await updateBlogPost(id, updates);
+      
+      // Invalidate cache to refresh blog posts list
+      queryClient.invalidateQueries({ queryKey: ["allBlogPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["blogPosts"] });
       
       setEditingBlog(null);
       toast.success("Blog post updated successfully");
@@ -312,36 +197,25 @@ const SecretBlogAdd = () => {
     }
   };
 
-  // Preserve original case when adding categories
-  const addCategory = () => {
+  const handleAddCategory = async () => {
     if (!newCategory.trim()) {
       toast.error("Category name cannot be empty");
       return;
     }
     
-    // Check case insensitively for duplicates, but preserve original case for storage
+    // Check case insensitively for duplicates
     if (categories.some(cat => cat.toLowerCase() === newCategory.trim().toLowerCase())) {
       toast.error("Category already exists");
       return;
     }
     
     try {
-      // Add new category preserving case
-      const updatedCategories = [...categories];
-      if (updatedCategories[0] === "All") {
-        // Insert after "All" while preserving case
-        updatedCategories.splice(1, 0, newCategory.trim());
-      } else {
-        updatedCategories.unshift(newCategory.trim());
-      }
+      await addCategory(newCategory.trim());
       
-      // Save to local storage
-      localStorage.setItem("blogCategories", JSON.stringify(updatedCategories));
+      // Invalidate cache to refresh categories list
+      queryClient.invalidateQueries({ queryKey: ["blogCategories"] });
       
-      // Update state
-      setCategories(updatedCategories);
       setNewCategory("");
-      
       toast.success("Category added successfully");
     } catch (error) {
       toast.error("Failed to add category");
@@ -349,7 +223,7 @@ const SecretBlogAdd = () => {
     }
   };
 
-  const deleteCategory = (category: string) => {
+  const handleDeleteCategory = async (category: string) => {
     if (category === "All") {
       toast.error("Cannot delete the 'All' category");
       return;
@@ -363,13 +237,10 @@ const SecretBlogAdd = () => {
     }
     
     try {
-      const updatedCategories = categories.filter(c => c !== category);
+      await deleteCategory(category);
       
-      // Save to local storage
-      localStorage.setItem("blogCategories", JSON.stringify(updatedCategories));
-      
-      // Update state
-      setCategories(updatedCategories);
+      // Invalidate cache to refresh categories list
+      queryClient.invalidateQueries({ queryKey: ["blogCategories"] });
       
       toast.success(`Category "${category}" deleted successfully`);
     } catch (error) {
@@ -378,11 +249,13 @@ const SecretBlogAdd = () => {
     }
   };
 
-  const resetCategories = () => {
+  const handleResetCategories = async () => {
     try {
-      // Reset to default categories
-      localStorage.setItem("blogCategories", JSON.stringify(DEFAULT_CATEGORIES));
-      setCategories(DEFAULT_CATEGORIES);
+      await resetCategories();
+      
+      // Invalidate cache to refresh categories list
+      queryClient.invalidateQueries({ queryKey: ["blogCategories"] });
+      
       toast.success("Categories reset to default");
     } catch (error) {
       toast.error("Failed to reset categories");
@@ -391,10 +264,10 @@ const SecretBlogAdd = () => {
   };
 
   // Show all blog posts, both custom and default
-  const blogPostsList = [...allBlogPosts].sort((a, b) => {
+  const blogPostsList = isLoadingPosts ? [] : [...allBlogPosts].sort((a, b) => {
     // Sort by default first, then by ID
-    if (a.isDefault && !b.isDefault) return -1;
-    if (!a.isDefault && b.isDefault) return 1;
+    if (a.is_default && !b.is_default) return -1;
+    if (!a.is_default && b.is_default) return 1;
     return a.id - b.id;
   });
 
@@ -489,13 +362,13 @@ const SecretBlogAdd = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="readTime" className="block text-sm font-medium mb-1">
+                    <label htmlFor="read_time" className="block text-sm font-medium mb-1">
                       Read Time
                     </label>
                     <Input
-                      id="readTime"
-                      name="readTime"
-                      value={formData.readTime}
+                      id="read_time"
+                      name="read_time"
+                      value={formData.read_time}
                       onChange={handleChange}
                       required
                       placeholder="5 min read"
@@ -546,7 +419,27 @@ const SecretBlogAdd = () => {
             {/* Blog Posts List */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-white">Manage All Blog Posts</h2>
-              {blogPostsList.length === 0 ? (
+              {isLoadingPosts ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="p-4 border border-gray-700 rounded-lg animate-pulse">
+                      <div className="flex justify-between">
+                        <div className="h-5 bg-gray-700 rounded w-1/3"></div>
+                        <div className="flex gap-2">
+                          {[1, 2, 3].map(j => (
+                            <div key={j} className="h-8 w-8 bg-gray-700 rounded"></div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="h-4 bg-gray-700 rounded w-4/5 mt-2"></div>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <div className="h-6 bg-gray-700 rounded w-16"></div>
+                        <div className="h-6 bg-gray-700 rounded w-20"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : blogPostsList.length === 0 ? (
                 <div className="text-gray-400 text-center py-10 border border-dashed border-gray-700 rounded-lg">
                   No blog posts yet. Add your first one!
                 </div>
@@ -609,8 +502,8 @@ const SecretBlogAdd = () => {
                             <div>
                               <label className="block text-sm font-medium mb-1">Read Time</label>
                               <Input
-                                name="readTime"
-                                value={editingBlog.readTime}
+                                name="read_time"
+                                value={editingBlog.read_time}
                                 onChange={handleEditChange}
                                 className="bg-gray-800 border-gray-700"
                               />
@@ -654,7 +547,7 @@ const SecretBlogAdd = () => {
                       <div className="flex justify-between">
                         <h3 className="text-lg font-medium">
                           {blog.title}
-                          {blog.isDefault && <span className="ml-2 text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded">Default</span>}
+                          {blog.is_default && <span className="ml-2 text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded">Default</span>}
                         </h3>
                         <div className="flex gap-2">
                           <Button 
@@ -672,7 +565,7 @@ const SecretBlogAdd = () => {
                           >
                             {blog.hidden ? <Eye size={18} /> : <EyeOff size={18} />}
                           </Button>
-                          {!blog.isDefault && (
+                          {!blog.is_default && (
                             <Button 
                               variant="ghost" 
                               size="icon"
@@ -690,7 +583,7 @@ const SecretBlogAdd = () => {
                           {blog.category}
                         </span>
                         <span className="text-xs bg-gray-800 px-2 py-1 rounded-full">
-                          {blog.readTime}
+                          {blog.read_time}
                         </span>
                       </div>
                       <div className="flex items-center justify-between mt-3 text-xs text-gray-400">
@@ -717,7 +610,7 @@ const SecretBlogAdd = () => {
                     placeholder="Enter category name"
                     className="bg-gray-800 border-gray-700"
                   />
-                  <Button onClick={addCategory}>
+                  <Button onClick={handleAddCategory}>
                     <Plus className="h-4 w-4 mr-1" /> Add
                   </Button>
                 </div>
@@ -725,25 +618,40 @@ const SecretBlogAdd = () => {
               
               <div className="mb-8">
                 <h3 className="text-lg font-medium mb-3">Current Categories</h3>
-                <div className="border border-gray-700 rounded-lg overflow-hidden">
-                  <ul className="divide-y divide-gray-700">
-                    {categories.map((category) => (
-                      <li key={category} className="flex items-center justify-between p-3">
-                        <span>{category}</span>
-                        {category !== "All" && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteCategory(category)}
-                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {isLoadingCategories ? (
+                  <div className="border border-gray-700 rounded-lg overflow-hidden">
+                    <ul className="divide-y divide-gray-700">
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <li key={i} className="p-3 animate-pulse">
+                          <div className="flex items-center justify-between">
+                            <div className="h-5 bg-gray-700 rounded w-24"></div>
+                            <div className="h-8 w-8 bg-gray-700 rounded"></div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <div className="border border-gray-700 rounded-lg overflow-hidden">
+                    <ul className="divide-y divide-gray-700">
+                      {categories.map((category) => (
+                        <li key={category} className="flex items-center justify-between p-3">
+                          <span>{category}</span>
+                          {category !== "All" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteCategory(category)}
+                              className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               
               <div className="flex justify-between mt-8">
@@ -755,7 +663,7 @@ const SecretBlogAdd = () => {
                 </Button>
                 <Button 
                   variant="destructive" 
-                  onClick={resetCategories}
+                  onClick={handleResetCategories}
                 >
                   Reset to Defaults
                 </Button>

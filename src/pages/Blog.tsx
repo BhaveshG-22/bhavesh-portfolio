@@ -6,100 +6,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { BookOpen, FileText, Search } from "lucide-react";
-
-type BlogPost = {
-  id: number;
-  title: string;
-  excerpt: string;
-  content: string;
-  date: string;
-  category: string;
-  image: string;
-  readTime: string;
-  hidden?: boolean;
-  isDefault?: boolean;
-};
-
-// Sample blog data - this will be used if no blog posts are found in localStorage
-const DEFAULT_BLOG_POSTS = [
-  {
-    id: 1,
-    title: "Getting Started with React",
-    excerpt: "Learn the basics of React and how to build your first component.",
-    content: "React is a popular JavaScript library for building user interfaces. This guide will walk you through setting up your first React project and creating components.",
-    date: "April 2, 2025",
-    category: "React",
-    image: "/placeholder.svg",
-    readTime: "5 min read",
-    isDefault: true,
-  },
-  {
-    id: 2,
-    title: "Advanced TypeScript Patterns",
-    excerpt: "Discover advanced TypeScript patterns to improve your code quality and maintainability.",
-    content: "TypeScript offers powerful type features that can greatly enhance your code. This article explores advanced patterns like discriminated unions, utility types, and more.",
-    date: "March 28, 2025",
-    category: "TypeScript",
-    image: "/placeholder.svg",
-    readTime: "8 min read",
-    isDefault: true,
-  },
-  {
-    id: 3,
-    title: "Mastering Tailwind CSS",
-    excerpt: "Take your CSS skills to the next level with advanced Tailwind techniques.",
-    content: "Tailwind CSS provides a utility-first approach to styling. Learn how to customize your Tailwind setup and create complex layouts efficiently.",
-    date: "March 20, 2025",
-    category: "CSS",
-    image: "/placeholder.svg",
-    readTime: "6 min read",
-    isDefault: true,
-  },
-  {
-    id: 4,
-    title: "Building Responsive UIs",
-    excerpt: "Learn how to create responsive user interfaces that work on any device.",
-    content: "Responsive design is crucial for modern web applications. This guide covers principles and techniques for creating UIs that adapt to different screen sizes.",
-    date: "March 15, 2025",
-    category: "UI/UX",
-    image: "/placeholder.svg", 
-    readTime: "7 min read",
-    isDefault: true,
-  }
-];
-
-const DEFAULT_CATEGORIES = ["All", "React", "TypeScript", "CSS", "UI/UX", "JavaScript"];
+import { fetchVisibleBlogPosts, fetchCategories, type BlogPost } from "@/services/blogService";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
-
-  // Load blog posts and categories from localStorage
+  
+  // Fetch blog posts from Supabase using React Query
+  const { 
+    data: blogPosts = [],
+    isLoading: isLoadingPosts,
+    isError: isPostsError 
+  } = useQuery({
+    queryKey: ["blogPosts"],
+    queryFn: fetchVisibleBlogPosts
+  });
+  
+  // Fetch categories from Supabase using React Query
+  const { 
+    data: categories = ["All"],
+    isLoading: isLoadingCategories,
+    isError: isCategoriesError 
+  } = useQuery({
+    queryKey: ["blogCategories"],
+    queryFn: fetchCategories
+  });
+  
+  // Show toast error if data fetch fails
   useEffect(() => {
-    try {
-      // Try to load saved default blog posts
-      const savedDefaultBlogPosts = JSON.parse(localStorage.getItem("defaultBlogPosts") || "null") || DEFAULT_BLOG_POSTS;
-      
-      // Load custom blog posts
-      const customBlogPosts = JSON.parse(localStorage.getItem("customBlogPosts") || "[]");
-      
-      // Combine and filter out hidden posts
-      const allBlogPosts = [...savedDefaultBlogPosts, ...customBlogPosts].filter(post => !post.hidden);
-      setBlogPosts(allBlogPosts);
-      
-      // Load categories
-      const savedCategories = JSON.parse(localStorage.getItem("blogCategories") || "null");
-      if (savedCategories) {
-        setCategories(savedCategories);
-      }
-    } catch (error) {
-      console.error("Error loading blog data:", error);
-      // Fallback to default data
-      setBlogPosts(DEFAULT_BLOG_POSTS);
+    if (isPostsError) {
+      toast.error("Failed to load blog posts");
     }
-  }, []);
+    if (isCategoriesError) {
+      toast.error("Failed to load categories");
+    }
+  }, [isPostsError, isCategoriesError]);
 
   // Filter posts based on search query and category
   const filteredPosts = blogPosts.filter((post) => {
@@ -121,8 +64,6 @@ const Blog = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Thoughts, stories and ideas about web development, design and technology
             </p>
-            
-            {/* Removed the Manage Blog button */}
           </div>
 
           {/* Search and Filter */}
@@ -137,22 +78,45 @@ const Blog = () => {
               />
             </div>
             <div className="flex overflow-x-auto gap-2 py-2 w-full md:w-auto">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={activeCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveCategory(category)}
-                  className="whitespace-nowrap"
-                >
-                  {category}
-                </Button>
-              ))}
+              {isLoadingCategories ? (
+                <div className="animate-pulse flex gap-2">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-9 w-20 bg-muted rounded-md"></div>
+                  ))}
+                </div>
+              ) : (
+                categories.map((category) => (
+                  <Button
+                    key={category}
+                    variant={activeCategory === category ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setActiveCategory(category)}
+                    className="whitespace-nowrap"
+                  >
+                    {category}
+                  </Button>
+                ))
+              )}
             </div>
           </div>
 
           {/* Blog Posts */}
-          {filteredPosts.length > 0 ? (
+          {isLoadingPosts ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="border rounded-lg overflow-hidden animate-pulse">
+                  <div className="h-48 bg-muted"></div>
+                  <div className="p-5 space-y-3">
+                    <div className="h-4 bg-muted rounded w-1/3"></div>
+                    <div className="h-6 bg-muted rounded w-4/5"></div>
+                    <div className="h-4 bg-muted rounded w-full"></div>
+                    <div className="h-4 bg-muted rounded w-full"></div>
+                    <div className="h-10 bg-muted rounded w-full mt-4"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredPosts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts.map((post) => (
                 <article 
@@ -175,7 +139,7 @@ const Blog = () => {
                       <Separator orientation="vertical" className="mx-2 h-4" />
                       <span className="flex items-center gap-1">
                         <FileText className="h-3 w-3" />
-                        {post.readTime}
+                        {post.read_time}
                       </span>
                     </div>
                     <h2 className="text-xl font-semibold mb-3 line-clamp-2">{post.title}</h2>
