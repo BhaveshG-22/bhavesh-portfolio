@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +36,7 @@ const AboutSection = () => {
             <div>
               <h3 className="text-2xl font-semibold mb-4">Who I Am</h3>
               <p className="text-muted-foreground mb-4">
-                I'm a full-stack developer with 5+ years of experience building web and mobile applications. I specialize in JavaScript ecosystems, 
+                I'm a full-stack developer with experience building web and mobile applications. I specialize in JavaScript ecosystems, 
                 with expertise in React, Next.js, Node.js, and modern backend technologies.
               </p>
               <p className="text-muted-foreground">
@@ -48,7 +49,7 @@ const AboutSection = () => {
               <Card>
                 <CardContent className="p-4 flex flex-col items-center text-center">
                   <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-3">
-                    <span className="text-xl font-bold text-primary">5+</span>
+                    <span className="text-xl font-bold text-primary">∞</span>
                   </div>
                   <h4 className="font-medium">Years of Experience</h4>
                 </CardContent>
