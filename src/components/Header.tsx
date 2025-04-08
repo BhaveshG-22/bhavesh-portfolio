@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X, LogIn, LogOut, Mail, Github, Linkedin, BookOpen, FolderKanban } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -104,16 +103,14 @@ export const Header = ({ activeSection }: HeaderProps) => {
             </li>
           </ul>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            
             <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100/20 dark:hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-white/10">
                 <Github className="h-5 w-5" />
               </Button>
             </a>
             
             <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100/20 dark:hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-white/10">
                 <Linkedin className="h-5 w-5" />
               </Button>
             </a>
@@ -135,8 +132,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
         
         {/* Mobile Navigation */}
         <div className="flex md:hidden items-center gap-2">
-          <ThemeToggle />
-          
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" className="px-4 py-2" aria-label="Open menu">

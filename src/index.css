@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -6,47 +7,6 @@
 
 @layer base {
   :root {
-    --background: 240 10% 97%;
-    --foreground: 240 10% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 15%;
-
-    --primary: 222 47% 40%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 250 40% 90%;
-    --secondary-foreground: 240 10% 15%;
-
-    --muted: 240 5% 90%;
-    --muted-foreground: 240 4% 35%;
-
-    --accent: 250 40% 90%;
-    --accent-foreground: 240 10% 15%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 222 47% 40%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 240 6% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
-  }
-
-  .dark {
     --background: 240 10% 7%;
     --foreground: 240 5% 95%;
 
@@ -83,12 +43,14 @@
     --sidebar-accent-foreground: 240 5% 96%;
     --sidebar-border: 240 4% 16%;
     --sidebar-ring: 217 91% 60%;
+    
+    --radius: 0.5rem;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border selection:bg-white/10 selection:text-white;
   }
 
   body {
@@ -111,19 +73,19 @@
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-portfolio-blue to-portfolio-purple bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-white to-primary/80 bg-clip-text text-transparent;
   }
   
   .text-gradient-light {
-    @apply bg-gradient-to-r from-portfolio-blue to-primary/80 bg-clip-text text-transparent dark:bg-gradient-to-r dark:from-white dark:to-primary/80;
+    @apply bg-gradient-to-r from-white to-primary/80 bg-clip-text text-transparent;
   }
   
   .text-gradient-bright {
-    @apply bg-gradient-to-r from-portfolio-blue via-primary/90 to-portfolio-purple/90 bg-clip-text text-transparent drop-shadow-sm dark:bg-gradient-to-r dark:from-white dark:via-primary/90 dark:to-portfolio-purple/90;
+    @apply bg-gradient-to-r from-white via-primary/90 to-portfolio-purple/90 bg-clip-text text-transparent drop-shadow-sm;
   }
   
   .text-teal-gradient {
-    @apply bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent dark:from-teal-400 dark:to-teal-200;
+    @apply bg-gradient-to-r from-teal-400 to-teal-200 bg-clip-text text-transparent;
   }
 
   .section-padding {
@@ -135,23 +97,23 @@
   }
   
   .glassmorphism {
-    @apply backdrop-blur-xl bg-white/70 dark:bg-white/20 border border-white/50 dark:border-white/30 shadow-lg;
+    @apply backdrop-blur-xl bg-white/20 border border-white/30 shadow-lg;
   }
   
   .glassmorphism-card {
-    @apply backdrop-blur-md bg-white/80 dark:bg-white/15 border border-white/60 dark:border-white/20 shadow-xl;
+    @apply backdrop-blur-md bg-white/15 border border-white/20 shadow-xl;
   }
   
   .glassmorphism-light {
-    @apply backdrop-blur-sm bg-white/80 dark:bg-white/10 border border-white/60 dark:border-white/20 shadow-md;
+    @apply backdrop-blur-sm bg-white/10 border border-white/20 shadow-md;
   }
 
   .glass-morphism {
-    @apply backdrop-blur-xl bg-white/50 dark:bg-black/20 border border-white/40 dark:border-white/10 shadow-lg;
+    @apply backdrop-blur-xl bg-black/20 border border-white/10 shadow-lg;
   }
   
   .project-card {
-    @apply bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl overflow-hidden transition-all hover:border-teal-500/30;
+    @apply bg-black/40 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden transition-all hover:border-teal-500/30;
   }
   
   .project-image {
@@ -214,6 +176,3 @@
     animation-play-state: paused;
   }
 }
-
-
- 

@@ -57,14 +57,14 @@ const Projects = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3, 4, 5, 6].map((item) => (
                 <Card key={item} className="border border-border/40 bg-card/30 backdrop-blur-sm">
-                  <div className="h-48 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-t-lg" />
+                  <div className="h-48 bg-gray-800 animate-pulse rounded-t-lg" />
                   <CardHeader>
-                    <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-800 animate-pulse rounded" />
+                    <div className="h-6 w-3/4 bg-gray-800 animate-pulse rounded" />
                   </CardHeader>
                   <CardContent>
-                    <div className="h-4 w-full bg-gray-200 dark:bg-gray-800 animate-pulse rounded mb-2" />
-                    <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-800 animate-pulse rounded mb-4" />
-                    <div className="h-8 w-1/3 bg-gray-200 dark:bg-gray-800 animate-pulse rounded" />
+                    <div className="h-4 w-full bg-gray-800 animate-pulse rounded mb-2" />
+                    <div className="h-4 w-5/6 bg-gray-800 animate-pulse rounded mb-4" />
+                    <div className="h-8 w-1/3 bg-gray-800 animate-pulse rounded" />
                   </CardContent>
                 </Card>
               ))}
