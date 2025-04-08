@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Database } from "@/integrations/supabase/types";
 
 export type BlogPost = {
   id: number;
@@ -19,8 +18,9 @@ export type BlogPost = {
 
 // Fetch all blog posts
 export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts")
+    .from("blog_posts" as any)
     .select("*")
     .order("is_default", { ascending: false })
     .order("id");
@@ -30,13 +30,14 @@ export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
     throw new Error(error.message);
   }
   
-  return data || [];
+  return data as BlogPost[] || [];
 };
 
 // Fetch only visible blog posts
 export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts")
+    .from("blog_posts" as any)
     .select("*")
     .eq("hidden", false)
     .order("is_default", { ascending: false })
@@ -47,13 +48,14 @@ export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
     throw new Error(error.message);
   }
   
-  return data || [];
+  return data as BlogPost[] || [];
 };
 
 // Fetch all categories
 export const fetchCategories = async (): Promise<string[]> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_categories")
+    .from("blog_categories" as any)
     .select("name")
     .order("id");
   
@@ -62,13 +64,14 @@ export const fetchCategories = async (): Promise<string[]> => {
     throw new Error(error.message);
   }
   
-  return (data || []).map(category => category.name);
+  return (data as { name: string }[] || []).map(category => category.name);
 };
 
 // Add a new blog post
 export const addBlogPost = async (blogPost: Omit<BlogPost, "id" | "created_at" | "updated_at">): Promise<BlogPost> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts")
+    .from("blog_posts" as any)
     .insert([blogPost])
     .select()
     .single();
@@ -78,13 +81,14 @@ export const addBlogPost = async (blogPost: Omit<BlogPost, "id" | "created_at" |
     throw new Error(error.message);
   }
   
-  return data;
+  return data as BlogPost;
 };
 
 // Update a blog post
 export const updateBlogPost = async (id: number, updates: Partial<Omit<BlogPost, "id" | "created_at" | "updated_at">>): Promise<BlogPost> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_posts")
+    .from("blog_posts" as any)
     .update(updates)
     .eq("id", id)
     .select()
@@ -95,13 +99,14 @@ export const updateBlogPost = async (id: number, updates: Partial<Omit<BlogPost,
     throw new Error(error.message);
   }
   
-  return data;
+  return data as BlogPost;
 };
 
 // Delete a blog post
 export const deleteBlogPost = async (id: number): Promise<void> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { error } = await supabase
-    .from("blog_posts")
+    .from("blog_posts" as any)
     .delete()
     .eq("id", id);
   
@@ -118,8 +123,9 @@ export const toggleBlogVisibility = async (id: number, isHidden: boolean): Promi
 
 // Add a new category
 export const addCategory = async (name: string): Promise<string> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { data, error } = await supabase
-    .from("blog_categories")
+    .from("blog_categories" as any)
     .insert([{ name }])
     .select()
     .single();
@@ -129,13 +135,14 @@ export const addCategory = async (name: string): Promise<string> => {
     throw new Error(error.message);
   }
   
-  return data.name;
+  return (data as { name: string }).name;
 };
 
 // Delete a category
 export const deleteCategory = async (name: string): Promise<void> => {
+  // Use a type assertion to tell TypeScript this is a valid query
   const { error } = await supabase
-    .from("blog_categories")
+    .from("blog_categories" as any)
     .delete()
     .eq("name", name);
   
@@ -149,7 +156,7 @@ export const deleteCategory = async (name: string): Promise<void> => {
 export const resetCategories = async (): Promise<string[]> => {
   // First delete all non-default categories
   await supabase
-    .from("blog_categories")
+    .from("blog_categories" as any)
     .delete()
     .not("name", "in", '("All","React","TypeScript","CSS","UI/UX","JavaScript")');
   
@@ -158,16 +165,16 @@ export const resetCategories = async (): Promise<string[]> => {
   
   // Get existing categories
   const { data: existingCategoriesData } = await supabase
-    .from("blog_categories")
+    .from("blog_categories" as any)
     .select("name");
     
-  const existingCategories = (existingCategoriesData || []).map(cat => cat.name);
+  const existingCategories = (existingCategoriesData as { name: string }[] || []).map(cat => cat.name);
   
   // Add any missing default categories
   for (const category of defaultCategories) {
     if (!existingCategories.includes(category)) {
       await supabase
-        .from("blog_categories")
+        .from("blog_categories" as any)
         .insert({ name: category });
     }
   }
