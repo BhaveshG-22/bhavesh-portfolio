@@ -13,6 +13,7 @@ type Project = {
   github: string;
   demo: string;
   category: string;
+  hidden?: boolean;
 };
 
 const ProjectsSection = () => {
@@ -69,8 +70,11 @@ const ProjectsSection = () => {
       // Load custom projects from localStorage
       const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
       
-      // Combine default projects with custom projects
-      setProjects([...defaultProjects, ...customProjects]);
+      // Filter out hidden projects
+      const visibleCustomProjects = customProjects.filter((project: Project) => !project.hidden);
+      
+      // Combine default projects with visible custom projects
+      setProjects([...defaultProjects, ...visibleCustomProjects]);
     } catch (error) {
       console.error("Error loading custom projects:", error);
       setProjects(defaultProjects);
