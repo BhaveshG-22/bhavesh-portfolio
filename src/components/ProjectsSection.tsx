@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,8 +17,10 @@ type Project = {
 
 const ProjectsSection = () => {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [projects, setProjects] = useState<Project[]>([]);
   
-  const projects: Project[] = [
+  // Default projects data
+  const defaultProjects: Project[] = [
     {
       id: 1,
       title: "E-commerce Platform",
@@ -60,6 +62,20 @@ const ProjectsSection = () => {
       category: "fullstack",
     },
   ];
+
+  // Load projects from local storage on component mount
+  useEffect(() => {
+    try {
+      // Load custom projects from localStorage
+      const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
+      
+      // Combine default projects with custom projects
+      setProjects([...defaultProjects, ...customProjects]);
+    } catch (error) {
+      console.error("Error loading custom projects:", error);
+      setProjects(defaultProjects);
+    }
+  }, []);
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
