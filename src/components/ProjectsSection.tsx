@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github } from "lucide-react";
@@ -16,9 +15,12 @@ type Project = {
   hidden?: boolean;
 };
 
+const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
+
 const ProjectsSection = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   
   // Default projects data
   const defaultProjects: Project[] = [
@@ -64,7 +66,7 @@ const ProjectsSection = () => {
     },
   ];
 
-  // Load projects from local storage on component mount
+  // Load projects and categories from local storage on component mount
   useEffect(() => {
     try {
       // Load custom projects from localStorage
@@ -75,8 +77,14 @@ const ProjectsSection = () => {
       
       // Combine default projects with visible custom projects
       setProjects([...defaultProjects, ...visibleCustomProjects]);
+      
+      // Load custom categories if they exist
+      const savedCategories = JSON.parse(localStorage.getItem("projectCategories") || "null");
+      if (savedCategories) {
+        setCategories(savedCategories);
+      }
     } catch (error) {
-      console.error("Error loading custom projects:", error);
+      console.error("Error loading custom projects or categories:", error);
       setProjects(defaultProjects);
     }
   }, []);
@@ -93,7 +101,7 @@ const ProjectsSection = () => {
           <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
           
           <div className="flex gap-6 mb-10 flex-wrap">
-            {["all", "frontend", "backend", "fullstack"].map((category) => (
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
