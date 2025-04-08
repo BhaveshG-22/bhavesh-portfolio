@@ -32,6 +32,11 @@ type Project = {
   isDefault?: boolean;
 };
 
+// For editing purposes, we need a separate type with tags as string
+type ProjectEditForm = Omit<Project, 'tags'> & {
+  tags: string | string[];
+};
+
 // Changed to preserve casing in default categories
 const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
 
@@ -50,7 +55,7 @@ const SecretProjectAdd = () => {
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [newCategory, setNewCategory] = useState("");
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingProject, setEditingProject] = useState<ProjectEditForm | null>(null);
 
   // Load all projects and categories on component mount
   useEffect(() => {
@@ -136,11 +141,7 @@ const SecretProjectAdd = () => {
   ) => {
     const { name, value } = e.target;
     if (editingProject) {
-      if (name === "tags" && typeof value === "string") {
-        setEditingProject((prev) => prev ? { ...prev, [name]: value } : null);
-      } else {
-        setEditingProject((prev) => prev ? { ...prev, [name]: value } : null);
-      }
+      setEditingProject((prev) => prev ? { ...prev, [name]: value } : null);
     }
   };
 
@@ -266,7 +267,7 @@ const SecretProjectAdd = () => {
 
   const startEditing = (project: Project) => {
     // If project has tags as an array, convert to comma-separated string for editing
-    const projectForEditing = {
+    const projectForEditing: ProjectEditForm = {
       ...project,
       tags: Array.isArray(project.tags) ? project.tags.join(", ") : project.tags
     };
@@ -281,12 +282,14 @@ const SecretProjectAdd = () => {
     if (!editingProject) return;
     
     try {
-      // Process the tags
-      const processedProject = {
+      // Process the tags - ensure they're converted to array format
+      const tagsArray = typeof editingProject.tags === 'string' 
+        ? editingProject.tags.split(',').map(tag => tag.trim()) 
+        : editingProject.tags;
+        
+      const processedProject: Project = {
         ...editingProject,
-        tags: typeof editingProject.tags === 'string' 
-          ? editingProject.tags.split(',').map(tag => tag.trim()) 
-          : editingProject.tags
+        tags: tagsArray
       };
       
       if (editingProject.isDefault) {
