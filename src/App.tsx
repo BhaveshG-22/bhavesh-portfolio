@@ -15,6 +15,7 @@ import Projects from "./pages/Projects";
 import SecretBlogAdd from "./pages/SecretBlogAdd";
 import Login from "./pages/Login";
 import ContactSubmissions from "./pages/ContactSubmissions";
+import GithubSettings from "./pages/GithubSettings";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,14 @@ const App = () => (
                 element={
                   <ProtectedRoute adminOnly>
                     <ContactSubmissions />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/github-settings" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <GithubSettings />
                   </ProtectedRoute>
                 } 
               />

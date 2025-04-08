@@ -1,5 +1,5 @@
 
-import { PenSquare, BookOpen, MessageSquare } from "lucide-react";
+import { PenSquare, BookOpen, MessageSquare, Github } from "lucide-react";
 import { 
   Sidebar, 
   SidebarContent, 
@@ -38,6 +38,14 @@ export const AdminSidebar = () => {
                 <a href="/secret-blog-add">
                   <BookOpen />
                   <span>Blog Posts</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="GitHub Settings">
+                <a href="/github-settings">
+                  <Github />
+                  <span>GitHub Settings</span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>

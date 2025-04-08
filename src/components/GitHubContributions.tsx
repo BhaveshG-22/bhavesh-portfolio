@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -28,77 +29,83 @@ interface ContributionData {
   weeks: ContributionWeek[];
 }
 
+interface ApiResponse {
+  contributionCalendar: {
+    totalContributions: number;
+    weeks: Array<{
+      contributionDays: Array<{
+        contributionCount: number;
+        date: string;
+      }>;
+    }>;
+  };
+}
+
 interface GitHubContributionsProps {
   username?: string;
 }
 
-const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps) => {
+const GitHubContributions = ({ username: propUsername }: GitHubContributionsProps) => {
   const [contributionData, setContributionData] = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | undefined>(propUsername);
   const { toast } = useToast();
   
+  // Fetch username from settings if not provided as prop
   useEffect(() => {
+    async function fetchUsername() {
+      if (!propUsername) {
+        try {
+          const { data, error } = await supabase
+            .from("github_settings")
+            .select("github_username")
+            .single();
+            
+          if (error) {
+            console.error("Error fetching GitHub username:", error);
+            setUsername("octocat"); // Default fallback
+          } else if (data) {
+            setUsername(data.github_username);
+          }
+        } catch (err) {
+          console.error("Error:", err);
+          setUsername("octocat"); // Default fallback
+        }
+      }
+    }
+    
+    fetchUsername();
+  }, [propUsername]);
+  
+  useEffect(() => {
+    if (!username) return;
+    
     const fetchContributions = async () => {
       setLoading(true);
       setError(null);
       
       try {
-        // GitHub GraphQL API endpoint
-        const endpoint = 'https://api.github.com/graphql';
+        // Call our Supabase Edge Function proxy
+        const functionUrl = `/api/github-contributions?username=${username}`;
         
-        // The GraphQL query to fetch contribution data
-        const query = `
-          query($userName:String!) { 
-            user(login: $userName){
-              contributionsCollection {
-                contributionCalendar {
-                  totalContributions
-                  weeks {
-                    contributionDays {
-                      contributionCount
-                      date
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `;
-
-        // Execute the query without an access token (public data only)
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query,
-            variables: { userName: username }
-          })
-        });
-
-        const result = await response.json();
+        const response = await fetch(functionUrl);
         
-        // Check if we got a rate limit error
-        if (response.status === 403) {
-          console.error("GitHub API rate limit exceeded");
-          throw new Error('GitHub API rate limit exceeded. Using simulated contribution data instead.');
+        if (!response.ok) {
+          throw new Error(`Error fetching GitHub contributions: ${response.status}`);
         }
         
-        if (result.errors) {
-          throw new Error(result.errors[0].message || 'Error fetching GitHub data');
-        }
+        const data = await response.json() as ApiResponse;
         
-        if (!result.data?.user?.contributionsCollection?.contributionCalendar) {
+        if (!data || !data.contributionCalendar) {
           throw new Error('No contribution data found');
         }
         
-        const calendar = result.data.user.contributionsCollection.contributionCalendar;
+        const calendar = data.contributionCalendar;
         
         // Process the data to add contribution levels
-        const processedWeeks = calendar.weeks.map((week: any) => {
-          const processedDays = week.contributionDays.map((day: any) => {
+        const processedWeeks = calendar.weeks.map((week) => {
+          const processedDays = week.contributionDays.map((day) => {
             // Determine level based on count
             let level: ContributionLevel = 0;
             const count = day.contributionCount;
@@ -128,14 +135,12 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
       } catch (err: any) {
         console.error("Error fetching GitHub contributions:", err);
         
-        // Show toast notification for API rate limit
-        if (err.message.includes('rate limit')) {
-          toast({
-            title: "GitHub API Rate Limited",
-            description: "Showing simulated contribution data instead.",
-            variant: "destructive"
-          });
-        }
+        // Show toast notification for API error
+        toast({
+          title: "GitHub API Error",
+          description: "Using simulated contribution data instead.",
+          variant: "destructive"
+        });
         
         setError(err.message || "Failed to fetch GitHub contributions");
         setLoading(false);
@@ -299,7 +304,7 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
       {error && (
         <Alert variant="destructive" className="mb-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>GitHub API Rate Limited</AlertTitle>
+          <AlertTitle>GitHub API Error</AlertTitle>
           <AlertDescription>
             Showing simulated contribution data instead.
           </AlertDescription>

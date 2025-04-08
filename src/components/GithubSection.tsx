@@ -2,10 +2,32 @@
 import { Github } from "lucide-react";
 import GitHubContributions from "@/components/GitHubContributions";
 import { Button } from "./ui/button";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const GithubSection = () => {
-  // You can change the GitHub username here
-  const githubUsername = "hkirat"; // Updated GitHub username
+  const [githubUsername, setGithubUsername] = useState<string>("octocat");
+  
+  useEffect(() => {
+    async function fetchUsername() {
+      try {
+        const { data, error } = await supabase
+          .from("github_settings")
+          .select("github_username")
+          .single();
+          
+        if (error) {
+          console.error("Error fetching GitHub username:", error);
+        } else if (data) {
+          setGithubUsername(data.github_username);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
+    }
+    
+    fetchUsername();
+  }, []);
   
   return (
     <section id="github" className="section-padding bg-gray-100 dark:bg-black py-20">
