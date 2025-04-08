@@ -19,15 +19,26 @@ const ScrollProgressBar = () => {
       setScrollProgress(Math.min(100, progress));
     };
 
-    // Add scroll event listener
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Add scroll event listener with throttling for performance
+    let ticking = false;
+    const scrollListener = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener("scroll", scrollListener, { passive: true });
     
     // Initial calculation
     handleScroll();
     
     // Clean up event listener
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", scrollListener);
     };
   }, []);
 
