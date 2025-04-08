@@ -19,7 +19,7 @@ export const Header = ({ activeSection }: HeaderProps) => {
   };
 
   return (
-    <header className="fixed top-0 w-full z-30 backdrop-blur-sm border-b border-white/5">
+    <header className="w-full z-30 backdrop-blur-sm border-b border-white/5">
       <div className="max-container flex items-center justify-between h-16 px-4">
         <Link
           to="/#hero"
