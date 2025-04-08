@@ -18,6 +18,14 @@ export const Header = ({ activeSection }: HeaderProps) => {
     await logout();
   };
 
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className="w-full z-30 bg-transparent border-b border-white/5">
       <div className="max-container flex items-center justify-between h-16 px-4">
@@ -73,12 +81,12 @@ export const Header = ({ activeSection }: HeaderProps) => {
             </li>
           </ul>
           <div className="flex items-center gap-2">
-            <Link to="/#contact">
+            <a href="#contact" onClick={handleContactClick}>
               <Button size="default" className="h-10">
                 <Mail className="h-4 w-4 mr-2" />
                 Contact Me
               </Button>
-            </Link>
+            </a>
             
             {user && (
               <Button variant="destructive" size="sm" onClick={handleLogout}>
@@ -133,12 +141,12 @@ export const Header = ({ activeSection }: HeaderProps) => {
               </nav>
               
               <div className="flex flex-col gap-4 mt-8">
-                <Link to="/#contact">
+                <a href="#contact" onClick={handleContactClick}>
                   <Button className="w-full">
                     <Mail className="h-4 w-4 mr-2" />
                     Contact Me
                   </Button>
-                </Link>
+                </a>
                 
                 {user && (
                   <Button variant="destructive" onClick={handleLogout}>
