@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -128,81 +129,84 @@ const SecretBlogAdd = () => {
       <div className="min-h-screen flex flex-col w-full">
         <Header activeSection="admin" />
         
-        <div className="flex flex-1">
+        <div className="flex flex-1 pt-16"> {/* Add pt-16 to move content below navbar */}
           <AdminSidebar />
-          <SidebarInset className="py-6 px-4 md:px-6">
-            <div className="max-w-7xl mx-auto">
+          <SidebarInset className="py-8 px-4 md:px-8 w-full overflow-y-auto">
+            <div className="max-w-4xl mx-auto"> {/* Increased max-width */}
               <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold">Manage Blog Posts</h1>
                 <SidebarTrigger />
               </div>
               <Separator className="mb-8" />
               
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    type="text"
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="content">Content</Label>
-                  <Textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="technology">Technology</SelectItem>
-                      <SelectItem value="travel">Travel</SelectItem>
-                      <SelectItem value="food">Food</SelectItem>
-                      <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    "Create Blog Post"
-                  )}
-                </Button>
-              </form>
+              <div className="bg-card rounded-lg border p-6 shadow-sm mb-8"> {/* Added card styling */}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      type="text"
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="content">Content</Label>
+                    <Textarea
+                      id="content"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      className="min-h-[200px]" /* Increased textarea height */
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select onValueChange={setCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="technology">Technology</SelectItem>
+                        <SelectItem value="travel">Travel</SelectItem>
+                        <SelectItem value="food">Food</SelectItem>
+                        <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Blog Post"
+                    )}
+                  </Button>
+                </form>
+              </div>
 
               <Separator className="my-8" />
 
-              <h2 className="text-2xl font-bold mb-4">Existing Blog Posts</h2>
+              <h2 className="text-2xl font-bold mb-6">Existing Blog Posts</h2>
               {loading ? (
-                <div className="flex items-center justify-center py-4">
+                <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin mr-2" />
                   <span>Loading blog posts...</span>
                 </div>
               ) : blogPosts.length === 0 ? (
-                <div className="text-center py-4">
+                <div className="text-center py-8 bg-muted rounded-lg">
                   <p className="text-muted-foreground">No blog posts yet.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {blogPosts.map((post) => (
-                    <div key={post.id} className="p-4 border rounded-md">
+                    <div key={post.id} className="p-6 border rounded-lg bg-card shadow-sm">
                       <h3 className="text-xl font-semibold">{post.title}</h3>
-                      <p className="text-muted-foreground">Category: {post.category}</p>
-                      <div className="flex justify-end mt-2">
+                      <p className="text-muted-foreground mt-1">Category: {post.category}</p>
+                      <div className="flex justify-end mt-4">
                         <Button 
                           variant="destructive" 
                           size="sm"

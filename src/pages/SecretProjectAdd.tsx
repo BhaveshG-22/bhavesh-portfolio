@@ -53,18 +53,20 @@ const SecretProjectAdd = () => {
       <div className="min-h-screen flex flex-col w-full">
         <Header activeSection="admin" />
         
-        <div className="flex flex-1">
+        <div className="flex flex-1 pt-16"> {/* Add pt-16 to move content below navbar */}
           <AdminSidebar />
-          <SidebarInset className="py-6 px-4 md:px-6">
-            <div className="max-w-7xl mx-auto">
+          <SidebarInset className="py-8 px-4 md:px-8 w-full overflow-y-auto">
+            <div className="max-w-4xl mx-auto"> {/* Increased max-width */}
               <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold">Manage Projects</h1>
                 <SidebarTrigger />
               </div>
               <Separator className="mb-8" />
               
-              <div className="grid gap-6">
-                <ProjectForm onProjectAdded={fetchProjects} />
+              <div className="grid gap-8">
+                <div className="bg-card rounded-lg border p-6 shadow-sm"> {/* Added card styling */}
+                  <ProjectForm onProjectAdded={fetchProjects} />
+                </div>
                 <Separator />
                 <ProjectsList />
               </div>
