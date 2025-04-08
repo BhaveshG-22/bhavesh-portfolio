@@ -99,7 +99,7 @@ export const Header = ({ activeSection }: HeaderProps) => {
           to="/" 
           className="font-bold text-xl flex items-center"
         >
-          <span className="text-teal-400">Portfolio</span>
+          <span className="text-teal-400">BhaveshG.dev</span>
         </Link>
 
         {/* Desktop Navigation */}
