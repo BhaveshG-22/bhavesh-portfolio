@@ -1,4 +1,5 @@
 
+import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,58 +21,60 @@ import GithubSettings from "./pages/GithubSettings";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/login" element={<Login />} />
-              <Route 
-                path="/secret-project-add" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <SecretProjectAdd />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/secret-blog-add" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <SecretBlogAdd />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/contact-submissions" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <ContactSubmissions />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/github-settings" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <GithubSettings />
-                  </ProtectedRoute>
-                } 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+  <React.StrictMode>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/login" element={<Login />} />
+                <Route 
+                  path="/secret-project-add" 
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <SecretProjectAdd />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/secret-blog-add" 
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <SecretBlogAdd />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/contact-submissions" 
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <ContactSubmissions />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/github-settings" 
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <GithubSettings />
+                    </ProtectedRoute>
+                  } 
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  </React.StrictMode>
 );
 
 export default App;
