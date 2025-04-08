@@ -64,10 +64,23 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
           };
         });
         
-        // Group the days into weeks (52 weeks * 7 days)
+        // Sort the days by date to ensure proper ordering
+        processedDays.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+        // Calculate the total days needed (fixed at 52 weeks * 7 days = 364 days for consistency)
+        const totalDays = 52 * 7;
+        
+        // Group the days into weeks (for the last year)
         const weeks: WeekData[] = [];
-        for (let i = 0; i < processedDays.length; i += 7) {
-          const weekDays = processedDays.slice(i, i + 7);
+        
+        // If we have more days than needed for a year view, take only the most recent ones
+        const daysToUse = processedDays.length > totalDays 
+          ? processedDays.slice(processedDays.length - totalDays) 
+          : processedDays;
+        
+        // Group days into weeks
+        for (let i = 0; i < daysToUse.length; i += 7) {
+          const weekDays = daysToUse.slice(i, i + 7);
           weeks.push({
             contributionDays: weekDays
           });
@@ -124,27 +137,22 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     const months: string[] = [];
     const seenMonths = new Set<string>();
     
+    // Get the last year's worth of data for labels
+    const lastYearData = contributionData.weeks?.flatMap(week => week.contributionDays) || [];
+    
     // Process all dates to extract month names
-    contributionData.contributionDays.forEach(day => {
+    lastYearData.forEach(day => {
       const date = new Date(day.date);
       const monthName = date.toLocaleDateString('en-US', { month: 'short' });
-      if (!seenMonths.has(monthName)) {
+      const monthKey = `${monthName}-${date.getFullYear()}`;
+      if (!seenMonths.has(monthKey)) {
         months.push(monthName);
-        seenMonths.add(monthName);
+        seenMonths.add(monthKey);
       }
     });
     
-    // Ensure we only return a reasonable number of month labels
-    const filteredMonths: string[] = [];
-    for (let i = 0; i < months.length; i++) {
-      if (i % 2 === 0 || i === months.length - 1) {
-        filteredMonths.push(months[i]);
-      } else {
-        filteredMonths.push('');
-      }
-    }
-    
-    return filteredMonths;
+    // Ensure we only return a reasonable number of month labels (every other month)
+    return months.filter((_, index) => index % 2 === 0);
   };
   
   if (loading) {
