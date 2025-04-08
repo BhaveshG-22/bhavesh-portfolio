@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 
 export type Project = {
   id: number;
@@ -58,7 +59,7 @@ export const fetchCategories = async (): Promise<string[]> => {
     throw new Error(error.message);
   }
   
-  return data.map(category => category.name) || [];
+  return (data || []).map(category => category.name);
 };
 
 export const addProject = async (project: Omit<Project, "id" | "created_at" | "updated_at">): Promise<Project> => {

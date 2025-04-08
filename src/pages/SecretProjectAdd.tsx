@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -193,7 +192,7 @@ const SecretProjectAdd = () => {
     // Convert tags array to string for editing
     const projectForEditing: ProjectEditForm = {
       ...project,
-      tags: Array.isArray(project.tags) ? project.tags.join(", ") : project.tags
+      tags: Array.isArray(project.tags) ? project.tags.join(", ") : ""
     };
     setEditingProject(projectForEditing);
   };
@@ -209,7 +208,7 @@ const SecretProjectAdd = () => {
       // Process the tags - ensure they're converted to array format
       const tagsArray = typeof editingProject.tags === 'string' 
         ? editingProject.tags.split(',').map(tag => tag.trim()) 
-        : editingProject.tags;
+        : [];
         
       // Update project in Supabase
       const updatedProject = await updateProject(editingProject.id, {
@@ -523,9 +522,7 @@ const SecretProjectAdd = () => {
                             <label className="block text-sm font-medium mb-1">Tags</label>
                             <Input
                               name="tags"
-                              value={typeof editingProject.tags === 'string' 
-                                ? editingProject.tags 
-                                : editingProject.tags.join(", ")}
+                              value={editingProject.tags}
                               onChange={handleEditChange}
                               className="bg-gray-800 border-gray-700"
                             />
