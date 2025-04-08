@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +67,25 @@ const ContactSection = () => {
     }
   };
 
+  const sendEmailNotification = async (data: ContactFormData) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-notification', {
+        body: data
+      });
+      
+      if (error) {
+        console.error("Email notification error:", error);
+        return false;
+      }
+      
+      console.log("Email notification sent successfully");
+      return true;
+    } catch (err) {
+      console.error("Failed to send email notification:", err);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -103,6 +123,9 @@ const ContactSection = () => {
       }
 
       console.log("Successfully submitted form data:", data);
+      
+      // Send email notification after successful submission
+      await sendEmailNotification(formData);
       
       toast({
         title: "Message sent!",
