@@ -11,34 +11,25 @@ import { Loader2, AlertTriangle } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
 interface ContributionDay {
   contributionCount: number;
   date: string;
-  level: ContributionLevel;
+  level?: ContributionLevel;
 }
 
-interface ContributionWeek {
+interface WeekData {
   contributionDays: ContributionDay[];
 }
 
 interface ContributionData {
+  userName: string;
   totalContributions: number;
-  weeks: ContributionWeek[];
-}
-
-interface ApiResponse {
-  contributionCalendar: {
-    totalContributions: number;
-    weeks: Array<{
-      contributionDays: Array<{
-        contributionCount: number;
-        date: string;
-      }>;
-    }>;
-  };
+  contributionDays: ContributionDay[];
+  weeks?: WeekData[]; // Generated from contributionDays
 }
 
 interface GitHubContributionsProps {
@@ -99,41 +90,43 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
           throw new Error(`Error fetching GitHub contributions: ${response.status}`);
         }
         
-        const data = await response.json() as ApiResponse;
+        const data = await response.json() as ContributionData;
         
-        if (!data || !data.contributionCalendar) {
+        if (!data || !data.contributionDays) {
           throw new Error('No contribution data found');
         }
         
-        const calendar = data.contributionCalendar;
-        
-        // Process the data to add contribution levels
-        const processedWeeks = calendar.weeks.map((week) => {
-          const processedDays = week.contributionDays.map((day) => {
-            // Determine level based on count
-            let level: ContributionLevel = 0;
-            const count = day.contributionCount;
-            
-            if (count === 0) level = 0;
-            else if (count === 1) level = 1;
-            else if (count >= 2 && count <= 4) level = 2;
-            else if (count >= 5 && count <= 9) level = 3;
-            else level = 4;
-            
-            return {
-              ...day,
-              level
-            };
-          });
+        // Process the data to add contribution levels to each day
+        const processedDays = data.contributionDays.map(day => {
+          // Determine level based on count
+          let level: ContributionLevel = 0;
+          const count = day.contributionCount;
+          
+          if (count === 0) level = 0;
+          else if (count === 1) level = 1;
+          else if (count >= 2 && count <= 4) level = 2;
+          else if (count >= 5 && count <= 9) level = 3;
+          else level = 4;
           
           return {
-            contributionDays: processedDays
+            ...day,
+            level
           };
         });
         
+        // Group the days into weeks (52 weeks * 7 days)
+        const weeks: WeekData[] = [];
+        for (let i = 0; i < processedDays.length; i += 7) {
+          const weekDays = processedDays.slice(i, i + 7);
+          weeks.push({
+            contributionDays: weekDays
+          });
+        }
+        
         setContributionData({
-          totalContributions: calendar.totalContributions,
-          weeks: processedWeeks
+          ...data,
+          contributionDays: processedDays,
+          weeks: weeks
         });
         setLoading(false);
       } catch (err: any) {
@@ -163,54 +156,59 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(today.getFullYear() - 1);
     
-    const weeks: ContributionWeek[] = [];
+    const contributionDays: ContributionDay[] = [];
     let totalContributions = 0;
     
-    // Generate 52 weeks of data (1 year)
-    for (let weekIndex = 0; weekIndex < 52; weekIndex++) {
-      const contributionDays: ContributionDay[] = [];
+    // Generate 365 days of data (1 year)
+    for (let dayIndex = 0; dayIndex < 365; dayIndex++) {
+      const date = new Date(oneYearAgo);
+      date.setDate(date.getDate() + dayIndex);
+      const dateStr = date.toISOString().split('T')[0];
       
-      // Generate 7 days per week
-      for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-        const date = new Date(oneYearAgo);
-        date.setDate(date.getDate() + (weekIndex * 7) + dayIndex);
-        
-        // Random contribution count
-        const rand = Math.random();
-        let contributionCount = 0;
-        let level: ContributionLevel = 0;
-        
-        if (rand < 0.6) {
-          contributionCount = 0;
-          level = 0;
-        } else if (rand < 0.75) {
-          contributionCount = 1;
-          level = 1;
-        } else if (rand < 0.85) {
-          contributionCount = Math.floor(Math.random() * 3) + 2; // 2-4
-          level = 2;
-        } else if (rand < 0.95) {
-          contributionCount = Math.floor(Math.random() * 5) + 5; // 5-9
-          level = 3;
-        } else {
-          contributionCount = Math.floor(Math.random() * 15) + 10; // 10-24
-          level = 4;
-        }
-        
-        contributionDays.push({
-          contributionCount,
-          date: date.toISOString().split('T')[0],
-          level
-        });
-        
-        totalContributions += contributionCount;
+      // Random contribution count
+      const rand = Math.random();
+      let contributionCount = 0;
+      let level: ContributionLevel = 0;
+      
+      if (rand < 0.6) {
+        contributionCount = 0;
+        level = 0;
+      } else if (rand < 0.75) {
+        contributionCount = 1;
+        level = 1;
+      } else if (rand < 0.85) {
+        contributionCount = Math.floor(Math.random() * 3) + 2; // 2-4
+        level = 2;
+      } else if (rand < 0.95) {
+        contributionCount = Math.floor(Math.random() * 5) + 5; // 5-9
+        level = 3;
+      } else {
+        contributionCount = Math.floor(Math.random() * 15) + 10; // 10-24
+        level = 4;
       }
       
-      weeks.push({ contributionDays });
+      contributionDays.push({
+        contributionCount,
+        date: dateStr,
+        level
+      });
+      
+      totalContributions += contributionCount;
+    }
+    
+    // Group the days into weeks (52 weeks * 7 days)
+    const weeks: WeekData[] = [];
+    for (let i = 0; i < contributionDays.length; i += 7) {
+      const weekDays = contributionDays.slice(i, i + 7);
+      weeks.push({
+        contributionDays: weekDays
+      });
     }
     
     setContributionData({
+      userName: username || "octocat",
       totalContributions,
+      contributionDays,
       weeks
     });
   };
@@ -244,7 +242,7 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
   
   // Get month labels based on contribution data
   const getMonthLabels = () => {
-    if (!contributionData?.weeks || contributionData.weeks.length === 0) {
+    if (!contributionData?.contributionDays || contributionData.contributionDays.length === 0) {
       return [];
     }
     
@@ -252,15 +250,13 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     const seenMonths = new Set<string>();
     
     // Process all dates to extract month names
-    contributionData.weeks.forEach(week => {
-      week.contributionDays.forEach(day => {
-        const date = new Date(day.date);
-        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
-        if (!seenMonths.has(monthName)) {
-          months.push(monthName);
-          seenMonths.add(monthName);
-        }
-      });
+    contributionData.contributionDays.forEach(day => {
+      const date = new Date(day.date);
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      if (!seenMonths.has(monthName)) {
+        months.push(monthName);
+        seenMonths.add(monthName);
+      }
     });
     
     // Ensure we only return a reasonable number of month labels
@@ -331,7 +327,7 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
           {Array.from({ length: 7 }).map((_, dayOfWeekIndex) => (
             <div key={dayOfWeekIndex} className="flex gap-1">
               {/* Map weeks data */}
-              {contributionData.weeks.map((week, weekIndex) => {
+              {contributionData.weeks?.map((week, weekIndex) => {
                 // Find the day entry for this day-of-week index
                 const day = week.contributionDays.find((_, i) => i === dayOfWeekIndex);
                 
@@ -347,7 +343,7 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
                         <div
                           className={cn(
                             "w-3 h-3 sm:w-3 sm:h-3 rounded-sm border border-opacity-10",
-                            getContributionColor(day.level)
+                            getContributionColor(day.level || 0)
                           )}
                         />
                       </TooltipTrigger>

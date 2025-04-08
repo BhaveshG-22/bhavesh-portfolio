@@ -2,6 +2,18 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Define response type matching the API format
+interface ContributionDay {
+  contributionCount: number;
+  date: string;
+}
+
+interface ApiResponse {
+  userName: string;
+  totalContributions: number;
+  contributionDays: ContributionDay[];
+}
+
 serve(async (req: Request) => {
   const url = new URL(req.url);
   const username = url.searchParams.get("username");
@@ -36,7 +48,7 @@ serve(async (req: Request) => {
       });
     }
     
-    const data = await response.json();
+    const data = await response.json() as ApiResponse;
     
     return new Response(JSON.stringify(data), {
       status: 200,
