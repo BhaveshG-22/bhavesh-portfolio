@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogIn, LogOut, Mail, BookOpen, FolderKanban } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Mail, BookOpen } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export interface HeaderProps {
@@ -51,26 +51,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
             </li>
             <li>
               <Link
-                to="/#projects"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
-                  activeSection === 'projects' ? 'text-primary' : ''
-                }`}
-              >
-                Projects
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/projects"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
-                  activeSection === 'projects-page' ? 'text-primary' : ''
-                }`}
-              >
-                All Projects
-              </Link>
-            </li>
-            <li>
-              <Link
                 to="/blog"
                 className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
                   activeSection === 'blog' ? 'text-primary' : ''
@@ -113,22 +93,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                   }`}
                 >
                   Home
-                </Link>
-                <Link
-                  to="/#projects"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${
-                    activeSection === 'projects' ? 'text-primary' : ''
-                  }`}
-                >
-                  Projects
-                </Link>
-                <Link
-                  to="/projects"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${
-                    activeSection === 'projects-page' ? 'text-primary' : ''
-                  }`}
-                >
-                  <FolderKanban className="h-4 w-4 mr-2 inline-block" /> All Projects
                 </Link>
                 <Link
                   to="/blog"
