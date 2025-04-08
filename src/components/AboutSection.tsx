@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Download, BookOpen, Briefcase, Award, Globe } from "lucide-react";
+import { Download, BookOpen, Briefcase, Award, Globe, Heart, Coffee, Clock, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -43,23 +43,23 @@ const AboutSection = () => {
             <div className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-white/10">
               <h3 className="text-xl font-semibold mb-4 flex items-center">
                 <Award className="w-5 h-5 mr-2 text-primary" />
-                <span className="text-gradient">Key Achievements</span>
+                <span className="text-gradient">Key Highlights</span>
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <Card className="bg-card/50 backdrop-blur-sm border border-white/10">
                   <CardContent className="p-4 flex flex-col items-center text-center">
                     <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">∞</span>
+                      <Heart className="h-5 w-5 text-primary" />
                     </div>
-                    <h4 className="font-medium text-sm">Years Experience</h4>
+                    <h4 className="font-medium text-sm">Passion for Code</h4>
                   </CardContent>
                 </Card>
                 <Card className="bg-card/50 backdrop-blur-sm border border-white/10">
                   <CardContent className="p-4 flex flex-col items-center text-center">
                     <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">50+</span>
+                      <Coffee className="h-5 w-5 text-primary" />
                     </div>
-                    <h4 className="font-medium text-sm">Projects Completed</h4>
+                    <h4 className="font-medium text-sm">Problem Solver</h4>
                   </CardContent>
                 </Card>
               </div>
@@ -92,36 +92,16 @@ const AboutSection = () => {
               </div>
             </div>
             
-            {/* Featured skills/expertise cards */}
+            {/* Personal traits and work approach */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-card/30 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all hover:border-primary/30 group">
                 <div className="flex items-center mb-3">
                   <div className="p-2 rounded-full bg-primary/10 mr-3 group-hover:bg-primary/20 transition-colors">
-                    <BookOpen className="h-5 w-5 text-primary" />
+                    <Clock className="h-5 w-5 text-primary" />
                   </div>
-                  <h4 className="font-semibold">Languages & Frameworks</h4>
+                  <h4 className="font-semibold">Work Approach</h4>
                 </div>
-                <p className="text-sm text-muted-foreground">Deep expertise in TypeScript, React, Node.js, and modern full-stack architectures.</p>
-              </div>
-              
-              <div className="bg-card/30 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all hover:border-primary/30 group">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 rounded-full bg-primary/10 mr-3 group-hover:bg-primary/20 transition-colors">
-                    <Briefcase className="h-5 w-5 text-primary" />
-                  </div>
-                  <h4 className="font-semibold">Industry Experience</h4>
-                </div>
-                <p className="text-sm text-muted-foreground">Worked with startups and established companies across diverse industries and sectors.</p>
-              </div>
-              
-              <div className="bg-card/30 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all hover:border-primary/30 group">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 rounded-full bg-primary/10 mr-3 group-hover:bg-primary/20 transition-colors">
-                    <Award className="h-5 w-5 text-primary" />
-                  </div>
-                  <h4 className="font-semibold">Best Practices</h4>
-                </div>
-                <p className="text-sm text-muted-foreground">Committed to clean code, accessibility, performance optimization, and responsive design.</p>
+                <p className="text-sm text-muted-foreground">Detail-oriented with a focus on code quality, performance, and maintainability.</p>
               </div>
               
               <div className="bg-card/30 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all hover:border-primary/30 group">
@@ -129,9 +109,29 @@ const AboutSection = () => {
                   <div className="p-2 rounded-full bg-primary/10 mr-3 group-hover:bg-primary/20 transition-colors">
                     <Globe className="h-5 w-5 text-primary" />
                   </div>
-                  <h4 className="font-semibold">Global Projects</h4>
+                  <h4 className="font-semibold">Remote Collaboration</h4>
                 </div>
-                <p className="text-sm text-muted-foreground">Successfully delivered solutions for international clients across multiple timezones.</p>
+                <p className="text-sm text-muted-foreground">Experienced in remote work with international teams across different time zones.</p>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all hover:border-primary/30 group">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 rounded-full bg-primary/10 mr-3 group-hover:bg-primary/20 transition-colors">
+                    <Star className="h-5 w-5 text-primary" />
+                  </div>
+                  <h4 className="font-semibold">Quality Focus</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">Committed to creating accessible, responsive, and user-friendly applications.</p>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm rounded-xl p-5 border border-white/10 transition-all hover:border-primary/30 group">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 rounded-full bg-primary/10 mr-3 group-hover:bg-primary/20 transition-colors">
+                    <Briefcase className="h-5 w-5 text-primary" />
+                  </div>
+                  <h4 className="font-semibold">Industry Focus</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">Experience in fintech, e-commerce, SaaS platforms, and content management systems.</p>
               </div>
             </div>
             
