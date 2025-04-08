@@ -7,10 +7,12 @@ import ProjectsSection from "@/components/ProjectsSection";
 import GithubSection from "@/components/GithubSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import ScrollProgressBar from "@/components/ScrollProgressBar";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <ScrollProgressBar />
       <Header activeSection="home" />
       <main className="pt-0">
         <HeroSection />
