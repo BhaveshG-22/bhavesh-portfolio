@@ -77,9 +77,7 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         const totalDays = 52 * 7;
         
         // Get the most recent 364 days
-        const mostRecentDays = processedDays.length > totalDays 
-          ? processedDays.slice(processedDays.length - totalDays) 
-          : processedDays;
+        const mostRecentDays = processedDays.slice(-totalDays); // Use the last 364 days
         
         // Group the days into weeks (for the last year)
         const weeks: WeekData[] = [];
@@ -134,37 +132,54 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     });
   };
   
-  // Get month labels based on the actual data we're displaying
+  // Generate accurate month labels based on the displayed data range
   const getMonthLabels = () => {
     if (!contributionData?.weeks || contributionData.weeks.length === 0) {
       return [];
     }
     
-    // Flatten all weeks to get individual days
-    const allDays = contributionData.weeks.flatMap(week => week.contributionDays);
+    // Get all days from the first and last weeks to determine the actual displayed date range
+    const firstWeek = contributionData.weeks[0];
+    const lastWeek = contributionData.weeks[contributionData.weeks.length - 1];
     
-    // For more accurate labeling, get data range that we're displaying
-    const startDate = new Date(allDays[0]?.date || '');
-    const endDate = new Date(allDays[allDays.length - 1]?.date || '');
+    if (!firstWeek || !lastWeek) return [];
     
-    // Create an array of all months between start and end date
-    const months = [];
+    const firstDay = firstWeek.contributionDays[0];
+    const lastDay = lastWeek.contributionDays[lastWeek.contributionDays.length - 1];
+    
+    if (!firstDay || !lastDay) return [];
+    
+    const startDate = new Date(firstDay.date);
+    const endDate = new Date(lastDay.date);
+    
+    // Calculate evenly distributed month labels across the graph
+    const monthLabels = [];
+    const totalColumns = contributionData.weeks.length;
+    const monthsSpan = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                       (endDate.getMonth() - startDate.getMonth()) + 1;
+    
+    // Create a temporary date to iterate through the months
     const currentDate = new Date(startDate);
-    
-    // Set to first day of month to ensure we get consistent monthly increments
-    currentDate.setDate(1);
+    currentDate.setDate(1); // Start at the beginning of the month
     
     while (currentDate <= endDate) {
-      const monthName = currentDate.toLocaleDateString('en-US', { month: 'short' });
-      months.push(monthName);
+      monthLabels.push({
+        month: currentDate.toLocaleDateString('en-US', { month: 'short' }),
+        position: (contributionData.weeks.length - 1) * 
+                  (currentDate.getTime() - startDate.getTime()) / 
+                  (endDate.getTime() - startDate.getTime())
+      });
       
-      // Move to next month
+      // Move to the next month
       currentDate.setMonth(currentDate.getMonth() + 1);
     }
     
-    // Return appropriate number of labels based on available space
-    // For a typical contribution graph, showing every other month works well
-    return months.filter((_, index) => index % 2 === 0);
+    // Ensure we don't show too many labels by filtering if needed
+    if (monthLabels.length > 6) {
+      return monthLabels.filter((_, index) => index % Math.ceil(monthLabels.length / 6) === 0);
+    }
+    
+    return monthLabels;
   };
   
   const handleContributionClick = (day: ContributionDay) => {
@@ -212,11 +227,15 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         </AlertDescription>
       </Alert>
       
-      {/* Month labels */}
-      <div className="flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-400">
-        {monthLabels.map((month, index) => (
-          <div key={index} className="text-center">
-            {month}
+      {/* Month labels - now positioned absolutely to align correctly with the graph */}
+      <div className="relative h-5 mb-1">
+        {monthLabels.map((labelData, index) => (
+          <div 
+            key={index} 
+            className="absolute text-xs text-gray-500 dark:text-gray-400 transform -translate-x-1/2"
+            style={{ left: `${(labelData.position / (contributionData.weeks?.length || 52)) * 100}%` }}
+          >
+            {labelData.month}
           </div>
         ))}
       </div>
