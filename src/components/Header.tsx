@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
-import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Mail, Github, Linkedin } from "lucide-react";
 
 export interface HeaderProps {
   activeSection?: string;
@@ -49,13 +49,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
             Home
           </Link>
           <Link 
-            to="/#projects" 
-            className={`hover:text-teal-400 ${activeSection === 'projects' ? 'text-teal-400' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            Projects
-          </Link>
-          <Link 
             to="/#about" 
             className={`hover:text-teal-400 ${activeSection === 'about' ? 'text-teal-400' : ''}`}
             onClick={toggleMobileMenu}
@@ -63,11 +56,18 @@ export const Header = ({ activeSection }: HeaderProps) => {
             About
           </Link>
           <Link 
-            to="/blog" 
-            className={`hover:text-teal-400 ${activeSection === 'blog' ? 'text-teal-400' : ''}`}
+            to="/#skills" 
+            className={`hover:text-teal-400 ${activeSection === 'skills' ? 'text-teal-400' : ''}`}
             onClick={toggleMobileMenu}
           >
-            Blog
+            Skills
+          </Link>
+          <Link 
+            to="/#projects" 
+            className={`hover:text-teal-400 ${activeSection === 'projects' ? 'text-teal-400' : ''}`}
+            onClick={toggleMobileMenu}
+          >
+            Projects
           </Link>
           <Link 
             to="/#contact" 
@@ -93,13 +93,13 @@ export const Header = ({ activeSection }: HeaderProps) => {
   };
 
   return (
-    <header className="fixed top-0 w-full z-30 bg-background/80 backdrop-blur-lg border-b">
+    <header className="fixed top-0 w-full z-30 bg-black/90 backdrop-blur-sm border-b border-white/5">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link 
           to="/" 
           className="font-bold text-xl flex items-center"
         >
-          <span className="text-teal-400">BhaveshG.dev</span>
+          <span className="text-teal-400">BhaveshG<span className="text-blue-400">.dev</span></span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -111,22 +111,22 @@ export const Header = ({ activeSection }: HeaderProps) => {
             Home
           </Link>
           <Link 
-            to="/#projects" 
-            className={`hover:text-teal-400 ${activeSection === 'projects' ? 'text-teal-400' : ''}`}
-          >
-            Projects
-          </Link>
-          <Link 
             to="/#about" 
             className={`hover:text-teal-400 ${activeSection === 'about' ? 'text-teal-400' : ''}`}
           >
             About
           </Link>
           <Link 
-            to="/blog" 
-            className={`hover:text-teal-400 ${activeSection === 'blog' ? 'text-teal-400' : ''}`}
+            to="/#skills" 
+            className={`hover:text-teal-400 ${activeSection === 'skills' ? 'text-teal-400' : ''}`}
           >
-            Blog
+            Skills
+          </Link>
+          <Link 
+            to="/#projects" 
+            className={`hover:text-teal-400 ${activeSection === 'projects' ? 'text-teal-400' : ''}`}
+          >
+            Projects
           </Link>
           <Link 
             to="/#contact" 
@@ -138,24 +138,19 @@ export const Header = ({ activeSection }: HeaderProps) => {
 
         {/* Right side buttons */}
         <div className="flex items-center space-x-2">
-          {/* Admin login button for desktop */}
-          {!isMobile && (
-            <>
-              {user ? (
-                <Button variant="destructive" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" /> Logout
-                </Button>
-              ) : (
-                <Link to="/login">
-                  <Button size="sm">
-                    <LogIn className="h-4 w-4 mr-2" /> Admin Login
-                  </Button>
-                </Link>
-              )}
-            </>
-          )}
-          
           <ThemeToggle />
+          
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex" aria-label="Github">
+            <Github className="h-5 w-5" />
+          </Button>
+          
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex" aria-label="LinkedIn">
+            <Linkedin className="h-5 w-5" />
+          </Button>
+          
+          <Button variant="outline" size="sm" className="hidden md:inline-flex">
+            <Mail className="h-4 w-4 mr-2" /> Contact Me
+          </Button>
           
           {/* Mobile menu toggle */}
           <Button 
