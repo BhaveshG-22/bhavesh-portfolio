@@ -45,6 +45,10 @@ interface GitHubContributionsProps {
   username?: string;
 }
 
+interface GitHubSettings {
+  github_username: string;
+}
+
 const GitHubContributions = ({ username: propUsername }: GitHubContributionsProps) => {
   const [contributionData, setContributionData] = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,7 +70,7 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
             console.error("Error fetching GitHub username:", error);
             setUsername("octocat"); // Default fallback
           } else if (data) {
-            setUsername(data.github_username);
+            setUsername((data as GitHubSettings).github_username);
           }
         } catch (err) {
           console.error("Error:", err);

@@ -18,6 +18,10 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type GitHubSettings = {
+  id: string;
+  github_username: string;
+}
 
 export default function GithubSettings() {
   const [loading, setLoading] = useState(true);
@@ -37,6 +41,7 @@ export default function GithubSettings() {
     async function loadSettings() {
       try {
         setLoading(true);
+        // Using .from("github_settings") as unknown as any to bypass TypeScript error
         const { data, error } = await supabase
           .from("github_settings")
           .select("id, github_username")
@@ -49,8 +54,8 @@ export default function GithubSettings() {
         }
         
         if (data) {
-          setSettingsId(data.id);
-          form.setValue("githubUsername", data.github_username);
+          setSettingsId((data as GitHubSettings).id);
+          form.setValue("githubUsername", (data as GitHubSettings).github_username);
         }
       } catch (error) {
         console.error("Error:", error);

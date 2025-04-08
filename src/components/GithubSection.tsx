@@ -19,7 +19,8 @@ const GithubSection = () => {
         if (error) {
           console.error("Error fetching GitHub username:", error);
         } else if (data) {
-          setGithubUsername(data.github_username);
+          // Cast data to have the github_username property
+          setGithubUsername((data as { github_username: string }).github_username);
         }
       } catch (err) {
         console.error("Error:", err);
