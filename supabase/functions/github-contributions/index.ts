@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -355,4 +356,70 @@ const mockData: ApiResponse = {
     { contributionCount: 1, date: "2025-02-28" },
     { contributionCount: 4, date: "2025-03-01" },
     { contributionCount: 3, date: "2025-03-02" },
-    { contributionCount: 8,
+    { contributionCount: 8, date: "2025-03-03" },
+    { contributionCount: 28, date: "2025-03-04" },
+    { contributionCount: 7, date: "2025-03-05" },
+    { contributionCount: 2, date: "2025-03-06" },
+    { contributionCount: 2, date: "2025-03-07" },
+    { contributionCount: 2, date: "2025-03-08" },
+    { contributionCount: 5, date: "2025-03-09" },
+    { contributionCount: 11, date: "2025-03-10" },
+    { contributionCount: 8, date: "2025-03-11" },
+    { contributionCount: 1, date: "2025-03-12" },
+    { contributionCount: 0, date: "2025-03-13" },
+    { contributionCount: 0, date: "2025-03-14" },
+    { contributionCount: 1, date: "2025-03-15" },
+    { contributionCount: 1, date: "2025-03-16" },
+    { contributionCount: 0, date: "2025-03-17" },
+    { contributionCount: 5, date: "2025-03-18" },
+    { contributionCount: 1, date: "2025-03-19" },
+    { contributionCount: 2, date: "2025-03-20" },
+    { contributionCount: 2, date: "2025-03-21" },
+    { contributionCount: 9, date: "2025-03-22" },
+    { contributionCount: 0, date: "2025-03-23" },
+    { contributionCount: 0, date: "2025-03-24" },
+    { contributionCount: 0, date: "2025-03-25" },
+    { contributionCount: 0, date: "2025-03-26" },
+    { contributionCount: 3, date: "2025-03-27" },
+    { contributionCount: 1, date: "2025-03-28" },
+    { contributionCount: 0, date: "2025-03-29" },
+    { contributionCount: 0, date: "2025-03-30" },
+    { contributionCount: 2, date: "2025-03-31" },
+    { contributionCount: 0, date: "2025-04-01" },
+    { contributionCount: 0, date: "2025-04-02" },
+    { contributionCount: 1, date: "2025-04-03" },
+    { contributionCount: 2, date: "2025-04-04" },
+    { contributionCount: 1, date: "2025-04-05" },
+    { contributionCount: 1, date: "2025-04-06" },
+    { contributionCount: 0, date: "2025-04-07" },
+    { contributionCount: 1, date: "2025-04-08" }
+  ]
+};
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // Return mock data
+    return new Response(JSON.stringify(mockData), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+      },
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error in GitHub contributions function:", error);
+    
+    return new Response(JSON.stringify({ error: "Failed to fetch GitHub contributions" }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+      },
+      status: 500,
+    });
+  }
+});
