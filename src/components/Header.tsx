@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogIn, LogOut, Mail, Github, Linkedin, BookOpen, FolderKanban } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Mail, BookOpen, FolderKanban } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export interface HeaderProps {
@@ -73,18 +73,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
             </li>
           </ul>
           <div className="flex items-center gap-2">
-            <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-white/10">
-                <Github className="h-5 w-5" />
-              </Button>
-            </a>
-            
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-white/10">
-                <Linkedin className="h-5 w-5" />
-              </Button>
-            </a>
-            
             <Link to="/#contact">
               <Button size="default" className="h-10">
                 <Mail className="h-4 w-4 mr-2" />
@@ -145,19 +133,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
               </nav>
               
               <div className="flex flex-col gap-4 mt-8">
-                <div className="flex gap-2">
-                  <a href="https://github.com" target="_blank" rel="noreferrer">
-                    <Button variant="ghost" size="icon">
-                      <Github className="h-5 w-5" />
-                    </Button>
-                  </a>
-                  <a href="https://linkedin.com" target="_blank" rel="noreferrer">
-                    <Button variant="ghost" size="icon">
-                      <Linkedin className="h-5 w-5" />
-                    </Button>
-                  </a>
-                </div>
-                
                 <Link to="/#contact">
                   <Button className="w-full">
                     <Mail className="h-4 w-4 mr-2" />
