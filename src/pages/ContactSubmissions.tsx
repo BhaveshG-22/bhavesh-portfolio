@@ -16,13 +16,14 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { 
   SidebarProvider, 
   SidebarInset,
   SidebarTrigger 
 } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/AdminSidebar";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Define type for contact submission that matches the database schema
 type ContactSubmission = {
@@ -38,11 +39,13 @@ type ContactSubmission = {
 const ContactSubmissions = () => {
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { isAdmin } = useAuth();
 
   useEffect(() => {
     const fetchSubmissions = async () => {
       setLoading(true);
+      setError(null);
       try {
         console.log("Fetching contact submissions...");
         
@@ -54,6 +57,7 @@ const ContactSubmissions = () => {
 
         if (error) {
           console.error("Supabase error:", error);
+          setError(`Database error: ${error.message}`);
           throw error;
         }
         
@@ -75,11 +79,14 @@ const ContactSubmissions = () => {
           }
         } else {
           console.warn("No submissions data or invalid format received:", data);
+          setError("Received invalid data format from database");
           setSubmissions([]);
         }
       } catch (error: any) {
-        toast.error(`Failed to fetch submissions: ${error.message}`);
-        console.error("Error fetching submissions:", error);
+        const errorMsg = `Failed to fetch submissions: ${error.message}`;
+        console.error(errorMsg, error);
+        setError(errorMsg);
+        toast.error(errorMsg);
         setSubmissions([]);
       } finally {
         setLoading(false);
@@ -93,6 +100,7 @@ const ContactSubmissions = () => {
   const refreshSubmissions = () => {
     console.log("Manual refresh triggered");
     setLoading(true);
+    setError(null);
     // Re-fetch data by triggering effect
     setSubmissions([]);
     
@@ -107,16 +115,20 @@ const ContactSubmissions = () => {
   
           if (error) {
             console.error("Manual refresh error:", error);
+            setError(`Database error during refresh: ${error.message}`);
             throw error;
           }
           
           console.log("Manual refresh received:", data);
           if (data) {
             setSubmissions(data as ContactSubmission[]);
+            toast.success(`Refreshed: Found ${data.length} submissions`);
           }
         } catch (error: any) {
+          const errorMsg = `Refresh failed: ${error.message}`;
           console.error("Manual refresh failed:", error);
-          toast.error(`Refresh failed: ${error.message}`);
+          setError(errorMsg);
+          toast.error(errorMsg);
         } finally {
           setLoading(false);
         }
@@ -133,7 +145,10 @@ const ContactSubmissions = () => {
         .update({ status })
         .eq("id", id);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Status update error:", error);
+        throw error;
+      }
       
       // Update local state to reflect the change
       setSubmissions(submissions.map(sub => 
@@ -171,6 +186,16 @@ const ContactSubmissions = () => {
               </div>
               <Separator className="mb-8" />
 
+              {error && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {error}. Please try refreshing the data or check your database connection.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin mr-2" />
@@ -180,11 +205,20 @@ const ContactSubmissions = () => {
                 <div className="text-center py-12 bg-muted rounded-lg">
                   <p className="text-muted-foreground">No contact form submissions found.</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    If you've submitted forms, there might be a connection issue.
+                    If you've submitted forms, there might be a connection issue or permissions problem.
                   </p>
-                  <Button onClick={refreshSubmissions} variant="outline" size="sm" className="mt-4">
-                    Try Refreshing
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+                    <Button onClick={refreshSubmissions} variant="outline" size="sm">
+                      Try Refreshing
+                    </Button>
+                    <Button 
+                      onClick={() => toast.info("Checking permissions status...")}
+                      variant="secondary" 
+                      size="sm"
+                    >
+                      Check Permissions
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <div className="rounded-lg border shadow-sm overflow-hidden bg-card">
