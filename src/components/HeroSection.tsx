@@ -1,4 +1,3 @@
-
 // AlternativeHeroSection.tsx with enhanced terminal
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -1057,19 +1056,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             }, [
               createElement("div", { key: "line-1", className: "text-blue-400" }, "ready - started server on 0.0.0.0:3000"),
               createElement("div", { key: "line-2" }, "event - compiled client and server successfully in 248 ms (17 modules)"),
-              createElement("div", { key: "line-3", className: "text-green-500" }, "✓ Ready in 352ms"),
-              createElement("div", { 
-                key: "line-4", 
-                className: "mt-2 text-white"  
-              }, "You can now view my-portfolio in the browser:"),
-              createElement("div", { 
-                key: "line-5", 
-                className: "ml-4 text-cyan-400 underline cursor-pointer hover:text-cyan-300 transition-colors",
-                onClick: () => {
-                  setCurrentTab("terminal");
-                  processCommand("about");
-                }
-              }, "http://localhost:3000/")
+              createElement("div", { key: "line-3", className: "text-green-500" }, "✓ Ready in 352ms")
             ]),
             createElement("div", {
               key: "preview-stats",
