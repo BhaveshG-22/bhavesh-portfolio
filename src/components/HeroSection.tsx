@@ -16,10 +16,8 @@ import {
   Play,
   X,
   CheckCircle2,
-  Folder,
   RefreshCw,
   HelpCircle,
-  Search,
   Coffee
 } from "lucide-react";
 
@@ -661,14 +659,6 @@ Twitter: @developer`
         }, [
           createElement(Play, { key: "icon", className: "w-3.5 h-3.5" }),
           "Output"
-        ]),
-        createElement("div", {
-          key: "tab-files",
-          className: `terminal-tab ${currentTab === "files" ? "active" : ""}`,
-          onClick: () => setCurrentTab("files")
-        }, [
-          createElement(Folder, { key: "icon", className: "w-3.5 h-3.5" }),
-          "Files"
         ])
       ]),
       
@@ -707,8 +697,7 @@ Twitter: @developer`
             className: "w-3 h-3 rounded-full bg-green-500 relative group cursor-pointer transition-all hover:brightness-110",
             title: "Expand",
             onClick: () => {
-              setCurrentTab(prev => prev === "files" ? "terminal" : 
-                           prev === "terminal" ? "output" : "files");
+              setCurrentTab(prev => prev === "terminal" ? "output" : "terminal");
             }
           }, [
             createElement(CheckCircle2, { 
@@ -860,7 +849,7 @@ Twitter: @developer`
                 !isTyping && createElement(BlinkingCursor, { key: "cursor" })
               ])
           ])
-        ] : currentTab === "output" ? [
+        ] : [
           // Output tab content
           createElement("div", {
             key: "output-preview",
@@ -959,105 +948,6 @@ Twitter: @developer`
               }, "Updated just now")
             ])
           ])
-        ] : [
-          // Files tab content
-          createElement("div", {
-            key: "files-explorer",
-            className: "text-sm text-gray-300 bg-gray-900/50 p-2 rounded-md border border-gray-800/50 h-full"
-          }, [
-            createElement("div", {
-              key: "search-bar",
-              className: "bg-black/60 rounded border border-gray-800 flex items-center px-2 mb-3"
-            }, [
-              createElement(Search, { key: "search-icon", className: "w-3.5 h-3.5 text-gray-500 mr-2" }),
-              createElement("input", {
-                key: "search-input",
-                type: "text",
-                placeholder: "Search files...",
-                className: "bg-transparent py-1.5 text-xs w-full outline-none border-none"
-              })
-            ]),
-            createElement("div", {
-              key: "files-structure",
-              className: "flex flex-col"
-            }, [
-              createElement("div", {
-                key: "folder-section-1",
-                className: "mb-2"
-              }, [
-                createElement("div", {
-                  key: "folder-1",
-                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer"
-                }, [
-                  createElement(Folder, { key: "icon", className: "w-3.5 h-3.5 text-blue-400 mr-1.5" }),
-                  createElement("span", { key: "name", className: "text-xs" }, "src")
-                ]),
-                // Subfolder content
-                createElement("div", {
-                  key: "subfolder-1",
-                  className: "pl-4"
-                }, [
-                  createElement("div", {
-                    key: "subfolder-1-1",
-                    className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer"
-                  }, [
-                    createElement(Folder, { key: "icon", className: "w-3.5 h-3.5 text-blue-400 mr-1.5" }),
-                    createElement("span", { key: "name", className: "text-xs" }, "components")
-                  ]),
-                  createElement("div", {
-                    key: "file-1",
-                    className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer",
-                    onClick: () => {
-                      setCurrentTab("terminal");
-                      processCommand("help");
-                    }
-                  }, [
-                    createElement(Code2, { key: "icon", className: "w-3.5 h-3.5 text-teal-500 mr-1.5" }),
-                    createElement("span", { key: "name", className: "text-xs" }, "HeroSection.tsx")
-                  ])
-                ])
-              ]),
-              createElement("div", {
-                key: "folder-section-2",
-                className: "mb-2"
-              }, [
-                createElement("div", {
-                  key: "folder-2",
-                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer"
-                }, [
-                  createElement(Folder, { key: "icon", className: "w-3.5 h-3.5 text-blue-400 mr-1.5" }),
-                  createElement("span", { key: "name", className: "text-xs" }, "pages")
-                ])
-              ]),
-              createElement("div", {
-                key: "file-section",
-                className: "mb-2"
-              }, [
-                createElement("div", {
-                  key: "file-3",
-                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer",
-                  onClick: () => {
-                    setCurrentTab("terminal");
-                    processCommand("projects");
-                  }
-                }, [
-                  createElement(Code2, { key: "icon", className: "w-3.5 h-3.5 text-cyan-500 mr-1.5" }),
-                  createElement("span", { key: "name", className: "text-xs" }, "projects.json")
-                ]),
-                createElement("div", {
-                  key: "file-4",
-                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer",
-                  onClick: () => {
-                    setCurrentTab("terminal");
-                    processCommand("skills");
-                  }
-                }, [
-                  createElement(Code2, { key: "icon", className: "w-3.5 h-3.5 text-yellow-500 mr-1.5" }),
-                  createElement("span", { key: "name", className: "text-xs" }, "skills.js")
-                ])
-              ])
-            ])
-          ]) 
         ]
       ])
     ]);
@@ -1245,3 +1135,4 @@ Twitter: @developer`
 };
 
 export default AlternativeHeroSection;
+
