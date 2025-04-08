@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Loader2 } from "lucide-react";
 import { Project, fetchVisibleProjects, fetchCategories } from "@/services/projectService";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Projects = () => {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -43,7 +45,7 @@ const Projects = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header activeSection="projects" />
-      <main className="flex-grow pt-24 pb-16">
+      <main className="flex-grow pt-24 pb-16 bg-background">
         <section className="max-container px-4">
           <div className="mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-light">Projects Portfolio</h1>
@@ -55,18 +57,8 @@ const Projects = () => {
 
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((item) => (
-                <Card key={item} className="border border-border/40 bg-card/30 backdrop-blur-sm">
-                  <div className="h-48 bg-gray-800 animate-pulse rounded-t-lg" />
-                  <CardHeader>
-                    <div className="h-6 w-3/4 bg-gray-800 animate-pulse rounded" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-4 w-full bg-gray-800 animate-pulse rounded mb-2" />
-                    <div className="h-4 w-5/6 bg-gray-800 animate-pulse rounded mb-4" />
-                    <div className="h-8 w-1/3 bg-gray-800 animate-pulse rounded" />
-                  </CardContent>
-                </Card>
+              {Array(6).fill(0).map((_, index) => (
+                <ProjectCardSkeleton key={index} />
               ))}
             </div>
           ) : (
@@ -76,7 +68,7 @@ const Projects = () => {
                   <Button
                     key={category}
                     onClick={() => setActiveCategory(category)}
-                    variant={activeCategory.toLowerCase() === category.toLowerCase() ? "secondary" : "ghost"}
+                    variant={activeCategory.toLowerCase() === category.toLowerCase() ? "secondary" : "outline"}
                     className="text-sm"
                   >
                     {category === "all" ? "All Projects" : category}
@@ -85,7 +77,7 @@ const Projects = () => {
               </div>
               
               {filteredProjects.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-muted-foreground bg-card/30 rounded-lg border border-border/40 backdrop-blur-sm p-8">
                   No projects in this category yet.
                 </div>
               ) : (
@@ -106,7 +98,7 @@ const Projects = () => {
 
 const ProjectCard = ({ project }: { project: Project }) => {
   return (
-    <Card className="flex flex-col border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden hover:border-primary/20 transition-all duration-300">
+    <Card className="flex flex-col border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden hover:border-primary/20 transition-all duration-300 h-full">
       <div className="h-48 w-full overflow-hidden">
         <img
           src={project.image}
@@ -116,50 +108,76 @@ const ProjectCard = ({ project }: { project: Project }) => {
       </div>
       
       <CardHeader>
-        <CardTitle className="text-xl">{project.title}</CardTitle>
+        <CardTitle className="text-xl text-foreground">{project.title}</CardTitle>
         <div className="flex flex-wrap gap-2 mt-2">
-          {project.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+          {project.tags && project.tags.slice(0, 3).map((tag) => (
+            <Badge key={tag} variant="outline" className="bg-primary/10 text-primary border-primary/20">
               {tag}
-            </span>
+            </Badge>
           ))}
-          {project.tags.length > 3 && (
-            <span className="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">
+          {project.tags && project.tags.length > 3 && (
+            <Badge variant="outline" className="bg-secondary/20 text-secondary border-secondary/30">
               +{project.tags.length - 3}
-            </span>
+            </Badge>
           )}
         </div>
       </CardHeader>
       
-      <CardContent className="flex-grow">
+      <CardContent className="flex flex-col flex-grow">
         <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
           {project.description}
         </p>
         
-        <div className="flex gap-4 mt-2">
-          <a 
-            href={project.demo} 
-            target="_blank" 
-            rel="noreferrer"
-            className="inline-flex items-center text-sm text-primary hover:underline"
-          >
-            <span>Live Demo</span>
-            <ExternalLink className="ml-1 h-3.5 w-3.5" />
-          </a>
+        <div className="flex gap-4 mt-auto pt-4">
+          {project.demo && (
+            <a 
+              href={project.demo} 
+              target="_blank" 
+              rel="noreferrer"
+              className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
+            >
+              <span>Live Demo</span>
+              <ExternalLink className="ml-1 h-3.5 w-3.5" />
+            </a>
+          )}
           
-          <a 
-            href={project.github} 
-            target="_blank" 
-            rel="noreferrer"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
-          >
-            <Github className="mr-1 h-3.5 w-3.5" />
-            <span>Code</span>
-          </a>
+          {project.github && (
+            <a 
+              href={project.github} 
+              target="_blank" 
+              rel="noreferrer"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Github className="mr-1 h-3.5 w-3.5" />
+              <span>Code</span>
+            </a>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 };
+
+const ProjectCardSkeleton = () => (
+  <Card className="border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden h-full">
+    <Skeleton className="h-48 w-full bg-muted/50" />
+    <CardHeader>
+      <Skeleton className="h-6 w-3/4 bg-muted/50 mb-2" />
+      <div className="flex gap-2">
+        <Skeleton className="h-5 w-16 bg-muted/50 rounded-full" />
+        <Skeleton className="h-5 w-16 bg-muted/50 rounded-full" />
+      </div>
+    </CardHeader>
+    <CardContent>
+      <Skeleton className="h-4 w-full bg-muted/50 mb-2" />
+      <Skeleton className="h-4 w-5/6 bg-muted/50 mb-2" />
+      <Skeleton className="h-4 w-4/6 bg-muted/50 mb-6" />
+      <div className="flex gap-4">
+        <Skeleton className="h-5 w-20 bg-muted/50" />
+        <Skeleton className="h-5 w-16 bg-muted/50" />
+      </div>
+    </CardContent>
+  </Card>
+);
 
 export default Projects;
