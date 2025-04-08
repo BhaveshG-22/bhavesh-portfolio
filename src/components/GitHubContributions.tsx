@@ -91,7 +91,6 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            // No auth needed as the function handles public access
           }
         });
         
@@ -99,13 +98,6 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
           const errorText = await response.text();
           console.error(`Error response (${response.status}):`, errorText);
           throw new Error(`Error fetching GitHub contributions: ${response.status}`);
-        }
-        
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const text = await response.text();
-          console.error('Non-JSON response:', text.substring(0, 200));
-          throw new Error('Invalid response format');
         }
         
         const data = await response.json() as ContributionData;

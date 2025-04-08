@@ -106,6 +106,22 @@ serve(async (req: Request) => {
     
     const data = await response.json() as ApiResponse;
     
+    // Verify the expected structure of the response
+    if (!data || !data.userName || !Array.isArray(data.contributionDays)) {
+      console.error("Invalid API response format:", data);
+      
+      // Generate fallback data
+      const fallbackData = generateFallbackData(username);
+      
+      return new Response(JSON.stringify({
+        ...fallbackData,
+        error: "Invalid API response format, using simulated data",
+      }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+    
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: corsHeaders,
