@@ -740,8 +740,7 @@ const SecretProjectAdd = () => {
                   <ul className="divide-y divide-gray-700">
                     {categories.map((category) => (
                       <li key={category} className="flex items-center justify-between p-3">
-                        {/* <span className="capitalize">{category}</span> */}
-                        <span className="">{category}</span>
+                        <span>{category}</span>
                         {category !== "all" && (
                           <Button
                             variant="ghost"
