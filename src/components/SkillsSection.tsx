@@ -75,13 +75,12 @@ const SkillsSection = () => {
 
         {/* Tech stack sliders - with responsive design */}
         <div className="mb-8 md:mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-3 md:p-4">
-
           <TechStackSlider 
             direction="ltr" 
             speed={isMobile ? "slow" : "medium"} 
             items={frontendTech} 
             variant={isMobile ? "minimal" : "default"}
-          />          
+          />
           
           <TechStackSlider 
             direction="rtl" 
@@ -89,7 +88,6 @@ const SkillsSection = () => {
             items={backendTech} 
             variant={isMobile ? "minimal" : "default"}
           />
-
         </div>
       </div>
     </section>

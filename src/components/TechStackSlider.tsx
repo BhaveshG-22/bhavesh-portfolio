@@ -249,14 +249,14 @@ const TechStackSlider = ({
       <div
         ref={sliderRef}
         className={`
-          flex flex-wrap md:flex-nowrap items-center justify-center gap-1 md:gap-0
+          flex items-center gap-2
           ${duplicatedItems.length > items.length ? (direction === "ltr" ? "animate-marquee" : "animate-marquee-reverse") : ""}
           ${isHovered || !autoplay ? "paused" : "running"}
         `}
         style={{ 
           animationDuration: ANIMATION_DURATIONS[mobileAdjustedSpeed], 
           width: "fit-content",
-          paddingLeft: isMobile ? '0.5rem' : '0'
+          flexWrap: "nowrap"
         }}
       >
         {duplicatedItems.map((item, index) => {
