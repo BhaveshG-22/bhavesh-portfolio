@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
-import { Menu, X, LogIn, LogOut, Mail, Github, Linkedin, BookOpen } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Mail, Github, Linkedin, BookOpen, FolderKanban } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export interface HeaderProps {
@@ -70,6 +70,16 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 }`}
               >
                 Projects
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/projects"
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
+                  activeSection === 'projects-page' ? 'text-primary' : ''
+                }`}
+              >
+                All Projects
               </Link>
             </li>
             <li>
@@ -166,6 +176,14 @@ export const Header = ({ activeSection }: HeaderProps) => {
                   }`}
                 >
                   Projects
+                </Link>
+                <Link
+                  to="/projects"
+                  className={`text-lg font-medium hover:text-primary transition-colors ${
+                    activeSection === 'projects-page' ? 'text-primary' : ''
+                  }`}
+                >
+                  <FolderKanban className="h-4 w-4 mr-2 inline-block" /> All Projects
                 </Link>
                 <Link
                   to="/blog"

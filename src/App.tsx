@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SecretProjectAdd from "./pages/SecretProjectAdd";
 import Blog from "./pages/Blog";
+import Projects from "./pages/Projects";
 import SecretBlogAdd from "./pages/SecretBlogAdd";
 import Login from "./pages/Login";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/login" element={<Login />} />
               <Route 
                 path="/secret-project-add" 
