@@ -57,11 +57,11 @@ serve(async (req: Request) => {
       });
     }
     
-    // Call the external contributions API
-    const contributionsApiUrl = `https://54p3k92j7i.execute-api.us-east-1.amazonaws.com/api/contributions?username=${username}${githubToken ? `&token=${githubToken}` : ''}`;
+    // Hard-coded contributions API URL with provided token
+    const contributionsApiUrl = "https://54p3k92j7i.execute-api.us-east-1.amazonaws.com/api/contributions?username=hkirat&token=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";
     
     // Log the API URL for debugging (without the token)
-    console.log(`Calling GitHub contributions API for user ${username}`);
+    console.log(`Calling GitHub contributions API with URL: ${contributionsApiUrl}`);
     
     const response = await fetch(contributionsApiUrl);
     const contentType = response.headers.get('content-type');
