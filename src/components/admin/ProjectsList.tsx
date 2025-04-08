@@ -36,8 +36,8 @@ const ProjectsList = () => {
     }
   };
 
-  // Changed to accept string type for ID to match what's coming from the project.id
-  const handleDeleteProject = async (id: string) => {
+  // Updated to accept either string or number type for ID to match what's coming from the database
+  const handleDeleteProject = async (id: string | number) => {
     try {
       const { error } = await supabase
         .from('projects')

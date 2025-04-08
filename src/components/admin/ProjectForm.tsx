@@ -32,9 +32,21 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
     setIsSubmitting(true);
 
     try {
+      // Mapping form fields to match database column names
+      const projectData = {
+        title,
+        description,
+        // Map link to demo/github fields based on the database schema
+        demo: link,
+        github: link,
+        image: imageUrl,
+        category,
+        tags: [] // Empty array for tags as required by schema
+      };
+
       const { error } = await supabase
-        .from('projects' as any)
-        .insert([{ title, description, link, image_url: imageUrl, category }]);
+        .from('projects')
+        .insert([projectData]);
 
       if (error) throw error;
 
@@ -108,6 +120,9 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="frontend">Frontend</SelectItem>
+              <SelectItem value="backend">Backend</SelectItem>
+              <SelectItem value="fullstack">Fullstack</SelectItem>
               <SelectItem value="Web Development">Web Development</SelectItem>
               <SelectItem value="Mobile App Development">Mobile App Development</SelectItem>
               <SelectItem value="Data Science">Data Science</SelectItem>

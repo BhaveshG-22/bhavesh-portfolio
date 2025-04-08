@@ -15,7 +15,7 @@ import ProjectsList from "@/components/admin/ProjectsList";
 const SecretProjectAdd = () => {
   const { isAdmin } = useAuth();
 
-  // Fix: Returning a Promise<void> as required
+  // Fix: Properly implemented as an async function returning Promise<void>
   const handleProjectAdded = async (): Promise<void> => {
     // This is just a placeholder function that returns a resolved promise
     return Promise.resolve();
@@ -31,7 +31,7 @@ const SecretProjectAdd = () => {
         <Header activeSection="admin" />
         
         <div className="flex flex-1">
-          {/* Remove the pt-16 to prevent pushing content down too much */}
+          {/* Sidebar positioning */}
           <div className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-10">
             <AdminSidebar />
           </div>
