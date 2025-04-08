@@ -1,3 +1,4 @@
+
 // AlternativeHeroSection.tsx with enhanced terminal
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,12 @@ import {
   Terminal,
   Play,
   X,
-  CheckCircle2
+  CheckCircle2,
+  Folder,
+  RefreshCw,
+  HelpCircle,
+  Search,
+  Coffee
 } from "lucide-react";
 
 // Helper function to create element with custom props
@@ -79,7 +85,105 @@ const AlternativeHeroSection = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [terminalHistory, setTerminalHistory] = useState([]);
   const [currentTab, setCurrentTab] = useState("terminal");
+  const [userInput, setUserInput] = useState("");
+  const [allowUserInput, setAllowUserInput] = useState(false);
+  const [showCoffeeBreak, setShowCoffeeBreak] = useState(false);
+  const inputRef = useRef(null);
+  const terminalRef = useRef(null);
   const heroRef = useRef(null);
+  
+  // Available terminal commands
+  const commands = {
+    help: () => ({
+      type: "response",
+      content: `Available commands:
+- help: Show this help message
+- clear: Clear terminal history
+- projects: View my projects
+- skills: List my skills
+- about: About me
+- contact: Contact information
+- github: Visit my GitHub profile
+- coffee: Take a coffee break`
+    }),
+    clear: () => {
+      setTerminalHistory([]);
+      return null;
+    },
+    projects: () => ({
+      type: "response",
+      content: `My latest projects:
+1. E-commerce Dashboard - React/NextJS
+2. Mobile Banking App - React Native
+3. Real-time Chat Application - Socket.io/Express
+4. Portfolio Website - You're looking at it!`
+    }),
+    skills: () => ({
+      type: "response",
+      content: `My technical skills:
+- Frontend: React, Next.js, TypeScript, Tailwind CSS
+- Backend: Node.js, Express, FastAPI, Django
+- Database: PostgreSQL, MongoDB, Supabase
+- DevOps: Docker, AWS, Vercel`
+    }),
+    about: () => ({
+      type: "response",
+      content: `Hi, I'm a Full Stack Developer passionate about creating exceptional digital experiences. I specialize in React, TypeScript, and modern backend technologies.`
+    }),
+    contact: () => ({
+      type: "response",
+      content: `Email: developer@example.com
+LinkedIn: linkedin.com/in/developer
+Twitter: @developer`
+    }),
+    github: () => {
+      window.open("https://github.com", "_blank");
+      return {
+        type: "response",
+        content: "Opening GitHub profile..."
+      };
+    },
+    coffee: () => {
+      setShowCoffeeBreak(true);
+      setTimeout(() => setShowCoffeeBreak(false), 5000);
+      return {
+        type: "response",
+        content: "☕ Taking a short coffee break... ☕"
+      };
+    },
+    unknown: (cmd) => ({
+      type: "response",
+      content: `Command not found: ${cmd}. Type 'help' for available commands.`
+    })
+  };
+
+  // Process user input command
+  const processCommand = (cmd) => {
+    const trimmedCmd = cmd.trim().toLowerCase();
+    const commandFn = commands[trimmedCmd] || commands.unknown;
+    
+    // Add command to history
+    setTerminalHistory(prev => [
+      ...prev,
+      { 
+        type: "command", 
+        content: cmd,
+        timestamp: new Date().toLocaleTimeString()
+      }
+    ]);
+    
+    // Process command and get response
+    const response = commandFn(trimmedCmd);
+    
+    // If there's a response, add it to history after a slight delay for realism
+    if (response) {
+      setTimeout(() => {
+        setTerminalHistory(prev => [...prev, { ...response, timestamp: new Date().toLocaleTimeString() }]);
+      }, 300);
+    }
+    
+    setUserInput("");
+  };
   
   // Custom hooks for animations
   useEffect(() => {
@@ -107,18 +211,16 @@ const AlternativeHeroSection = () => {
   // Terminal animation sequence
   useEffect(() => {
     if (isLoaded) {
-      const commands = [
+      const initialCommands = [
         { text: "npm install", delay: 800 },
         { text: "npx create-next-app@latest my-portfolio --typescript", delay: 2500 },
         { text: "cd my-portfolio", delay: 1000 },
-        { text: "npm run dev -- --turbo", delay: 1500 },
-        { text: "git add . && git commit -m \"Initial commit\"", delay: 2000 },
-        { text: "git push origin main", delay: 1500 }
+        { text: "npm run dev -- --turbo", delay: 1500 }
       ];
       
       let totalDelay = 1000;
       
-      commands.forEach((cmd, index) => {
+      initialCommands.forEach((cmd, index) => {
         // Start typing animation
         setTimeout(() => {
           setIsTyping(true);
@@ -160,6 +262,24 @@ const AlternativeHeroSection = () => {
                   }
                 ]);
                 setTerminalCommand("");
+                
+                // Enable user input after initial animation sequence
+                if (index === initialCommands.length - 1) {
+                  setTimeout(() => {
+                    setTerminalHistory(prev => [
+                      ...prev,
+                      { 
+                        type: "response", 
+                        content: "Type 'help' to see available commands.",
+                        timestamp: new Date().toLocaleTimeString()
+                      }
+                    ]);
+                    setAllowUserInput(true);
+                    if (inputRef.current) {
+                      inputRef.current.focus();
+                    }
+                  }, 1000);
+                }
               }, 300);
             }
           }, 20);
@@ -170,6 +290,13 @@ const AlternativeHeroSection = () => {
     }
   }, [isLoaded]);
   
+  // Auto-scroll to bottom when terminal content changes
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [terminalHistory, userInput]);
+  
   // 3D tilt effect styles based on mouse position
   const getTiltStyle = () => {
     const maxTilt = 6; // max tilt in degrees
@@ -178,6 +305,13 @@ const AlternativeHeroSection = () => {
       transform: `perspective(1000px) rotateX(${(mousePosition.y - 0.5) * -maxTilt}deg) rotateY(${(mousePosition.x - 0.5) * maxTilt}deg) scale3d(1.03, 1.03, 1.03)`,
       transition: "transform 0.1s ease"
     };
+  };
+
+  // Handle key press in terminal
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      processCommand(userInput);
+    }
   };
   
   // Custom CSS
@@ -313,6 +447,27 @@ const AlternativeHeroSection = () => {
         transform: skew(0.65deg);
       }
     }
+    
+    @keyframes coffee-steam {
+      0% { opacity: 0.8; transform: translateY(0) scale(1); }
+      50% { opacity: 0.3; transform: translateY(-15px) scale(1.5); }
+      100% { opacity: 0; transform: translateY(-30px) scale(2); }
+    }
+    
+    .coffee-steam {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.7);
+      animation: coffee-steam 2s infinite;
+    }
+    
+    .steam-1 { left: 45%; animation-delay: 0.2s; }
+    .steam-2 { left: 50%; animation-delay: 0.8s; }
+    .steam-3 { left: 55%; animation-delay: 0.5s; }
     
     .noise-bg {
       position: absolute;
@@ -506,6 +661,14 @@ const AlternativeHeroSection = () => {
         }, [
           createElement(Play, { key: "icon", className: "w-3.5 h-3.5" }),
           "Output"
+        ]),
+        createElement("div", {
+          key: "tab-files",
+          className: `terminal-tab ${currentTab === "files" ? "active" : ""}`,
+          onClick: () => setCurrentTab("files")
+        }, [
+          createElement(Folder, { key: "icon", className: "w-3.5 h-3.5" }),
+          "Files"
         ])
       ]),
       
@@ -521,7 +684,8 @@ const AlternativeHeroSection = () => {
           createElement("div", { 
             key: "dot-1", 
             className: "w-3 h-3 rounded-full bg-red-500 relative group cursor-pointer transition-all hover:brightness-110",
-            title: "Close"
+            title: "Close",
+            onClick: () => commands.clear()
           }, [
             createElement(X, { 
               key: "icon", 
@@ -541,7 +705,11 @@ const AlternativeHeroSection = () => {
           createElement("div", { 
             key: "dot-3", 
             className: "w-3 h-3 rounded-full bg-green-500 relative group cursor-pointer transition-all hover:brightness-110",
-            title: "Expand"
+            title: "Expand",
+            onClick: () => {
+              setCurrentTab(prev => prev === "files" ? "terminal" : 
+                           prev === "terminal" ? "output" : "files");
+            }
           }, [
             createElement(CheckCircle2, { 
               key: "icon", 
@@ -566,8 +734,32 @@ const AlternativeHeroSection = () => {
       // Terminal body
       createElement("div", {
         key: "terminal-body",
+        ref: terminalRef,
         className: "bg-black/90 p-4 font-mono text-sm h-[calc(100%-78px)] overflow-auto no-scrollbar relative"
       }, [
+        // Coffee break overlay
+        showCoffeeBreak && createElement("div", {
+          key: "coffee-break",
+          className: "absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-20 animate-fade-in"
+        }, [
+          createElement("div", {
+            key: "coffee-container",
+            className: "relative"
+          }, [
+            createElement("div", { key: "steam-1", className: "coffee-steam steam-1" }),
+            createElement("div", { key: "steam-2", className: "coffee-steam steam-2" }),
+            createElement("div", { key: "steam-3", className: "coffee-steam steam-3" }),
+            createElement(Coffee, { 
+              key: "coffee-icon", 
+              className: "w-16 h-16 text-primary animate-pulse" 
+            })
+          ]),
+          createElement("p", {
+            key: "coffee-text",
+            className: "mt-4 text-center text-white"
+          }, "Taking a coffee break...")
+        ]),
+        
         // Conditional content based on selected tab
         currentTab === "terminal" ? [
           // Terminal welcome message
@@ -613,11 +805,7 @@ const AlternativeHeroSection = () => {
             createElement("span", { 
               key: "motivation", 
               className: "block mb-1 text-green-400 opacity-80" 
-            }, "// Crafting digital experiences with clean code"),
-            createElement("span", { 
-              key: "hint", 
-              className: "block mb-1 text-gray-500 text-xs" 
-            }, "// Type 'help' for available commands")
+            }, "// Crafting digital experiences with clean code")
           ]),
           
           // Terminal history (commands and responses)
@@ -634,7 +822,7 @@ const AlternativeHeroSection = () => {
             } else {
               return createElement("div", {
                 key: `history-resp-${index}`,
-                className: "pl-10 mb-2 text-gray-400 text-xs font-light"
+                className: "pl-10 mb-2 text-gray-400 text-xs font-light whitespace-pre-wrap"
               }, item.content);
             }
           }),
@@ -646,10 +834,33 @@ const AlternativeHeroSection = () => {
           }, [
             createElement("span", { key: "prompt", className: "text-green-400 mr-2" }, "➜"),
             createElement("span", { key: "path", className: "text-blue-400 mr-2" }, "~/portfolio"),
-            createElement("span", { key: "command-text", className: "text-gray-300" }, terminalCommand),
-            !isTyping && createElement(BlinkingCursor, { key: "cursor" })
+            
+            allowUserInput ? 
+              createElement("div", { 
+                key: "user-input-container",
+                className: "flex-grow text-gray-300 focus-within:outline-none"
+              }, [
+                createElement("input", {
+                  key: "user-input",
+                  type: "text",
+                  ref: inputRef,
+                  value: userInput,
+                  onChange: (e) => setUserInput(e.target.value),
+                  onKeyDown: handleKeyPress,
+                  className: "bg-transparent border-none outline-none text-gray-300 w-full",
+                  placeholder: "Type a command...",
+                  autoComplete: "off",
+                  autoCorrect: "off",
+                  autoCapitalize: "off",
+                  spellCheck: "false"
+                })
+              ]) : 
+              createElement(React.Fragment, { key: "animated-text" }, [
+                createElement("span", { key: "command-text", className: "text-gray-300" }, terminalCommand),
+                !isTyping && createElement(BlinkingCursor, { key: "cursor" })
+              ])
           ])
-        ] : [
+        ] : currentTab === "output" ? [
           // Output tab content
           createElement("div", {
             key: "output-preview",
@@ -664,11 +875,24 @@ const AlternativeHeroSection = () => {
             ]),
             createElement("div", {
               key: "output-content",
-              className: "text-xs text-gray-400 font-mono space-y-1"
+              className: "text-xs text-gray-400 font-mono space-y-1 opacity-0",
+              style: { animation: "fadeIn 0.5s ease-out forwards" }
             }, [
               createElement("div", { key: "line-1", className: "text-blue-400" }, "ready - started server on 0.0.0.0:3000"),
               createElement("div", { key: "line-2" }, "event - compiled client and server successfully in 248 ms (17 modules)"),
-              createElement("div", { key: "line-3", className: "text-green-500" }, "✓ Ready in 352ms")
+              createElement("div", { key: "line-3", className: "text-green-500" }, "✓ Ready in 352ms"),
+              createElement("div", { 
+                key: "line-4", 
+                className: "mt-2 text-white"  
+              }, "You can now view my-portfolio in the browser:"),
+              createElement("div", { 
+                key: "line-5", 
+                className: "ml-4 text-cyan-400 underline cursor-pointer hover:text-cyan-300 transition-colors",
+                onClick: () => {
+                  setCurrentTab("terminal");
+                  processCommand("about");
+                }
+              }, "http://localhost:3000/")
             ]),
             createElement("div", {
               key: "preview-stats",
@@ -705,8 +929,135 @@ const AlternativeHeroSection = () => {
                   "Online"
                 ])
               ])
+            ]),
+            // Quick actions for output tab
+            createElement("div", {
+              key: "quick-actions",
+              className: "mt-4 flex justify-between items-center border-t border-gray-800 pt-3"
+            }, [
+              createElement("div", {
+                key: "left-actions",
+                className: "flex items-center gap-2"
+              }, [
+                createElement(Button, {
+                  key: "refresh-btn",
+                  size: "sm",
+                  variant: "outline",
+                  className: "h-8 flex gap-2 items-center text-xs bg-gray-800/60 hover:bg-gray-700/60",
+                  onClick: () => {
+                    setCurrentTab("terminal");
+                    setTimeout(() => setCurrentTab("output"), 300);
+                  }
+                }, [
+                  createElement(RefreshCw, { key: "icon", className: "w-3 h-3" }),
+                  "Refresh"
+                ])
+              ]),
+              createElement("div", {
+                key: "right-actions",
+                className: "text-xs text-gray-500"
+              }, "Updated just now")
             ])
           ])
+        ] : [
+          // Files tab content
+          createElement("div", {
+            key: "files-explorer",
+            className: "text-sm text-gray-300 bg-gray-900/50 p-2 rounded-md border border-gray-800/50 h-full"
+          }, [
+            createElement("div", {
+              key: "search-bar",
+              className: "bg-black/60 rounded border border-gray-800 flex items-center px-2 mb-3"
+            }, [
+              createElement(Search, { key: "search-icon", className: "w-3.5 h-3.5 text-gray-500 mr-2" }),
+              createElement("input", {
+                key: "search-input",
+                type: "text",
+                placeholder: "Search files...",
+                className: "bg-transparent py-1.5 text-xs w-full outline-none border-none"
+              })
+            ]),
+            createElement("div", {
+              key: "files-structure",
+              className: "flex flex-col"
+            }, [
+              createElement("div", {
+                key: "folder-section-1",
+                className: "mb-2"
+              }, [
+                createElement("div", {
+                  key: "folder-1",
+                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer"
+                }, [
+                  createElement(Folder, { key: "icon", className: "w-3.5 h-3.5 text-blue-400 mr-1.5" }),
+                  createElement("span", { key: "name", className: "text-xs" }, "src")
+                ]),
+                // Subfolder content
+                createElement("div", {
+                  key: "subfolder-1",
+                  className: "pl-4"
+                }, [
+                  createElement("div", {
+                    key: "subfolder-1-1",
+                    className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer"
+                  }, [
+                    createElement(Folder, { key: "icon", className: "w-3.5 h-3.5 text-blue-400 mr-1.5" }),
+                    createElement("span", { key: "name", className: "text-xs" }, "components")
+                  ]),
+                  createElement("div", {
+                    key: "file-1",
+                    className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer",
+                    onClick: () => {
+                      setCurrentTab("terminal");
+                      processCommand("help");
+                    }
+                  }, [
+                    createElement(Code2, { key: "icon", className: "w-3.5 h-3.5 text-teal-500 mr-1.5" }),
+                    createElement("span", { key: "name", className: "text-xs" }, "HeroSection.tsx")
+                  ])
+                ])
+              ]),
+              createElement("div", {
+                key: "folder-section-2",
+                className: "mb-2"
+              }, [
+                createElement("div", {
+                  key: "folder-2",
+                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer"
+                }, [
+                  createElement(Folder, { key: "icon", className: "w-3.5 h-3.5 text-blue-400 mr-1.5" }),
+                  createElement("span", { key: "name", className: "text-xs" }, "pages")
+                ])
+              ]),
+              createElement("div", {
+                key: "file-section",
+                className: "mb-2"
+              }, [
+                createElement("div", {
+                  key: "file-3",
+                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer",
+                  onClick: () => {
+                    setCurrentTab("terminal");
+                    processCommand("projects");
+                  }
+                }, [
+                  createElement(Code2, { key: "icon", className: "w-3.5 h-3.5 text-cyan-500 mr-1.5" }),
+                  createElement("span", { key: "name", className: "text-xs" }, "projects.json")
+                ]),
+                createElement("div", {
+                  key: "file-4",
+                  className: "flex items-center py-1 px-1.5 hover:bg-gray-800/50 rounded cursor-pointer",
+                  onClick: () => {
+                    setCurrentTab("terminal");
+                    processCommand("skills");
+                  }
+                }, [
+                  createElement(Code2, { key: "icon", className: "w-3.5 h-3.5 text-yellow-500 mr-1.5" }),
+                  createElement("span", { key: "name", className: "text-xs" }, "skills.js")
+                ])
+              ])
+            ])
+          ]) 
         ]
       ])
     ]);
@@ -861,6 +1212,29 @@ const AlternativeHeroSection = () => {
         }, createTerminal())
       ])
     ]),
+    
+    // Helper floating button (help)
+    createElement("div", {
+      key: "helper",
+      className: "absolute bottom-4 right-4 z-20 opacity-0 animation-delay-1000",
+      style: isLoaded ? { animation: "fadeIn 0.8s ease forwards", animationDelay: "2000ms" } : {}
+    }, 
+      createElement(Button, {
+        key: "helper-btn",
+        size: "sm",
+        variant: "outline",
+        className: "rounded-full w-8 h-8 p-0 bg-black/40 border-white/20",
+        onClick: () => {
+          setCurrentTab("terminal");
+          processCommand("help");
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }
+      }, 
+        createElement(HelpCircle, { className: "w-4 h-4" })
+      )
+    ),
     
     // CSS styles
     createElement("style", {
