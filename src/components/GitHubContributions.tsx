@@ -7,7 +7,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -34,6 +36,7 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
   const [contributionData, setContributionData] = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
   
   useEffect(() => {
     const fetchContributions = async () => {
@@ -77,6 +80,12 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
 
         const result = await response.json();
         
+        // Check if we got a rate limit error
+        if (response.status === 403) {
+          console.error("GitHub API rate limit exceeded");
+          throw new Error('GitHub API rate limit exceeded. Using simulated contribution data instead.');
+        }
+        
         if (result.errors) {
           throw new Error(result.errors[0].message || 'Error fetching GitHub data');
         }
@@ -118,6 +127,16 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
         setLoading(false);
       } catch (err: any) {
         console.error("Error fetching GitHub contributions:", err);
+        
+        // Show toast notification for API rate limit
+        if (err.message.includes('rate limit')) {
+          toast({
+            title: "GitHub API Rate Limited",
+            description: "Showing simulated contribution data instead.",
+            variant: "destructive"
+          });
+        }
+        
         setError(err.message || "Failed to fetch GitHub contributions");
         setLoading(false);
         
@@ -127,7 +146,7 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
     };
     
     fetchContributions();
-  }, [username]);
+  }, [username, toast]);
   
   // Generate fallback contribution data if the API fails
   const generateFallbackData = () => {
@@ -259,13 +278,14 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
     );
   }
   
-  if (error || !contributionData) {
+  if (!contributionData) {
     return (
       <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-10 flex justify-center items-center">
         <div className="flex flex-col items-center text-center">
-          <p className="text-red-500 mb-2">Error loading GitHub contributions</p>
+          <AlertTriangle className="h-8 w-8 text-red-500 mb-2" />
+          <p className="text-red-500 mb-2">Failed to load GitHub contributions</p>
           <p className="text-gray-600 dark:text-gray-400 text-sm">
-            {error || "Failed to load contribution data. Showing simulated data instead."}
+            An unexpected error occurred.
           </p>
         </div>
       </div>
@@ -276,6 +296,16 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
   
   return (
     <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4">
+      {error && (
+        <Alert variant="destructive" className="mb-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>GitHub API Rate Limited</AlertTitle>
+          <AlertDescription>
+            Showing simulated contribution data instead.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       {/* Month labels */}
       <div className="flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-400">
         {monthLabels.map((month, index) => (
@@ -325,9 +355,10 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
       </div>
       
       {/* Bottom section */}
-      <div className="flex justify-between items-center mt-3 text-xs text-gray-700 dark:text-gray-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-3 text-xs text-gray-700 dark:text-gray-300 gap-2">
         <div>
           {contributionData.totalContributions.toLocaleString()} contributions in the last year
+          {error && <span className="text-xs text-gray-500 ml-1">(simulated)</span>}
         </div>
         
         {/* Legend */}
