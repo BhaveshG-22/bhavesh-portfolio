@@ -57,7 +57,7 @@ export const Header = ({ activeSection }: HeaderProps) => {
                   activeSection === 'projects-page' ? 'text-primary' : ''
                 }`}
               >
-                All Projects
+             Projects
               </Link>
             </li>
             <li>
