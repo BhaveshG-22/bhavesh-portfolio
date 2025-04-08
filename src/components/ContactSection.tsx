@@ -77,10 +77,11 @@ const ContactSection = () => {
     try {
       console.log("Submitting form data:", formData);
       
-      // Submit data to Supabase contact_submissions table
+      // Fixed: Pass the formData object directly instead of wrapping it in an array
+      // Also, all required fields are present in formData
       const { error, data } = await supabase
         .from('contact_submissions')
-        .insert([formData]);
+        .insert(formData);
       
       if (error) {
         console.error("Supabase error:", error);
