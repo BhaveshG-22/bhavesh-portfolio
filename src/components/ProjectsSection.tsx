@@ -5,6 +5,7 @@ import { ExternalLink, Github } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Project, fetchVisibleProjects, fetchCategories } from "@/services/projectService";
 import { toast } from "sonner";
+import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
 
 // Default categories in case we can't fetch from Supabase
 const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
@@ -14,17 +15,38 @@ const ProjectsSection = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [isLoading, setIsLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState<any>(null);
+  
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const result = await runSupabaseConnectionTest();
+        setConnectionStatus(result);
+        console.log("Supabase connection test result in ProjectsSection.tsx:", result);
+      } catch (error) {
+        console.error("Error testing Supabase connection:", error);
+      }
+    };
+    
+    testConnection();
+  }, []);
   
   useEffect(() => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
         
+        // Log detailed information about the request
+        console.log("About to fetch projects from Supabase in ProjectsSection...");
+        
         // Load projects and categories from Supabase
         const [projectsData, categoriesData] = await Promise.all([
           fetchVisibleProjects(),
           fetchCategories()
         ]);
+        
+        console.log("ProjectsSection - Fetched projects:", projectsData);
+        console.log("ProjectsSection - Fetched categories:", categoriesData);
         
         setProjects(projectsData);
         setCategories(categoriesData);
@@ -49,6 +71,17 @@ const ProjectsSection = () => {
         <div className="flex flex-col items-start mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-light">Featured Projects</h2>
           <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
+          
+          {/* Connection test display */}
+          {connectionStatus && (
+            <div className="w-full mb-6 p-4 rounded-md bg-gray-800/80 text-sm">
+              <p>Connection Status: {connectionStatus.success ? '✅ Connected' : '❌ Failed'}</p>
+              {connectionStatus.tables && connectionStatus.tables.projects && (
+                <p>Projects Table: {connectionStatus.tables.projects.accessible ? '✅ Accessible' : '❌ Inaccessible'}</p>
+              )}
+              <p>Projects found: {projects.length}</p>
+            </div>
+          )}
           
           {isLoading ? (
             <div className="w-full flex justify-center py-12">
@@ -79,6 +112,7 @@ const ProjectsSection = () => {
               {filteredProjects.length === 0 ? (
                 <div className="w-full text-center py-12 text-gray-400">
                   No projects in this category yet.
+                  {projects.length > 0 && <span> (But {projects.length} projects in other categories)</span>}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

@@ -1,6 +1,4 @@
-
 import { supabase } from "@/integrations/supabase/client";
-import { Database } from "@/integrations/supabase/types";
 
 export type Project = {
   id: number;
@@ -18,34 +16,62 @@ export type Project = {
 };
 
 export const fetchProjects = async (): Promise<Project[]> => {
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .order("is_default", { ascending: false })
-    .order("id");
-  
-  if (error) {
-    console.error("Error fetching projects:", error);
-    throw new Error(error.message);
+  console.log("Fetching all projects...");
+  try {
+    console.log("Making Supabase request to fetch all projects");
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .order("is_default", { ascending: false })
+      .order("id");
+    
+    if (error) {
+      console.error("Error fetching projects:", error);
+      throw new Error(error.message);
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} projects`);
+    if (data && data.length > 0) {
+      console.log("First project:", data[0]);
+    } else {
+      console.log("No projects found");
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error("Unexpected error in fetchProjects:", error);
+    throw error;
   }
-  
-  return data || [];
 };
 
 export const fetchVisibleProjects = async (): Promise<Project[]> => {
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("hidden", false)
-    .order("is_default", { ascending: false })
-    .order("id");
-  
-  if (error) {
-    console.error("Error fetching visible projects:", error);
-    throw new Error(error.message);
+  console.log("Fetching visible projects...");
+  try {
+    console.log("Making Supabase request to fetch visible projects");
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("hidden", false)
+      .order("is_default", { ascending: false })
+      .order("id");
+    
+    if (error) {
+      console.error("Error fetching visible projects:", error);
+      throw new Error(error.message);
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} visible projects`);
+    if (data && data.length > 0) {
+      console.log("First visible project:", data[0]);
+    } else {
+      console.log("No visible projects found");
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error("Unexpected error in fetchVisibleProjects:", error);
+    throw error;
   }
-  
-  return data || [];
 };
 
 export const fetchCategories = async (): Promise<string[]> => {

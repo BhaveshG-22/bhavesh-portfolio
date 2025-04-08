@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Project } from "@/types/project";
+import { Project } from "@/services/projectService"; // Use the consistent Project type
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +19,21 @@ const ProjectsList = () => {
 
   const fetchProjects = async () => {
     try {
+      console.log("Fetching projects in Admin ProjectsList");
       const { data, error } = await supabase
-        .from('projects' as any)
+        .from('projects')
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching projects in admin:", error);
+        throw error;
+      }
       
-      // Safely convert to Project[] type using type assertion
-      setProjects((data || []) as unknown as Project[]);
+      console.log(`Admin: Successfully fetched ${data?.length || 0} projects`);
+      
+      // Safely convert to Project[] type
+      setProjects(data as Project[]);
     } catch (error: any) {
       toast.error(`Failed to fetch projects: ${error.message}`);
       console.error("Error fetching projects:", error);
@@ -60,6 +66,18 @@ const ProjectsList = () => {
   return (
     <div className="w-full">
       <h2 className="text-2xl font-semibold mb-4 text-foreground">Current Projects</h2>
+      
+      {/* Debug info */}
+      <div className="mb-4 p-3 bg-muted/20 rounded-md border border-border/30">
+        <p className="text-sm text-muted-foreground">Projects count: {projects.length}</p>
+        <details className="mt-2">
+          <summary className="text-sm cursor-pointer text-primary">Debug info</summary>
+          <pre className="mt-2 p-2 bg-muted/30 text-xs rounded overflow-auto max-h-60">
+            {JSON.stringify(projects[0] || {}, null, 2)}
+          </pre>
+        </details>
+      </div>
+      
       {loading ? (
         <div className="flex items-center justify-center py-6">
           <Loader2 className="h-6 w-6 animate-spin mr-2" />
@@ -89,7 +107,7 @@ const ProjectsList = () => {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteProject(project.id!)}>
+                        <AlertDialogAction onClick={() => handleDeleteProject(project.id)}>
                           Delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -101,9 +119,9 @@ const ProjectsList = () => {
                   <Badge variant="secondary" className="text-xs">
                     {project.category}
                   </Badge>
-                  {project.link && (
+                  {project.demo && (
                     <a 
-                      href={project.link} 
+                      href={project.demo} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-primary hover:underline text-sm"

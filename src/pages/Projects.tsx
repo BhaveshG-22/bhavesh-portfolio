@@ -9,17 +9,49 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
 
 const Projects = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState<any>(null);
+  
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const result = await runSupabaseConnectionTest();
+        setConnectionStatus(result);
+        console.log("Supabase connection test result in Projects.tsx:", result);
+      } catch (error) {
+        console.error("Error testing Supabase connection:", error);
+      }
+    };
+    
+    testConnection();
+  }, []);
   
   useEffect(() => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
+        
+        // Direct fetch from Supabase to check if we can get raw data
+        const { data: rawData, error: rawError } = await fetch("https://pdlleyruhdefngyxetby.supabase.co/rest/v1/projects?select=*", {
+          headers: {
+            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkbGxleXJ1aGRlZm5neXhldGJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNzk3MTcsImV4cCI6MjA1OTY1NTcxN30.suCSyxmO8PhfWfAY6RYQKa3AhRzE6RVax_VEKJHI8SQ",
+            "Content-Type": "application/json"
+          }
+        }).then(res => res.json());
+        
+        console.log("Direct Supabase API check for projects:", rawData);
+        
+        if (rawError) {
+          console.error("Raw Supabase API error:", rawError);
+        }
+        
+        // Load projects and categories from Supabase using our service
         const [projectsData, categoriesData] = await Promise.all([
           fetchVisibleProjects(),
           fetchCategories()
@@ -53,6 +85,29 @@ const Projects = () => {
               Explore my full collection of projects across various technologies and domains. 
               Each project represents a unique challenge and learning experience.
             </p>
+            
+            {/* Connection test display */}
+            {connectionStatus && (
+              <div className="mt-6 p-4 rounded-md bg-muted/20 text-sm">
+                <p>Connection Status: {connectionStatus.success ? '✅ Connected' : '❌ Failed'}</p>
+                {connectionStatus.tables && connectionStatus.tables.projects && (
+                  <p>Projects Table: {connectionStatus.tables.projects.accessible ? '✅ Accessible' : '❌ Inaccessible'}</p>
+                )}
+                <details>
+                  <summary className="cursor-pointer text-primary hover:underline">View Details</summary>
+                  <pre className="mt-2 p-2 bg-muted/30 overflow-auto text-xs rounded">
+                    {JSON.stringify(connectionStatus, null, 2)}
+                  </pre>
+                </details>
+              </div>
+            )}
+            
+            {/* Projects length info */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Found {projects.length} projects in total.
+              Current filter: {activeCategory}
+              Filtered projects: {filteredProjects.length}
+            </div>
           </div>
 
           {isLoading ? (

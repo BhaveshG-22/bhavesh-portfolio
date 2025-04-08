@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Tests the connection to Supabase and returns information about
- * the blog_posts and blog_categories tables
+ * the blog_posts, blog_categories and projects tables
  */
 export const testSupabaseConnection = async () => {
   console.log("Testing Supabase connection...");
@@ -32,6 +32,12 @@ export const testSupabaseConnection = async () => {
       .select('count')
       .limit(1);
     
+    // Check projects table
+    const { data: projectsData, error: projectsError } = await supabase
+      .from('projects')
+      .select('count')
+      .limit(1);
+    
     return {
       success: true,
       connection: "Successful",
@@ -44,6 +50,11 @@ export const testSupabaseConnection = async () => {
         blog_categories: {
           accessible: !categoriesError,
           error: categoriesError ? categoriesError.message : null
+        },
+        projects: {
+          accessible: !projectsError,
+          error: projectsError ? projectsError.message : null,
+          count: projectsData
         }
       }
     };
