@@ -32,11 +32,16 @@ export const testSupabaseConnection = async () => {
       .select('count')
       .limit(1);
     
-    // Check projects table
-    const { data: projectsData, error: projectsError } = await supabase
+    // Get ALL projects (regardless of hidden status)
+    const { data: allProjects, error: allProjectsError } = await supabase
       .from('projects')
-      .select('count')
-      .limit(1);
+      .select('*');
+    
+    // Check visible projects (where hidden = false)
+    const { data: visibleProjects, error: visibleProjectsError } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('hidden', false);
     
     return {
       success: true,
@@ -52,9 +57,11 @@ export const testSupabaseConnection = async () => {
           error: categoriesError ? categoriesError.message : null
         },
         projects: {
-          accessible: !projectsError,
-          error: projectsError ? projectsError.message : null,
-          count: projectsData
+          accessible: !allProjectsError,
+          error: allProjectsError ? allProjectsError.message : null,
+          total_count: allProjects ? allProjects.length : 0,
+          visible_count: visibleProjects ? visibleProjects.length : 0,
+          sample: allProjects && allProjects.length > 0 ? allProjects[0] : null
         }
       }
     };

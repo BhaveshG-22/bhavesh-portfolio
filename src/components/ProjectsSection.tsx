@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Project, fetchVisibleProjects, fetchCategories } from "@/services/projectService";
+import { Project, fetchVisibleProjects, fetchProjects, fetchCategories, toggleProjectVisibility } from "@/services/projectService";
 import { toast } from "sonner";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
 
@@ -13,9 +13,11 @@ const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
 const ProjectsSection = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<any>(null);
+  const [showAllProjects, setShowAllProjects] = useState(false);
   
   useEffect(() => {
     const testConnection = async () => {
@@ -36,12 +38,16 @@ const ProjectsSection = () => {
       try {
         setIsLoading(true);
         
+        // Load ALL projects first to see what we have
+        const allProjectsData = await fetchProjects();
+        setAllProjects(allProjectsData);
+        
         // Log detailed information about the request
         console.log("About to fetch projects from Supabase in ProjectsSection...");
         
-        // Load projects and categories from Supabase
+        // Load visible projects and categories from Supabase
         const [projectsData, categoriesData] = await Promise.all([
-          fetchVisibleProjects(),
+          showAllProjects ? fetchProjects() : fetchVisibleProjects(),
           fetchCategories()
         ]);
         
@@ -59,7 +65,7 @@ const ProjectsSection = () => {
     };
     
     loadProjects();
-  }, []);
+  }, [showAllProjects]);
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
@@ -72,16 +78,52 @@ const ProjectsSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-light">Featured Projects</h2>
           <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
           
+          {/* Show/Hide All Projects Toggle */}
+          <div className="mb-4 w-full flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowAllProjects(!showAllProjects)}
+              className="flex items-center gap-2 text-xs"
+            >
+              {showAllProjects ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+              {showAllProjects ? "Show Only Visible" : "Show All (Including Hidden)"}
+            </Button>
+          </div>
+          
           {/* Connection test display */}
           {connectionStatus && (
             <div className="w-full mb-6 p-4 rounded-md bg-gray-800/80 text-sm">
               <p>Connection Status: {connectionStatus.success ? '✅ Connected' : '❌ Failed'}</p>
               {connectionStatus.tables && connectionStatus.tables.projects && (
-                <p>Projects Table: {connectionStatus.tables.projects.accessible ? '✅ Accessible' : '❌ Inaccessible'}</p>
+                <>
+                  <p>Projects Table: {connectionStatus.tables.projects.accessible ? '✅ Accessible' : '❌ Inaccessible'}</p>
+                  <p>Total projects in database: {connectionStatus.tables.projects.total_count}</p>
+                  <p>Visible projects (hidden=false): {connectionStatus.tables.projects.visible_count}</p>
+                </>
               )}
-              <p>Projects found: {projects.length}</p>
+              <div className="mt-2">
+                <details>
+                  <summary className="cursor-pointer hover:text-teal-400">Sample Project Data</summary>
+                  {connectionStatus.tables && 
+                   connectionStatus.tables.projects && 
+                   connectionStatus.tables.projects.sample ? (
+                    <pre className="mt-2 text-xs bg-black/50 p-2 rounded overflow-auto max-h-60">
+                      {JSON.stringify(connectionStatus.tables.projects.sample, null, 2)}
+                    </pre>
+                  ) : (
+                    <p className="mt-2 italic text-gray-400">No sample project available</p>
+                  )}
+                </details>
+              </div>
             </div>
           )}
+          
+          <div className="w-full mb-6">
+            <p>Total Projects: {allProjects.length}</p>
+            <p>Visible Projects: {showAllProjects ? allProjects.length : projects.length}</p>
+            <p>Filtered Projects: {filteredProjects.length}</p>
+          </div>
           
           {isLoading ? (
             <div className="w-full flex justify-center py-12">
@@ -133,6 +175,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
   return (
     <div className="flex flex-col">
       <div className="relative h-64 mb-6 overflow-hidden rounded-xl border border-white/10 backdrop-blur-sm bg-black/40 hover:border-teal-500/30 transition-all">
+        {project.hidden && (
+          <div className="absolute top-2 right-2 z-10 bg-red-500/80 text-white px-2 py-1 rounded text-xs">
+            Hidden
+          </div>
+        )}
         <img
           src={project.image}
           alt={project.title}

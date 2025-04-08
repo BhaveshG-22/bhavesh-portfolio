@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type Project = {
@@ -33,6 +34,7 @@ export const fetchProjects = async (): Promise<Project[]> => {
     console.log(`Successfully fetched ${data?.length || 0} projects`);
     if (data && data.length > 0) {
       console.log("First project:", data[0]);
+      console.log("Project hidden values:", data.map(p => `${p.id}: ${p.hidden}`));
     } else {
       console.log("No projects found");
     }
@@ -47,6 +49,10 @@ export const fetchProjects = async (): Promise<Project[]> => {
 export const fetchVisibleProjects = async (): Promise<Project[]> => {
   console.log("Fetching visible projects...");
   try {
+    // First, let's check ALL projects to see what we have
+    const allProjects = await fetchProjects();
+    console.log(`Total projects in database: ${allProjects.length}`);
+    
     console.log("Making Supabase request to fetch visible projects");
     const { data, error } = await supabase
       .from("projects")
@@ -64,7 +70,12 @@ export const fetchVisibleProjects = async (): Promise<Project[]> => {
     if (data && data.length > 0) {
       console.log("First visible project:", data[0]);
     } else {
-      console.log("No visible projects found");
+      console.log("No visible projects found - verify if all projects have hidden=true");
+      
+      // Check if we have any projects that are just showing as hidden
+      if (allProjects.length > 0) {
+        console.log("All projects are hidden=true. You should set some to hidden=false to make them visible.");
+      }
     }
     
     return data || [];
@@ -132,6 +143,7 @@ export const deleteProject = async (id: number): Promise<void> => {
 };
 
 export const toggleProjectVisibility = async (id: number, isHidden: boolean): Promise<Project> => {
+  console.log(`Toggling project ${id} visibility from ${isHidden} to ${!isHidden}`);
   return updateProject(id, { hidden: !isHidden });
 };
 
