@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Projects = () => {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -17,6 +18,7 @@ const Projects = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<any>(null);
+  const { isAdmin } = useAuth();
   
   useEffect(() => {
     const testConnection = async () => {
@@ -38,17 +40,19 @@ const Projects = () => {
         setIsLoading(true);
         
         // Direct fetch from Supabase to check if we can get raw data
-        const { data: rawData, error: rawError } = await fetch("https://pdlleyruhdefngyxetby.supabase.co/rest/v1/projects?select=*", {
-          headers: {
-            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkbGxleXJ1aGRlZm5neXhldGJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNzk3MTcsImV4cCI6MjA1OTY1NTcxN30.suCSyxmO8PhfWfAY6RYQKa3AhRzE6RVax_VEKJHI8SQ",
-            "Content-Type": "application/json"
+        if (isAdmin) {
+          const { data: rawData, error: rawError } = await fetch("https://pdlleyruhdefngyxetby.supabase.co/rest/v1/projects?select=*", {
+            headers: {
+              "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkbGxleXJ1aGRlZm5neXhldGJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNzk3MTcsImV4cCI6MjA1OTY1NTcxN30.suCSyxmO8PhfWfAY6RYQKa3AhRzE6RVax_VEKJHI8SQ",
+              "Content-Type": "application/json"
+            }
+          }).then(res => res.json());
+          
+          console.log("Direct Supabase API check for projects:", rawData);
+          
+          if (rawError) {
+            console.error("Raw Supabase API error:", rawError);
           }
-        }).then(res => res.json());
-        
-        console.log("Direct Supabase API check for projects:", rawData);
-        
-        if (rawError) {
-          console.error("Raw Supabase API error:", rawError);
         }
         
         // Load projects and categories from Supabase using our service
@@ -68,7 +72,7 @@ const Projects = () => {
     };
     
     loadProjects();
-  }, []);
+  }, [isAdmin]);
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
@@ -86,8 +90,8 @@ const Projects = () => {
               Each project represents a unique challenge and learning experience.
             </p>
             
-            {/* Connection test display */}
-            {connectionStatus && (
+            {/* Connection test display - Only visible for admins */}
+            {isAdmin && connectionStatus && (
               <div className="mt-6 p-4 rounded-md bg-muted/20 text-sm">
                 <p>Connection Status: {connectionStatus.success ? '✅ Connected' : '❌ Failed'}</p>
                 {connectionStatus.tables && connectionStatus.tables.projects && (
@@ -102,12 +106,14 @@ const Projects = () => {
               </div>
             )}
             
-            {/* Projects length info */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Found {projects.length} projects in total.
-              Current filter: {activeCategory}
-              Filtered projects: {filteredProjects.length}
-            </div>
+            {/* Projects length info - Only visible for admins */}
+            {isAdmin && (
+              <div className="mt-4 text-sm text-muted-foreground">
+                Found {projects.length} projects in total.
+                Current filter: {activeCategory}
+                Filtered projects: {filteredProjects.length}
+              </div>
+            )}
           </div>
 
           {isLoading ? (

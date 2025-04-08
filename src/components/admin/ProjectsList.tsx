@@ -8,10 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProjectsList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchProjects();
@@ -63,11 +65,22 @@ const ProjectsList = () => {
     }
   };
 
+  // Non-admin users shouldn't see this component, but just in case
+  if (!isAdmin) {
+    return (
+      <div className="w-full p-6 bg-muted/10 rounded-lg border border-border/30">
+        <p className="text-muted-foreground text-center">
+          You don't have permission to view this content.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
       <h2 className="text-2xl font-semibold mb-4 text-foreground">Current Projects</h2>
       
-      {/* Debug info */}
+      {/* Debug info - Always visible in admin sections */}
       <div className="mb-4 p-3 bg-muted/20 rounded-md border border-border/30">
         <p className="text-sm text-muted-foreground">Projects count: {projects.length}</p>
         <details className="mt-2">
@@ -118,6 +131,10 @@ const ProjectsList = () => {
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Badge variant="secondary" className="text-xs">
                     {project.category}
+                  </Badge>
+                  {/* Add visibility status badge */}
+                  <Badge variant={project.hidden ? "destructive" : "outline"} className="text-xs">
+                    {project.hidden ? "Hidden" : "Visible"}
                   </Badge>
                   {project.demo && (
                     <a 

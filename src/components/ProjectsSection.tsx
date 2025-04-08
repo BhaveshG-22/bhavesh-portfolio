@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Project, fetchVisibleProjects, fetchProjects, fetchCategories, toggleProjectVisibility } from "@/services/projectService";
 import { toast } from "sonner";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Default categories in case we can't fetch from Supabase
 const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
@@ -18,6 +19,7 @@ const ProjectsSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<any>(null);
   const [showAllProjects, setShowAllProjects] = useState(false);
+  const { isAdmin } = useAuth();
   
   useEffect(() => {
     const testConnection = async () => {
@@ -78,21 +80,23 @@ const ProjectsSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-light">Featured Projects</h2>
           <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
           
-          {/* Show/Hide All Projects Toggle */}
-          <div className="mb-4 w-full flex justify-end">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowAllProjects(!showAllProjects)}
-              className="flex items-center gap-2 text-xs"
-            >
-              {showAllProjects ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-              {showAllProjects ? "Show Only Visible" : "Show All (Including Hidden)"}
-            </Button>
-          </div>
+          {/* Show/Hide All Projects Toggle - Only visible to admin */}
+          {isAdmin && (
+            <div className="mb-4 w-full flex justify-end">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowAllProjects(!showAllProjects)}
+                className="flex items-center gap-2 text-xs"
+              >
+                {showAllProjects ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                {showAllProjects ? "Show Only Visible" : "Show All (Including Hidden)"}
+              </Button>
+            </div>
+          )}
           
-          {/* Connection test display */}
-          {connectionStatus && (
+          {/* Connection test display - Only visible to admin */}
+          {isAdmin && connectionStatus && (
             <div className="w-full mb-6 p-4 rounded-md bg-gray-800/80 text-sm">
               <p>Connection Status: {connectionStatus.success ? '✅ Connected' : '❌ Failed'}</p>
               {connectionStatus.tables && connectionStatus.tables.projects && (
@@ -119,11 +123,14 @@ const ProjectsSection = () => {
             </div>
           )}
           
-          <div className="w-full mb-6">
-            <p>Total Projects: {allProjects.length}</p>
-            <p>Visible Projects: {showAllProjects ? allProjects.length : projects.length}</p>
-            <p>Filtered Projects: {filteredProjects.length}</p>
-          </div>
+          {/* Projects count information - Only visible to admin */}
+          {isAdmin && (
+            <div className="w-full mb-6">
+              <p>Total Projects: {allProjects.length}</p>
+              <p>Visible Projects: {showAllProjects ? allProjects.length : projects.length}</p>
+              <p>Filtered Projects: {filteredProjects.length}</p>
+            </div>
+          )}
           
           {isLoading ? (
             <div className="w-full flex justify-center py-12">
@@ -172,10 +179,13 @@ const ProjectsSection = () => {
 };
 
 const ProjectCard = ({ project }: { project: Project }) => {
+  const { isAdmin } = useAuth();
+  
   return (
     <div className="flex flex-col">
       <div className="relative h-64 mb-6 overflow-hidden rounded-xl border border-white/10 backdrop-blur-sm bg-black/40 hover:border-teal-500/30 transition-all">
-        {project.hidden && (
+        {/* Only show hidden indicator for admin users */}
+        {isAdmin && project.hidden && (
           <div className="absolute top-2 right-2 z-10 bg-red-500/80 text-white px-2 py-1 rounded text-xs">
             Hidden
           </div>
