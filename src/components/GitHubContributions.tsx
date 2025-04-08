@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ContributionLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -24,27 +23,27 @@ interface GitHubContributionsProps {
 
 const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps) => {
   const [data, setData] = useState<ContributionData[]>([]);
+  const [visibleWeeks, setVisibleWeeks] = useState(52);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalContributions, setTotalContributions] = useState<number>(0);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-  
-  // Always show full year (52 weeks)
-  const visibleWeeks = 52;
   
   useEffect(() => {
-    // Update container width on mount and resize
-    const updateContainerWidth = () => {
-      const container = document.getElementById('contributions-container');
-      if (container) {
-        setContainerWidth(container.offsetWidth);
+    // Handle responsive sizing
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setVisibleWeeks(26); // Show ~6 months on mobile
+      } else if (window.innerWidth < 1024) {
+        setVisibleWeeks(39); // Show ~9 months on tablets
+      } else {
+        setVisibleWeeks(52); // Show full year on desktop
       }
     };
     
-    updateContainerWidth();
-    window.addEventListener('resize', updateContainerWidth);
+    handleResize();
+    window.addEventListener('resize', handleResize);
     
-    return () => window.removeEventListener('resize', updateContainerWidth);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   
   useEffect(() => {
@@ -218,32 +217,15 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
   // Get visible data based on current visible weeks setting
   const visibleData = data.slice(-visibleWeeks * 7);
   
-  // Get all months in the past year for labels
-  const getMonthLabels = () => {
-    const months: string[] = [];
-    const now = new Date();
-    let date = new Date();
-    date.setFullYear(now.getFullYear() - 1);
-    
-    for (let i = 0; i < 12; i++) {
-      date.setMonth(date.getMonth() + 1);
-      months.push(date.toLocaleString('en-US', { month: 'short' }));
-    }
-    
-    return months;
+  // Get visible months based on visible weeks
+  const getVisibleMonths = () => {
+    const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
+    if (visibleWeeks === 52) return months;
+    if (visibleWeeks === 39) return months.slice(3); // 9 months
+    return months.slice(6); // 6 months
   };
   
-  const monthLabels = getMonthLabels();
-  
-  // Calculate sizing based on container width
-  const cellSize = Math.max(Math.min(4, Math.floor(containerWidth / (visibleWeeks + 4))), 2);
-  const cellGap = Math.max(1, Math.floor(cellSize / 4));
-  
-  const cellStyle = {
-    width: `${cellSize}px`,
-    height: `${cellSize}px`,
-    borderRadius: `${Math.max(1, Math.floor(cellSize / 4))}px`,
-  };
+  const visibleMonths = getVisibleMonths();
   
   if (loading) {
     return (
@@ -268,49 +250,45 @@ const GitHubContributions = ({ username = "octocat" }: GitHubContributionsProps)
   }
   
   return (
-    <div 
-      id="contributions-container"
-      className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4"
-    >
+    <div className="w-full bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden p-3 sm:p-4">
       {/* Month labels */}
-      <div className="flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-400 px-1">
-        {monthLabels.map((month, index) => (
-          <div key={index} className="text-center">{month}</div>
+      <div className="flex justify-between mb-1 text-xs text-gray-500 dark:text-gray-400">
+        {visibleMonths.map((month, index) => (
+          <div key={index} className="text-center">
+            {month}
+          </div>
         ))}
       </div>
       
-      {/* Scrollable contribution grid */}
-      <ScrollArea className="h-full w-full">
-        <div className="grid grid-rows-7 grid-flow-col gap-[1px]" style={{ gap: `${cellGap}px` }}>
-          {Array.from({ length: 7 }).map((_, rowIndex) => (
-            <div key={rowIndex} className="flex gap-[1px]" style={{ gap: `${cellGap}px` }}>
-              {visibleData
-                .filter((_, index) => index % 7 === rowIndex)
-                .map((day, colIndex) => (
-                  <TooltipProvider key={colIndex}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div
-                          className={cn(
-                            "rounded-sm border border-opacity-10",
-                            getContributionColor(day.level)
-                          )}
-                          style={cellStyle}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-xs py-1 px-2">
-                        {day.count === 0 ? "No" : day.count} contribution{day.count !== 1 ? 's' : ''} on {day.date}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
+      {/* Contribution grid */}
+      <div className="grid grid-rows-7 grid-flow-col gap-1">
+        {Array.from({ length: 7 }).map((_, rowIndex) => (
+          <div key={rowIndex} className="flex gap-1">
+            {visibleData
+              .filter((_, index) => index % 7 === rowIndex)
+              .map((day, colIndex) => (
+                <TooltipProvider key={colIndex}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={cn(
+                          "w-3 h-3 sm:w-4 sm:h-4 rounded-sm border border-opacity-10",
+                          getContributionColor(day.level)
+                        )}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 text-xs py-1 px-2">
+                      {day.count === 0 ? "No" : day.count} contribution{day.count !== 1 ? 's' : ''} on {day.date}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+          </div>
+        ))}
+      </div>
       
       {/* Bottom section */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mt-3 text-xs text-gray-700 dark:text-gray-300 gap-2">
+      <div className="flex justify-between items-center mt-3 text-xs text-gray-700 dark:text-gray-300">
         <div>
           {totalContributions.toLocaleString()} contributions in the last year
         </div>
