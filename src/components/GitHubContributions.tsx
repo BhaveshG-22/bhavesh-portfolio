@@ -76,17 +76,17 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         // Calculate the total days needed (fixed at 52 weeks * 7 days = 364 days for consistency)
         const totalDays = 52 * 7;
         
-        // Group the days into weeks (for the last year)
-        const weeks: WeekData[] = [];
-        
-        // If we have more days than needed for a year view, take only the most recent ones
-        const daysToUse = processedDays.length > totalDays 
+        // Get the most recent 364 days
+        const mostRecentDays = processedDays.length > totalDays 
           ? processedDays.slice(processedDays.length - totalDays) 
           : processedDays;
         
+        // Group the days into weeks (for the last year)
+        const weeks: WeekData[] = [];
+        
         // Group days into weeks
-        for (let i = 0; i < daysToUse.length; i += 7) {
-          const weekDays = daysToUse.slice(i, i + 7);
+        for (let i = 0; i < mostRecentDays.length; i += 7) {
+          const weekDays = mostRecentDays.slice(i, i + 7);
           weeks.push({
             contributionDays: weekDays
           });
@@ -134,30 +134,36 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     });
   };
   
-  // Get month labels based on contribution data
+  // Get month labels based on the actual data we're displaying
   const getMonthLabels = () => {
-    if (!contributionData?.contributionDays || contributionData.contributionDays.length === 0) {
+    if (!contributionData?.weeks || contributionData.weeks.length === 0) {
       return [];
     }
     
-    const months: string[] = [];
-    const seenMonths = new Set<string>();
+    // Flatten all weeks to get individual days
+    const allDays = contributionData.weeks.flatMap(week => week.contributionDays);
     
-    // Get the last year's worth of data for labels
-    const lastYearData = contributionData.weeks?.flatMap(week => week.contributionDays) || [];
+    // For more accurate labeling, get data range that we're displaying
+    const startDate = new Date(allDays[0]?.date || '');
+    const endDate = new Date(allDays[allDays.length - 1]?.date || '');
     
-    // Process all dates to extract month names
-    lastYearData.forEach(day => {
-      const date = new Date(day.date);
-      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
-      const monthKey = `${monthName}-${date.getFullYear()}`;
-      if (!seenMonths.has(monthKey)) {
-        months.push(monthName);
-        seenMonths.add(monthKey);
-      }
-    });
+    // Create an array of all months between start and end date
+    const months = [];
+    const currentDate = new Date(startDate);
     
-    // Ensure we only return a reasonable number of month labels (every other month)
+    // Set to first day of month to ensure we get consistent monthly increments
+    currentDate.setDate(1);
+    
+    while (currentDate <= endDate) {
+      const monthName = currentDate.toLocaleDateString('en-US', { month: 'short' });
+      months.push(monthName);
+      
+      // Move to next month
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+    
+    // Return appropriate number of labels based on available space
+    // For a typical contribution graph, showing every other month works well
     return months.filter((_, index) => index % 2 === 0);
   };
   
