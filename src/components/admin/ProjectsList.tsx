@@ -36,13 +36,16 @@ const ProjectsList = () => {
     }
   };
 
-  // Updated to accept either string or number type for ID to match what's coming from the database
+  // Fix: Convert id parameter to number before passing to Supabase
   const handleDeleteProject = async (id: string | number) => {
     try {
+      // Convert id to number if it's a string
+      const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+      
       const { error } = await supabase
         .from('projects')
         .delete()
-        .eq('id', id);
+        .eq('id', numericId);
 
       if (error) throw error;
       
