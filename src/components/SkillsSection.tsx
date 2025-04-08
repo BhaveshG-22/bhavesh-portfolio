@@ -79,14 +79,14 @@ const SkillsSection = () => {
             direction="ltr" 
             speed={isMobile ? "slow" : "medium"} 
             items={frontendTech} 
-            variant={isMobile ? "minimal" : "default"}
+            variant="default"
           />
           
           <TechStackSlider 
             direction="rtl" 
             speed={isMobile ? "slow" : "medium"} 
             items={backendTech} 
-            variant={isMobile ? "minimal" : "default"}
+            variant="default"
           />
         </div>
       </div>

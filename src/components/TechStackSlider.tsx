@@ -1,4 +1,3 @@
-
 // Updated TechStackSlider with responsive design for mobile
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -181,14 +180,14 @@ const TechStackSlider = ({
   };
 
   const getBadgeClasses = (item: TechItem) => {
-    const base = isMobile 
-      ? "px-2 py-1 text-xs font-medium flex items-center gap-1 transition-all duration-300" 
-      : "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-all duration-300";
+    // Consistent base class - no longer conditionally different based on mobile/desktop
+    const base = "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-all duration-300";
     
     const itemName = item.name;
     const itemColor = item.color?.trim() || techLogos[itemName]?.color || "bg-gradient-to-r from-gray-800 to-gray-600";
     const isActive = activeItem === itemName;
 
+    // Keep the variants consistent across all device sizes
     switch (variant) {
       case "glow":
         return `${base} ${isActive ? "scale-110 -translate-y-1" : "hover:scale-110 hover:-translate-y-1"} rounded-full ${itemColor} text-white border-none transform`;
@@ -269,17 +268,17 @@ const TechStackSlider = ({
           return (
             <div
               key={`${itemName}-${index}`}
-              className={`mx-1 my-1 md:mx-1.5 md:my-1.5 tech-item relative ${variant === "floating" && isActive ? "animate-float" : ""}`}
+              className={`mx-1.5 my-1.5 tech-item relative ${variant === "floating" && isActive ? "animate-float" : ""}`}
               onClick={() => handleItemClick(itemName)}
             >
               {showDescription && isActive && renderDescriptionPanel()}
               <Badge className={getBadgeClasses(item)} variant="outline">
                 {variant === "neon" ? (
-                  <span className="flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full bg-current/20 text-current">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-current/20 text-current">
                     {item.logo || logoInfo.icon}
                   </span>
                 ) : (
-                  <span className={`flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full ${variant === "minimal" ? "" : logoInfo.color} text-white`}>
+                  <span className={`flex items-center justify-center w-5 h-5 rounded-full ${variant === "minimal" ? "" : logoInfo.color} text-white`}>
                     {item.logo || logoInfo.icon}
                   </span>
                 )}
