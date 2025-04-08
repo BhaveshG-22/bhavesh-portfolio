@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SecretProjectAdd from "./pages/SecretProjectAdd";
 import Blog from "./pages/Blog";
+import SecretBlogAdd from "./pages/SecretBlogAdd";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/secret-project-add" element={<SecretProjectAdd />} />
+            <Route path="/secret-blog-add" element={<SecretBlogAdd />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
