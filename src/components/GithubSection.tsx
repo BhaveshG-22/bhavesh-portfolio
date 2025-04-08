@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 const GithubSection = () => {
   // You can change the GitHub username here
-  const githubUsername = "BhaveshG-22"; // Updated GitHub username
+  const githubUsername = "hkirat"; // Updated GitHub username
   
   return (
     <section id="github" className="section-padding bg-gray-100 dark:bg-black py-20">
