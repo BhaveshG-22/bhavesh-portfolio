@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +17,14 @@ const contactFormSchema = z.object({
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
+
+// Define the type for the database insertion that matches the required fields
+type ContactSubmissionInsert = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+};
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -77,11 +84,18 @@ const ContactSection = () => {
     try {
       console.log("Submitting form data:", formData);
       
-      // Fixed: Pass the formData object directly instead of wrapping it in an array
-      // Also, all required fields are present in formData
+      // Create a properly typed object to insert into Supabase
+      // This ensures all required fields are present and non-optional
+      const submissionData: ContactSubmissionInsert = {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      };
+      
       const { error, data } = await supabase
         .from('contact_submissions')
-        .insert(formData);
+        .insert(submissionData);
       
       if (error) {
         console.error("Supabase error:", error);
