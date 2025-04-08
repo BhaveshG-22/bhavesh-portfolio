@@ -36,10 +36,9 @@ const ProjectsList = () => {
     }
   };
 
-  // Fix: Change the parameter type from string to number or ensure we parse the string to a number
+  // Changed to accept string type for ID to match what's coming from the project.id
   const handleDeleteProject = async (id: string) => {
     try {
-      // Fix: Convert string id to number if needed by the API
       const { error } = await supabase
         .from('projects')
         .delete()

@@ -1,5 +1,5 @@
 
-import { Loader2, PenSquare, BookOpen } from "lucide-react";
+import { PenSquare, BookOpen, MessageSquare } from "lucide-react";
 import { 
   Sidebar, 
   SidebarContent, 
@@ -20,7 +20,7 @@ export const AdminSidebar = () => {
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Contact Submissions">
                 <a href="/contact-submissions">
-                  <Loader2 />
+                  <MessageSquare />
                   <span>Contact Form</span>
                 </a>
               </SidebarMenuButton>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -126,20 +125,24 @@ const SecretBlogAdd = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex flex-col w-full">
+      <div className="min-h-screen flex flex-col w-full bg-background text-foreground">
         <Header activeSection="admin" />
         
-        <div className="flex flex-1 pt-16"> {/* Add pt-16 to move content below navbar */}
-          <AdminSidebar />
-          <SidebarInset className="py-8 px-4 md:px-8 w-full overflow-y-auto">
-            <div className="max-w-4xl mx-auto"> {/* Increased max-width */}
+        <div className="flex flex-1">
+          {/* Fixed sidebar positioning */}
+          <div className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-10">
+            <AdminSidebar />
+          </div>
+          
+          <div className="ml-16 md:ml-[var(--sidebar-width)] w-full pt-20 px-4 md:px-8">
+            <div className="max-w-4xl mx-auto">
               <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold">Manage Blog Posts</h1>
+                <h1 className="text-3xl font-bold text-foreground">Manage Blog Posts</h1>
                 <SidebarTrigger />
               </div>
               <Separator className="mb-8" />
               
-              <div className="bg-card rounded-lg border p-6 shadow-sm mb-8"> {/* Added card styling */}
+              <div className="bg-card rounded-lg border border-border/60 p-6 shadow-md mb-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <Label htmlFor="title">Title</Label>
@@ -190,7 +193,7 @@ const SecretBlogAdd = () => {
 
               <Separator className="my-8" />
 
-              <h2 className="text-2xl font-bold mb-6">Existing Blog Posts</h2>
+              <h2 className="text-2xl font-bold mb-6 text-foreground">Existing Blog Posts</h2>
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin mr-2" />
@@ -220,7 +223,7 @@ const SecretBlogAdd = () => {
                 </div>
               )}
             </div>
-          </SidebarInset>
+          </div>
         </div>
         <Footer />
       </div>
