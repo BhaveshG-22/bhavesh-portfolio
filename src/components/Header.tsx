@@ -49,16 +49,7 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 Home
               </Link>
             </li>
-            <li>
-              <Link
-                to="/#projects"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
-                  activeSection === 'projects' ? 'text-primary' : ''
-                }`}
-              >
-                Projects
-              </Link>
-            </li>
+          
             <li>
               <Link
                 to="/projects"
