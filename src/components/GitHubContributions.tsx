@@ -106,10 +106,9 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         // Check if the API returned an error but still provided fallback data
         if (data.error) {
           setError(data.error);
-          toast({
-            title: "GitHub API Notice",
-            description: data.error,
-            variant: "default"
+          // Fix: Update toast to use the correct format for Sonner
+          toast(data.error, {
+            description: "Displaying simulated GitHub contribution data",
           });
         }
         
