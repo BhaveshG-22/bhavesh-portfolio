@@ -43,26 +43,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
             </li>
             <li>
               <Link
-                to="/#about"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
-                  activeSection === 'about' ? 'text-primary' : ''
-                }`}
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/#skills"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
-                  activeSection === 'skills' ? 'text-primary' : ''
-                }`}
-              >
-                Skills
-              </Link>
-            </li>
-            <li>
-              <Link
                 to="/#projects"
                 className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
                   activeSection === 'projects' ? 'text-primary' : ''
@@ -89,16 +69,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 }`}
               >
                 Blog
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/#contact"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
-                  activeSection === 'contact' ? 'text-primary' : ''
-                }`}
-              >
-                Contact
               </Link>
             </li>
           </ul>
@@ -149,22 +119,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                   Home
                 </Link>
                 <Link
-                  to="/#about"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${
-                    activeSection === 'about' ? 'text-primary' : ''
-                  }`}
-                >
-                  About
-                </Link>
-                <Link
-                  to="/#skills"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${
-                    activeSection === 'skills' ? 'text-primary' : ''
-                  }`}
-                >
-                  Skills
-                </Link>
-                <Link
                   to="/#projects"
                   className={`text-lg font-medium hover:text-primary transition-colors ${
                     activeSection === 'projects' ? 'text-primary' : ''
@@ -187,14 +141,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                   }`}
                 >
                   <BookOpen className="h-4 w-4 mr-2 inline-block" /> Blog
-                </Link>
-                <Link
-                  to="/#contact"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${
-                    activeSection === 'contact' ? 'text-primary' : ''
-                  }`}
-                >
-                  Contact
                 </Link>
               </nav>
               
