@@ -6,168 +6,198 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X, LogIn, LogOut, Mail, Github, Linkedin } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export interface HeaderProps {
   activeSection?: string;
 }
 
 export const Header = ({ activeSection }: HeaderProps) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isMobile = useIsMobile();
   const { user, logout } = useAuth();
-
-  useEffect(() => {
-    if (!isMobile && mobileMenuOpen) {
-      setMobileMenuOpen(false);
-    }
-  }, [isMobile]);
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
 
   const handleLogout = async () => {
     await logout();
   };
 
-  const renderMobileMenu = () => {
-    if (!mobileMenuOpen) return null;
-
-    return (
-      <div className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-40 flex flex-col">
-        <div className="flex justify-end p-4">
-          <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
-            <X />
-          </Button>
-        </div>
-        <nav className="flex flex-col items-center justify-center flex-1 gap-8 text-lg">
-          <Link 
-            to="/#home" 
-            className={`hover:text-teal-400 ${activeSection === 'home' ? 'text-teal-400' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            Home
-          </Link>
-          <Link 
-            to="/#about" 
-            className={`hover:text-teal-400 ${activeSection === 'about' ? 'text-teal-400' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            About
-          </Link>
-          <Link 
-            to="/#skills" 
-            className={`hover:text-teal-400 ${activeSection === 'skills' ? 'text-teal-400' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            Skills
-          </Link>
-          <Link 
-            to="/#projects" 
-            className={`hover:text-teal-400 ${activeSection === 'projects' ? 'text-teal-400' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            Projects
-          </Link>
-          <Link 
-            to="/#contact" 
-            className={`hover:text-teal-400 ${activeSection === 'contact' ? 'text-teal-400' : ''}`}
-            onClick={toggleMobileMenu}
-          >
-            Contact
-          </Link>
-          {user ? (
-            <Button variant="destructive" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" /> Logout
-            </Button>
-          ) : (
-            <Link to="/login" onClick={toggleMobileMenu}>
-              <Button size="sm">
-                <LogIn className="h-4 w-4 mr-2" /> Admin Login
-              </Button>
-            </Link>
-          )}
-        </nav>
-      </div>
-    );
-  };
-
   return (
     <header className="fixed top-0 w-full z-30 bg-black/90 backdrop-blur-sm border-b border-white/5">
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <Link 
-          to="/" 
-          className="font-bold text-xl flex items-center"
+      <div className="max-container flex items-center justify-between h-16 px-4">
+        <Link
+          to="/#hero"
+          className="text-xl font-bold hover:text-primary transition-colors"
         >
-          <div className="flex items-center">
-            <span className="font-bold text-white">BhaveshG</span>
-            <span className="text-blue-400">.dev</span>
-          </div>
+          <span className="text-gradient-light font-poppins">BhaveshG.dev</span>
         </Link>
-
+        
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link 
-            to="/#home" 
-            className={`hover:text-teal-400 ${activeSection === 'home' ? 'text-teal-400' : ''}`}
-          >
-            Home
-          </Link>
-          <Link 
-            to="/#about" 
-            className={`hover:text-teal-400 ${activeSection === 'about' ? 'text-teal-400' : ''}`}
-          >
-            About
-          </Link>
-          <Link 
-            to="/#skills" 
-            className={`hover:text-teal-400 ${activeSection === 'skills' ? 'text-teal-400' : ''}`}
-          >
-            Skills
-          </Link>
-          <Link 
-            to="/#projects" 
-            className={`hover:text-teal-400 ${activeSection === 'projects' ? 'text-teal-400' : ''}`}
-          >
-            Projects
-          </Link>
-          <Link 
-            to="/#contact" 
-            className={`hover:text-teal-400 ${activeSection === 'contact' ? 'text-teal-400' : ''}`}
-          >
-            Contact
-          </Link>
+        <nav className="hidden md:flex items-center gap-6">
+          <ul className="flex items-center gap-6">
+            <li>
+              <Link
+                to="/#hero"
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
+                  activeSection === 'home' ? 'text-primary' : ''
+                }`}
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/#about"
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
+                  activeSection === 'about' ? 'text-primary' : ''
+                }`}
+              >
+                About
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/#skills"
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
+                  activeSection === 'skills' ? 'text-primary' : ''
+                }`}
+              >
+                Skills
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/#projects"
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
+                  activeSection === 'projects' ? 'text-primary' : ''
+                }`}
+              >
+                Projects
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/#contact"
+                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${
+                  activeSection === 'contact' ? 'text-primary' : ''
+                }`}
+              >
+                Contact
+              </Link>
+            </li>
+          </ul>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            
+            <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100 dark:hover:bg-white/10">
+                <Github className="h-5 w-5" />
+              </Button>
+            </a>
+            
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground hover:bg-gray-100 dark:hover:bg-white/10">
+                <Linkedin className="h-5 w-5" />
+              </Button>
+            </a>
+            
+            <Link to="/#contact">
+              <Button size="default" className="h-10">
+                <Mail className="h-4 w-4 mr-2" />
+                Contact Me
+              </Button>
+            </Link>
+            
+            {user && (
+              <Button variant="destructive" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" /> Logout
+              </Button>
+            )}
+          </div>
         </nav>
-
-        {/* Right side buttons */}
-        <div className="flex items-center space-x-2">
+        
+        {/* Mobile Navigation */}
+        <div className="flex md:hidden items-center gap-2">
           <ThemeToggle />
           
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex" aria-label="Github">
-            <Github className="h-5 w-5" />
-          </Button>
-          
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex" aria-label="LinkedIn">
-            <Linkedin className="h-5 w-5" />
-          </Button>
-          
-          <Button variant="outline" size="sm" className="hidden md:inline-flex">
-            <Mail className="h-4 w-4 mr-2" /> Contact Me
-          </Button>
-          
-          {/* Mobile menu toggle */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="md:hidden" 
-            onClick={toggleMobileMenu}
-          >
-            <Menu />
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" className="px-4 py-2" aria-label="Open menu">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="flex flex-col pt-16">
+              <nav className="flex flex-col items-start gap-6">
+                <Link
+                  to="/#hero"
+                  className={`text-lg font-medium hover:text-primary transition-colors ${
+                    activeSection === 'home' ? 'text-primary' : ''
+                  }`}
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/#about"
+                  className={`text-lg font-medium hover:text-primary transition-colors ${
+                    activeSection === 'about' ? 'text-primary' : ''
+                  }`}
+                >
+                  About
+                </Link>
+                <Link
+                  to="/#skills"
+                  className={`text-lg font-medium hover:text-primary transition-colors ${
+                    activeSection === 'skills' ? 'text-primary' : ''
+                  }`}
+                >
+                  Skills
+                </Link>
+                <Link
+                  to="/#projects"
+                  className={`text-lg font-medium hover:text-primary transition-colors ${
+                    activeSection === 'projects' ? 'text-primary' : ''
+                  }`}
+                >
+                  Projects
+                </Link>
+                <Link
+                  to="/#contact"
+                  className={`text-lg font-medium hover:text-primary transition-colors ${
+                    activeSection === 'contact' ? 'text-primary' : ''
+                  }`}
+                >
+                  Contact
+                </Link>
+              </nav>
+              
+              <div className="flex flex-col gap-4 mt-8">
+                <div className="flex gap-2">
+                  <a href="https://github.com" target="_blank" rel="noreferrer">
+                    <Button variant="ghost" size="icon">
+                      <Github className="h-5 w-5" />
+                    </Button>
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noreferrer">
+                    <Button variant="ghost" size="icon">
+                      <Linkedin className="h-5 w-5" />
+                    </Button>
+                  </a>
+                </div>
+                
+                <Link to="/#contact">
+                  <Button className="w-full">
+                    <Mail className="h-4 w-4 mr-2" />
+                    Contact Me
+                  </Button>
+                </Link>
+                
+                {user && (
+                  <Button variant="destructive" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" /> Logout
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-      
-      {renderMobileMenu()}
     </header>
   );
 };
