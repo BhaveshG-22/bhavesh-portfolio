@@ -84,12 +84,13 @@ export default function GithubSettings() {
           
         if (insertError) {
           console.error("Error creating GitHub settings:", insertError);
-          toast.error("Failed to save GitHub settings");
+          toast.error("Failed to save GitHub settings: " + insertError.message);
           return;
         }
         
         savedSettingsId = newSettings.id;
         setSettingsId(newSettings.id);
+        toast.success("GitHub settings created successfully");
       } else {
         // Update existing settings
         const { error: updateError } = await supabase
@@ -99,33 +100,43 @@ export default function GithubSettings() {
           
         if (updateError) {
           console.error("Error updating GitHub settings:", updateError);
-          toast.error("Failed to save GitHub settings");
+          toast.error("Failed to save GitHub settings: " + updateError.message);
           return;
         }
+        
+        toast.success("GitHub settings updated successfully");
       }
       
       // If GitHub token is provided, call the edge function to save it
       if (values.githubToken) {
-        const response = await fetch(
-          `${window.location.origin}/api/save-github-token`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-            },
-            body: JSON.stringify({ token: values.githubToken }),
+        try {
+          const response = await fetch(
+            `${window.location.origin}/api/save-github-token`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+              },
+              body: JSON.stringify({ token: values.githubToken }),
+            }
+          );
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error saving GitHub token:", errorText);
+            toast.error("Failed to save GitHub token");
+            return;
           }
-        );
-        
-        if (!response.ok) {
-          console.error("Error saving GitHub token:", await response.text());
+          
+          toast.success("GitHub token saved successfully");
+        } catch (error) {
+          console.error("Error calling edge function:", error);
           toast.error("Failed to save GitHub token");
           return;
         }
       }
       
-      toast.success("GitHub settings saved successfully");
       form.setValue("githubToken", ""); // Clear token field after save
     } catch (error) {
       console.error("Error:", error);
