@@ -606,7 +606,7 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
           {/* Contributions grid with month labels */}
           <div className="flex-1 overflow-hidden">
             {/* Month labels row */}
-            <div className="relative h-5">
+            <div className="relative h-5 mb-1">
               {monthLabels.map((labelData, index) => (
                 <div 
                   key={index} 
