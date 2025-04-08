@@ -13,7 +13,7 @@ import {
 export const AdminSidebar = () => {
   return (
     <Sidebar>
-      <SidebarContent>
+      <SidebarContent className="pt-16">
         <SidebarGroup>
           <SidebarGroupLabel>Admin Dashboard</SidebarGroupLabel>
           <SidebarMenu>
