@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -33,6 +32,7 @@ type Project = {
   isDefault?: boolean;
 };
 
+// Changed to preserve casing in default categories
 const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
 
 const SecretProjectAdd = () => {
@@ -136,7 +136,11 @@ const SecretProjectAdd = () => {
   ) => {
     const { name, value } = e.target;
     if (editingProject) {
-      setEditingProject((prev) => prev ? { ...prev, [name]: value } : null);
+      if (name === "tags" && typeof value === "string") {
+        setEditingProject((prev) => prev ? { ...prev, [name]: value } : null);
+      } else {
+        setEditingProject((prev) => prev ? { ...prev, [name]: value } : null);
+      }
     }
   };
 
@@ -261,7 +265,7 @@ const SecretProjectAdd = () => {
   };
 
   const startEditing = (project: Project) => {
-    // If project is an array, convert to comma-separated string for editing
+    // If project has tags as an array, convert to comma-separated string for editing
     const projectForEditing = {
       ...project,
       tags: Array.isArray(project.tags) ? project.tags.join(", ") : project.tags
@@ -322,25 +326,27 @@ const SecretProjectAdd = () => {
     }
   };
 
+  // Modified to preserve original case
   const addCategory = () => {
     if (!newCategory.trim()) {
       toast.error("Category name cannot be empty");
       return;
     }
     
-    if (categories.includes(newCategory.trim().toLowerCase())) {
+    // Check case insensitively for duplicates, but preserve original case for storage
+    if (categories.some(cat => cat.toLowerCase() === newCategory.trim().toLowerCase())) {
       toast.error("Category already exists");
       return;
     }
     
     try {
-      // Add new category (excluding "all" which is always first)
+      // Add new category preserving case
       const updatedCategories = [...categories];
       if (updatedCategories[0] === "all") {
-        // Insert after "all"
-        updatedCategories.splice(1, 0, newCategory.trim().toLowerCase());
+        // Insert after "all" while preserving case
+        updatedCategories.splice(1, 0, newCategory.trim());
       } else {
-        updatedCategories.unshift(newCategory.trim().toLowerCase());
+        updatedCategories.unshift(newCategory.trim());
       }
       
       // Save to local storage
@@ -780,4 +786,3 @@ const SecretProjectAdd = () => {
 };
 
 export default SecretProjectAdd;
-

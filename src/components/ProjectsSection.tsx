@@ -17,6 +17,7 @@ type Project = {
   isDefault?: boolean;
 };
 
+// Updated to match the case-preserved version in SecretProjectAdd
 const DEFAULT_CATEGORIES = ["all", "frontend", "backend", "fullstack"];
 
 const ProjectsSection = () => {
@@ -105,7 +106,7 @@ const ProjectsSection = () => {
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
-    : projects.filter(project => project.category === activeCategory);
+    : projects.filter(project => project.category.toLowerCase() === activeCategory.toLowerCase());
 
   return (
     <section id="projects" className="section-padding bg-gray-950 text-white">
@@ -121,12 +122,12 @@ const ProjectsSection = () => {
                 onClick={() => setActiveCategory(category)}
                 className={cn(
                   "px-4 py-1 text-sm rounded-md transition-all",
-                  activeCategory === category
+                  activeCategory.toLowerCase() === category.toLowerCase()
                     ? "bg-teal-500/20 text-teal-400 border border-teal-500/40"
                     : "text-gray-400 hover:text-gray-200"
                 )}
               >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {category === "all" ? "All" : category}
               </button>
             ))}
           </div>
