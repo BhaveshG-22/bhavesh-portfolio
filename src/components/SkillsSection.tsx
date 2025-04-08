@@ -1,5 +1,6 @@
 
 import TechStackSlider from "./TechStackSlider";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Code,
   FileCode,
@@ -27,6 +28,8 @@ import {
 } from "lucide-react";
 
 const SkillsSection = () => {
+  const isMobile = useIsMobile();
+  
   // Tech stacks for sliders with standard Lucide icons
   const frontendTech = [
     { name: "HTML", icon: Globe, color: "bg-orange-500" },
@@ -61,23 +64,31 @@ const SkillsSection = () => {
       <div className="absolute inset-0 bg-gradient-to-tl from-primary/5 to-transparent z-0" />
 
       <div className="max-container relative z-10">
-        <div className="flex flex-col items-center text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Tools that I have used</h2>
-          <div className="w-20 h-1.5 bg-primary rounded-full mb-8" />
-          <p className="text-lg text-muted-foreground max-w-3xl">
+        <div className="flex flex-col items-center text-center mb-6 md:mb-8">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">Tools that I have used</h2>
+          <div className="w-16 md:w-20 h-1 md:h-1.5 bg-primary rounded-full mb-6 md:mb-8" />
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl px-4 md:px-0">
             I've acquired a diverse range of skills throughout my journey as a full-stack developer.
             Here's a glimpse of my technical expertise and the technologies I work with.
           </p>
         </div>
 
-        {/* Tech stack sliders - removed shadow class */}
-        <div className="mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-4">
+        {/* Tech stack sliders - with responsive design */}
+        <div className="mb-8 md:mb-12 bg-white/20 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10 rounded-xl p-3 md:p-4">
 
-          <TechStackSlider direction="ltr" speed="medium" items={frontendTech} />          
-          <TechStackSlider direction="rtl" speed="medium" items={backendTech} />
-
-   
-
+          <TechStackSlider 
+            direction="ltr" 
+            speed={isMobile ? "slow" : "medium"} 
+            items={frontendTech} 
+            variant={isMobile ? "minimal" : "default"}
+          />          
+          
+          <TechStackSlider 
+            direction="rtl" 
+            speed={isMobile ? "slow" : "medium"} 
+            items={backendTech} 
+            variant={isMobile ? "minimal" : "default"}
+          />
 
         </div>
       </div>

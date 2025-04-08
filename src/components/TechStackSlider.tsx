@@ -1,6 +1,8 @@
-// Updated TechStackSlider with infinite scroll (maintaining original styling)
+
+// Updated TechStackSlider with responsive design for mobile
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   FileCode,
   FileJson,
@@ -102,6 +104,12 @@ const TechStackSlider = ({
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  
+  // Use slower animation on mobile
+  const mobileAdjustedSpeed = isMobile 
+    ? (speed === "fast" ? "medium" : (speed === "medium" ? "slow" : "slow")) 
+    : speed;
 
   const techLogos: TechLogos = useMemo(() => ({
     HTML: { icon: <FileCode className="h-4 w-4" />, color: "bg-gradient-to-r from-orange-600 via-red-500 to-orange-400", description: "The standard markup language for web pages" },
@@ -118,9 +126,16 @@ const TechStackSlider = ({
     TensorFlow: { icon: <Bot className="h-4 w-4" />, color: "bg-gradient-to-r from-orange-600 via-red-500 to-red-400", description: "Open-source machine learning framework" }
   }), []);
 
+  // Adjust number of duplications based on screen size
+  const duplicateFactor = useMemo(() => isMobile ? 2 : 3, [isMobile]);
+  
   const duplicatedItems = useMemo(() => {
-    return [...items, ...items, ...items];
-  }, [items]);
+    const duplicatedArray = [];
+    for (let i = 0; i < duplicateFactor; i++) {
+      duplicatedArray.push(...items);
+    }
+    return duplicatedArray;
+  }, [items, duplicateFactor]);
 
   useEffect(() => {
     let styleElement = document.getElementById('tech-slider-animations');
@@ -140,21 +155,36 @@ const TechStackSlider = ({
   useEffect(() => {
     const setupAnimation = () => {
       if (!sliderRef.current || !containerRef.current) return;
-      const fullWidth = sliderRef.current.scrollWidth / 3;
+      const fullWidth = sliderRef.current.scrollWidth / duplicateFactor;
       sliderRef.current.style.setProperty("--slider-shift", `${fullWidth}px`);
-      sliderRef.current.style.setProperty("--animation-duration", ANIMATION_DURATIONS[speed]);
+      sliderRef.current.style.setProperty("--animation-duration", ANIMATION_DURATIONS[mobileAdjustedSpeed]);
     };
+    
     setupAnimation();
-    window.addEventListener("resize", setupAnimation);
-    return () => window.removeEventListener("resize", setupAnimation);
-  }, [speed, items]);
+    
+    // Add resize observer for more responsive behavior
+    const resizeObserver = new ResizeObserver(() => {
+      setupAnimation();
+    });
+    
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [mobileAdjustedSpeed, duplicateFactor]);
 
   const handleItemClick = (name: string) => {
     setActiveItem(activeItem === name ? null : name);
   };
 
   const getBadgeClasses = (item: TechItem) => {
-    const base = "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-all duration-300";
+    const base = isMobile 
+      ? "px-2 py-1 text-xs font-medium flex items-center gap-1 transition-all duration-300" 
+      : "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-all duration-300";
+    
     const itemName = item.name;
     const itemColor = item.color?.trim() || techLogos[itemName]?.color || "bg-gradient-to-r from-gray-800 to-gray-600";
     const isActive = activeItem === itemName;
@@ -197,28 +227,37 @@ const TechStackSlider = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full overflow-hidden relative py-6 ${className}`}
+      className={`w-full overflow-hidden relative py-4 md:py-6 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
         if (!autoplay) setActiveItem(null);
       }}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => {
+        if (!autoplay) setTimeout(() => setActiveItem(null), 3000);
+      }}
     >
       {!autoplay && (
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center gap-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-3 py-1 md:px-4 md:py-1 rounded-full border border-gray-200 dark:border-gray-700">
           <MousePointer className="h-3 w-3" />
-          <span>Hover and click to explore</span>
+          <span className="hidden md:inline">Hover and click to explore</span>
+          <span className="md:hidden">Tap to explore</span>
         </div>
       )}
 
       <div
         ref={sliderRef}
         className={`
-          flex flex-wrap md:flex-nowrap items-center justify-center
+          flex flex-wrap md:flex-nowrap items-center justify-center gap-1 md:gap-0
           ${duplicatedItems.length > items.length ? (direction === "ltr" ? "animate-marquee" : "animate-marquee-reverse") : ""}
           ${isHovered || !autoplay ? "paused" : "running"}
         `}
-        style={{ animationDuration: ANIMATION_DURATIONS[speed], width: "fit-content" }}
+        style={{ 
+          animationDuration: ANIMATION_DURATIONS[mobileAdjustedSpeed], 
+          width: "fit-content",
+          paddingLeft: isMobile ? '0.5rem' : '0'
+        }}
       >
         {duplicatedItems.map((item, index) => {
           const itemName = item.name;
@@ -230,17 +269,17 @@ const TechStackSlider = ({
           return (
             <div
               key={`${itemName}-${index}`}
-              className={`mx-1.5 my-1.5 tech-item relative ${variant === "floating" && isActive ? "animate-float" : ""}`}
+              className={`mx-1 my-1 md:mx-1.5 md:my-1.5 tech-item relative ${variant === "floating" && isActive ? "animate-float" : ""}`}
               onClick={() => handleItemClick(itemName)}
             >
               {showDescription && isActive && renderDescriptionPanel()}
               <Badge className={getBadgeClasses(item)} variant="outline">
                 {variant === "neon" ? (
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-current/20 text-current">
+                  <span className="flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full bg-current/20 text-current">
                     {item.logo || logoInfo.icon}
                   </span>
                 ) : (
-                  <span className={`flex items-center justify-center w-5 h-5 rounded-full ${variant === "minimal" ? "" : logoInfo.color} text-white`}>
+                  <span className={`flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full ${variant === "minimal" ? "" : logoInfo.color} text-white`}>
                     {item.logo || logoInfo.icon}
                   </span>
                 )}
