@@ -45,6 +45,8 @@ const ContactSubmissions = () => {
       setLoading(true);
       try {
         console.log("Fetching contact submissions...");
+        
+        // Using .from('contact_submissions') with explicit typing
         const { data, error } = await supabase
           .from('contact_submissions')
           .select("*")
@@ -58,9 +60,19 @@ const ContactSubmissions = () => {
         console.log("Raw response from Supabase:", data);
         
         if (data && Array.isArray(data)) {
-          // Properly type the data received from Supabase
+          // Check if data is actually empty
+          if (data.length === 0) {
+            console.log("No submissions found in database");
+          }
+          
+          // Explicitly cast with type assertion
           setSubmissions(data as ContactSubmission[]);
           console.log("Submissions set to state:", data.length, "items found");
+          
+          // Log first item for debugging if available
+          if (data.length > 0) {
+            console.log("Sample submission:", JSON.stringify(data[0]));
+          }
         } else {
           console.warn("No submissions data or invalid format received:", data);
           setSubmissions([]);
@@ -76,6 +88,43 @@ const ContactSubmissions = () => {
 
     fetchSubmissions();
   }, []);
+
+  // Debugging helper to manually refresh data
+  const refreshSubmissions = () => {
+    console.log("Manual refresh triggered");
+    setLoading(true);
+    // Re-fetch data by triggering effect
+    setSubmissions([]);
+    
+    setTimeout(() => {
+      const fetchSubmissions = async () => {
+        try {
+          console.log("Manual refresh: Fetching submissions...");
+          const { data, error } = await supabase
+            .from('contact_submissions')
+            .select("*")
+            .order("created_at", { ascending: false });
+  
+          if (error) {
+            console.error("Manual refresh error:", error);
+            throw error;
+          }
+          
+          console.log("Manual refresh received:", data);
+          if (data) {
+            setSubmissions(data as ContactSubmission[]);
+          }
+        } catch (error: any) {
+          console.error("Manual refresh failed:", error);
+          toast.error(`Refresh failed: ${error.message}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchSubmissions();
+    }, 500);
+  };
 
   const updateStatus = async (id: string, status: string) => {
     try {
@@ -113,7 +162,12 @@ const ContactSubmissions = () => {
             <div className="max-w-5xl mx-auto"> {/* Increased max-width */}
               <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold">Contact Form Submissions</h1>
-                <SidebarTrigger />
+                <div className="flex gap-2">
+                  <Button onClick={refreshSubmissions} variant="outline" size="sm">
+                    Refresh Data
+                  </Button>
+                  <SidebarTrigger />
+                </div>
               </div>
               <Separator className="mb-8" />
 
@@ -124,7 +178,13 @@ const ContactSubmissions = () => {
                 </div>
               ) : submissions.length === 0 ? (
                 <div className="text-center py-12 bg-muted rounded-lg">
-                  <p className="text-muted-foreground">No contact form submissions yet.</p>
+                  <p className="text-muted-foreground">No contact form submissions found.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    If you've submitted forms, there might be a connection issue.
+                  </p>
+                  <Button onClick={refreshSubmissions} variant="outline" size="sm" className="mt-4">
+                    Try Refreshing
+                  </Button>
                 </div>
               ) : (
                 <div className="rounded-lg border shadow-sm overflow-hidden bg-card">
