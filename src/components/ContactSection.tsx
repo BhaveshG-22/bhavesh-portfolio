@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,39 +7,94 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+
+// Create schema for form validation
+const contactFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  subject: z.string().min(3, "Subject must be at least 3 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+type ContactFormData = z.infer<typeof contactFormSchema>;
 
 const ContactSection = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
     subject: "",
     message: "",
   });
+  const [errors, setErrors] = useState<Partial<ContactFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (errors[name as keyof ContactFormData]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    try {
+      contactFormSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Partial<ContactFormData> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            newErrors[err.path[0] as keyof ContactFormData] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate the form first
+    if (!validateForm()) {
+      toast({
+        title: "Form validation error",
+        description: "Please check the form for errors and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      // Use type assertion to work around TypeScript limitations
-      const { error } = await supabase
-        .from('contact_submissions' as any)
-        .insert([formData as any]);
+      console.log("Submitting form data:", formData);
       
-      if (error) throw error;
+      // Submit data to Supabase contact_submissions table
+      const { error, data } = await supabase
+        .from('contact_submissions')
+        .insert([formData]);
+      
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
 
+      console.log("Successfully submitted form data:", data);
+      
       toast({
         title: "Message sent!",
         description: "Thank you for your message. I'll get back to you soon.",
       });
       
+      // Reset form after successful submission
       setFormData({
         name: "",
         email: "",
@@ -46,12 +102,12 @@ const ContactSection = () => {
         message: "",
       });
     } catch (error: any) {
+      console.error("Error submitting form:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to send message. Please try again.",
         variant: "destructive",
       });
-      console.error("Error submitting form:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -128,8 +184,12 @@ const ContactSection = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="John Doe"
+                      className={errors.name ? "border-destructive" : ""}
                       required
                     />
+                    {errors.name && (
+                      <p className="text-sm text-destructive">{errors.name}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">
@@ -142,8 +202,12 @@ const ContactSection = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="john@example.com"
+                      className={errors.email ? "border-destructive" : ""}
                       required
                     />
+                    {errors.email && (
+                      <p className="text-sm text-destructive">{errors.email}</p>
+                    )}
                   </div>
                 </div>
                 
@@ -157,8 +221,12 @@ const ContactSection = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     placeholder="Project Inquiry"
+                    className={errors.subject ? "border-destructive" : ""}
                     required
                   />
+                  {errors.subject && (
+                    <p className="text-sm text-destructive">{errors.subject}</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -172,8 +240,12 @@ const ContactSection = () => {
                     onChange={handleChange}
                     placeholder="Tell me about your project..."
                     rows={5}
+                    className={errors.message ? "border-destructive" : ""}
                     required
                   />
+                  {errors.message && (
+                    <p className="text-sm text-destructive">{errors.message}</p>
+                  )}
                 </div>
                 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
