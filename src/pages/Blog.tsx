@@ -5,8 +5,7 @@ import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, FileText, Search, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BookOpen, FileText, Search } from "lucide-react";
 
 type BlogPost = {
   id: number;
@@ -123,15 +122,7 @@ const Blog = () => {
               Thoughts, stories and ideas about web development, design and technology
             </p>
             
-            {/* Admin link - would typically be protected by auth in a real app */}
-            <div className="mt-4">
-              <Button variant="outline" size="sm" asChild className="gap-1">
-                <Link to="/secret-blog-add">
-                  <Plus className="h-3.5 w-3.5" />
-                  Manage Blog
-                </Link>
-              </Button>
-            </div>
+            {/* Removed the Manage Blog button */}
           </div>
 
           {/* Search and Filter */}
