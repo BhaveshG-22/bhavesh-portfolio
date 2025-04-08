@@ -6,11 +6,13 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const GithubSection = () => {
-  const [githubUsername, setGithubUsername] = useState<string>("octocat");
+  const [githubUsername, setGithubUsername] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     async function fetchUsername() {
       try {
+        setLoading(true);
         const { data, error } = await supabase
           .from("github_settings")
           .select("github_username")
@@ -23,6 +25,8 @@ const GithubSection = () => {
         }
       } catch (err) {
         console.error("Error:", err);
+      } finally {
+        setLoading(false);
       }
     }
     
@@ -57,7 +61,7 @@ const GithubSection = () => {
             asChild
           >
             <a 
-              href={`https://github.com/${githubUsername}`}
+              href={`https://github.com/${githubUsername || 'octocat'}`}
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2"

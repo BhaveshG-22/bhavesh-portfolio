@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -29,6 +29,7 @@ interface ContributionData {
   totalContributions: number;
   contributionDays: ContributionDay[];
   weeks?: WeekData[]; // Generated from contributionDays
+  error?: string; // Error message if API failed but returned fallback data
 }
 
 interface GitHubContributionsProps {
@@ -44,7 +45,6 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [username, setUsername] = useState<string | undefined>(propUsername);
-  const { toast } = useToast();
   
   // Fetch username from settings if not provided as prop
   useEffect(() => {
@@ -83,9 +83,15 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
       
       try {
         // Call our Supabase Edge Function proxy
-        const functionUrl = `/api/github-contributions?username=${username}`;
+        const functionUrl = `/functions/v1/github-contributions?username=${username}`;
         
-        const response = await fetch(functionUrl);
+        const response = await fetch(`${window.location.origin}${functionUrl}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // No auth needed as the function handles public access
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`Error fetching GitHub contributions: ${response.status}`);
@@ -95,6 +101,16 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
         
         if (!data || !data.contributionDays) {
           throw new Error('No contribution data found');
+        }
+        
+        // Check if the API returned an error but still provided fallback data
+        if (data.error) {
+          setError(data.error);
+          toast({
+            title: "GitHub API Notice",
+            description: data.error,
+            variant: "default"
+          });
         }
         
         // Process the data to add contribution levels to each day
@@ -133,13 +149,6 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
       } catch (err: any) {
         console.error("Error fetching GitHub contributions:", err);
         
-        // Show toast notification for API error
-        toast({
-          title: "GitHub API Error",
-          description: "Using simulated contribution data instead.",
-          variant: "destructive"
-        });
-        
         setError(err.message || "Failed to fetch GitHub contributions");
         setLoading(false);
         
@@ -149,7 +158,7 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
     };
     
     fetchContributions();
-  }, [username, toast]);
+  }, [username]);
   
   // Generate fallback contribution data if the API fails
   const generateFallbackData = () => {
@@ -210,7 +219,8 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
       userName: username || "octocat",
       totalContributions,
       contributionDays,
-      weeks
+      weeks,
+      error: "Using simulated contribution data"
     });
   };
   
@@ -305,9 +315,9 @@ const GitHubContributions = ({ username: propUsername }: GitHubContributionsProp
       {error && (
         <Alert variant="destructive" className="mb-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>GitHub API Error</AlertTitle>
+          <AlertTitle>GitHub API Notice</AlertTitle>
           <AlertDescription>
-            Showing simulated contribution data instead.
+            {error}
           </AlertDescription>
         </Alert>
       )}

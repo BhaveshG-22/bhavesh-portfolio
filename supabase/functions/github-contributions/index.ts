@@ -15,17 +15,17 @@ interface ApiResponse {
 }
 
 serve(async (req: Request) => {
-  const url = new URL(req.url);
-  const username = url.searchParams.get("username");
-  
-  if (!username) {
-    return new Response(JSON.stringify({ error: "Username is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
   try {
+    const url = new URL(req.url);
+    const username = url.searchParams.get("username");
+    
+    if (!username) {
+      return new Response(JSON.stringify({ error: "Username is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -42,9 +42,19 @@ serve(async (req: Request) => {
     
     if (!response.ok) {
       console.error(`API error: ${response.status} ${response.statusText}`);
-      return new Response(JSON.stringify({ error: "Failed to fetch GitHub contributions" }), {
-        status: response.status,
-        headers: { "Content-Type": "application/json" },
+      
+      // Generate fallback data
+      const fallbackData = generateFallbackData(username);
+      
+      return new Response(JSON.stringify({
+        ...fallbackData,
+        error: "Failed to fetch from GitHub API, using simulated data",
+      }), {
+        status: 200,
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "public, max-age=1800" // Cache for 30 minutes
+        },
       });
     }
     
@@ -59,9 +69,62 @@ serve(async (req: Request) => {
     });
   } catch (error) {
     console.error("Error fetching GitHub contributions:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
+    
+    // Generate fallback data with the default username
+    const fallbackData = generateFallbackData("octocat");
+    
+    return new Response(JSON.stringify({
+      ...fallbackData,
+      error: "Internal server error, using simulated data"
+    }), {
+      status: 200, // Still return 200 with fallback data
       headers: { "Content-Type": "application/json" },
     });
   }
 });
+
+// Function to generate fallback contribution data
+function generateFallbackData(username: string): ApiResponse {
+  const today = new Date();
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(today.getFullYear() - 1);
+  
+  const contributionDays: ContributionDay[] = [];
+  let totalContributions = 0;
+  
+  // Generate 365 days of data (1 year)
+  for (let dayIndex = 0; dayIndex < 365; dayIndex++) {
+    const date = new Date(oneYearAgo);
+    date.setDate(date.getDate() + dayIndex);
+    const dateStr = date.toISOString().split('T')[0];
+    
+    // Random contribution count
+    const rand = Math.random();
+    let contributionCount = 0;
+    
+    if (rand < 0.6) {
+      contributionCount = 0;
+    } else if (rand < 0.75) {
+      contributionCount = 1;
+    } else if (rand < 0.85) {
+      contributionCount = Math.floor(Math.random() * 3) + 2; // 2-4
+    } else if (rand < 0.95) {
+      contributionCount = Math.floor(Math.random() * 5) + 5; // 5-9
+    } else {
+      contributionCount = Math.floor(Math.random() * 15) + 10; // 10-24
+    }
+    
+    contributionDays.push({
+      contributionCount,
+      date: dateStr,
+    });
+    
+    totalContributions += contributionCount;
+  }
+  
+  return {
+    userName: username,
+    totalContributions,
+    contributionDays,
+  };
+}
