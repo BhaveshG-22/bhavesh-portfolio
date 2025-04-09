@@ -15,7 +15,9 @@ const GithubSection = () => {
           </p>
         </div>
         
-        <GitHubContributions username="hkirat" />
+        <div className="w-full">
+          <GitHubContributions username="hkirat" />
+        </div>
       </div>
     </section>
   );

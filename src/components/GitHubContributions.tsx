@@ -145,7 +145,7 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
 
   if (isLoading) {
     return (
-      <div className="bg-black/80 p-4 rounded-lg border border-gray-700">
+      <div className="w-full bg-black/80 p-4 rounded-lg border border-gray-700">
         <div className="flex items-center space-x-2 mb-4">
           <Calendar className="h-5 w-5 text-gray-400" />
           <h3 className="text-base font-medium text-white">GitHub Contributions</h3>
@@ -160,7 +160,7 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
 
   if (error) {
     return (
-      <div className="bg-black/80 p-4 rounded-lg border border-gray-700">
+      <div className="w-full bg-black/80 p-4 rounded-lg border border-gray-700">
         <div className="flex items-center space-x-2 mb-4">
           <Calendar className="h-5 w-5 text-gray-400" />
           <h3 className="text-base font-medium text-white">GitHub Contributions</h3>
@@ -173,7 +173,7 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
   }
 
   return (
-    <div className="bg-black/80 p-4 rounded-lg border border-gray-700">
+    <div className="w-full bg-black/80 p-4 rounded-lg border border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Calendar className="h-5 w-5 text-gray-400" />
@@ -193,15 +193,14 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
             <div className="flex flex-col mr-2 mt-6">
               <div className="h-4"></div>
             </div>
-            <div className="flex-1 flex">
+            <div className="relative flex-1 flex">
               {monthLabels.map((month, idx) => (
                 <div 
                   key={idx} 
-                  className="text-xs text-gray-500" 
+                  className="absolute text-xs text-gray-500" 
                   style={{ 
-                    position: 'absolute', 
-                    marginLeft: `${month.index * 14}px`,
-                    marginTop: '-20px'
+                    left: `${month.index * 14}px`,
+                    top: '-20px'
                   }}
                 >
                   {month.name}
