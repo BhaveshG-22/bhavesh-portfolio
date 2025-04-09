@@ -77,6 +77,22 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
     }
   }, [username]);
 
+  // Generate month labels
+  const generateMonthLabels = () => {
+    const months = [];
+    const currentDate = new Date(startDate);
+    
+    for (let i = 0; i < 12; i++) {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      months.push(currentDate.toLocaleString('default', { month: 'short' }));
+    }
+    
+    return months;
+  };
+
+  // Days of the week
+  const weekdays = ['Mon', 'Wed', 'Fri'];
+
   if (isLoading) {
     return (
       <div className="w-full bg-black/80 p-4 rounded-lg border border-gray-700">
@@ -120,22 +136,39 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
         )}
       </div>
 
-      <div className="w-full overflow-x-auto py-2">
-        <div className="min-w-full w-full">
-          {heatmapValues.length > 0 && (
-            <Heatmap
-              startDate={startDate}
-              values={heatmapValues}
-              emptyColor={[30, 40, 50]}
-              baseColor={[57, 211, 83]} // GitHub's green color
-              scaleFactor={15}
-              style={{ 
-                width: '100%', 
-                borderRadius: '4px',
-                padding: '0.5rem'
-              }}
-            />
-          )}
+      {/* Month labels row */}
+      <div className="flex mb-1 pl-12 text-xs text-gray-500">
+        {generateMonthLabels().map((month, idx) => (
+          <div key={`month-${idx}`} className="flex-1 text-center">{month}</div>
+        ))}
+      </div>
+
+      <div className="flex">
+        {/* Day labels column */}
+        <div className="flex flex-col justify-around pr-2 text-xs text-gray-500">
+          {weekdays.map((day, idx) => (
+            <div key={`day-${idx}`} className="h-4">{day}</div>
+          ))}
+        </div>
+
+        {/* Heatmap */}
+        <div className="w-full overflow-x-auto py-2">
+          <div className="min-w-full w-full">
+            {heatmapValues.length > 0 && (
+              <Heatmap
+                startDate={startDate}
+                values={heatmapValues}
+                emptyColor={[30, 40, 50]}
+                baseColor={[57, 211, 83]} // GitHub's green color
+                scaleFactor={15}
+                style={{ 
+                  width: '100%', 
+                  borderRadius: '4px',
+                  padding: '0.5rem'
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
       
