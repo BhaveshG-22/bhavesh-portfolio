@@ -145,10 +145,14 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
 
       <div className="flex">
         {/* Day labels column */}
-        <div className="flex flex-col justify-around pr-2 text-xs text-gray-500">
-          {weekdays.map((day, idx) => (
-            <div key={`day-${idx}`} className="h-4">{day}</div>
-          ))}
+        <div className="flex flex-col h-full pr-2 text-xs text-gray-500">
+          <div style={{ height: '20%' }}></div>
+          <div style={{ height: '10%' }}>Mon</div>
+          <div style={{ height: '10%' }}></div>
+          <div style={{ height: '10%' }}>Wed</div>
+          <div style={{ height: '10%' }}></div>
+          <div style={{ height: '10%' }}>Fri</div>
+          <div style={{ height: '30%' }}></div>
         </div>
 
         {/* Heatmap */}
