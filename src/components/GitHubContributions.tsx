@@ -141,7 +141,7 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
       </div>
 
       <div className="flex">
-        {/* Day labels column */}
+        {/* Day labels column with specific height to match heatmap */}
         <div className="flex flex-col justify-between pr-2 text-xs text-gray-500" style={{ height: '104px' }}>
           <div className="pt-2">Mon</div>
           <div>Wed</div>
