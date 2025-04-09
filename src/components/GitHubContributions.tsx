@@ -11,12 +11,20 @@ type ContributionDay = {
 
 type FormattedContribution = ContributionDay & { level: number };
 
+// Add props interface for the component
+interface GitHubContributionsProps {
+  username: string;
+}
+
 const cn = (...classes: string[]) => classes.filter(Boolean).join(" ");
 
-const GitHubContributions = () => {
+const GitHubContributions = ({ username }: GitHubContributionsProps) => {
   const [data, setData] = useState<FormattedContribution[]>([]);
 
   useEffect(() => {
+    // We use the mockGithubData for now, but username is available when needed
+    console.log(`Loading GitHub data for username: ${username}`);
+    
     const processed = mockGithubData.contributionDays.map((day) => {
       const count = day.contributionCount;
       let level = 0;
@@ -28,7 +36,16 @@ const GitHubContributions = () => {
       return { ...day, level };
     });
     setData(processed);
-  }, []);
+  }, [username]);
+
+  // Safely handle initial render with empty data
+  if (data.length === 0) {
+    return (
+      <div className="bg-black p-4 rounded-lg">
+        <p className="text-gray-400">Loading contributions...</p>
+      </div>
+    );
+  }
 
   const startDate = new Date(data[0]?.date || new Date());
   const endDate = new Date(data[data.length - 1]?.date || new Date());
@@ -89,7 +106,9 @@ const GitHubContributions = () => {
           <Info className="h-5 w-5 text-blue-300 mt-0.5 mr-2" />
           <div>
             <h4 className="text-sm font-medium text-blue-300">Using Mock Data</h4>
-            <p className="text-sm text-blue-400">Displaying hard-coded GitHub contribution data for demonstration purposes.</p>
+            <p className="text-sm text-blue-400">
+              Displaying hard-coded GitHub contribution data for user {username} for demonstration purposes.
+            </p>
           </div>
         </div>
       </div>
