@@ -24,7 +24,7 @@ const GithubSection = () => {
         </div>
         
         <div className="w-full max-w-5xl mx-auto">
-          <GitHubContributions username={githubUsername} />
+          {/* <GitHubContributions username={githubUsername} /> */}
         </div>
         
         <div className="mt-10 flex justify-center">
