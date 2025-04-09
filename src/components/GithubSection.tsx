@@ -1,4 +1,3 @@
-
 import React from "react";
 import GitHubContributions from "./GitHubContributions";
 
@@ -14,8 +13,8 @@ const GithubSection = () => {
             My GitHub contributions over the past year. I'm consistently working on projects and contributing to open-source.
           </p>
         </div>
-        
-        <div className="w-full">
+
+        <div className="w-full max-w-full overflow-x-auto">
           <GitHubContributions username="hkirat" />
         </div>
       </div>
