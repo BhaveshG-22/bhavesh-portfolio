@@ -1,3 +1,4 @@
+
 import React from "react";
 import GitHubContributions from "./GitHubContributions";
 
@@ -14,7 +15,7 @@ const GithubSection = () => {
           </p>
         </div>
 
-        <div className="w-full max-w-full overflow-x-auto">
+        <div className="w-full">
           <GitHubContributions username="hkirat" />
         </div>
       </div>
