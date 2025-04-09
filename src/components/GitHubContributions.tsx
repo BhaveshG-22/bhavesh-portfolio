@@ -90,9 +90,6 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
     return months;
   };
 
-  // Days of the week
-  const weekdays = ['Mon', 'Wed', 'Fri'];
-
   if (isLoading) {
     return (
       <div className="w-full bg-black/80 p-4 rounded-lg border border-gray-700">
@@ -145,14 +142,10 @@ const GitHubContributions = ({ username }: GitHubContributionsProps) => {
 
       <div className="flex">
         {/* Day labels column */}
-        <div className="flex flex-col h-full pr-2 text-xs text-gray-500">
-          <div style={{ height: '20%' }}></div>
-          <div style={{ height: '10%' }}>Mon</div>
-          <div style={{ height: '10%' }}></div>
-          <div style={{ height: '10%' }}>Wed</div>
-          <div style={{ height: '10%' }}></div>
-          <div style={{ height: '10%' }}>Fri</div>
-          <div style={{ height: '30%' }}></div>
+        <div className="flex flex-col justify-between pr-2 text-xs text-gray-500" style={{ height: '104px' }}>
+          <div className="pt-2">Mon</div>
+          <div>Wed</div>
+          <div className="pb-2">Fri</div>
         </div>
 
         {/* Heatmap */}
