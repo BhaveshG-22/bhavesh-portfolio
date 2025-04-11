@@ -2,24 +2,17 @@
 import React from "react";
 import { ExternalLink, Github } from "lucide-react";
 import { Project } from "@/services/projectService";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface ProjectCardProps {
   project: Project;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-  const { isAdmin } = useAuth();
-  
+  // Removed isAdmin check that was using AuthContext
   return (
     <div className="flex flex-col">
       <div className="relative h-64 mb-6 overflow-hidden rounded-xl border border-white/10 backdrop-blur-sm bg-black/40 hover:border-teal-500/30 transition-all">
-        {/* Only show hidden indicator for admin users */}
-        {isAdmin && project.hidden && (
-          <div className="absolute top-2 right-2 z-10 bg-red-500/80 text-white px-2 py-1 rounded text-xs">
-            Hidden
-          </div>
-        )}
+        {/* Removed hidden indicator since there's no admin functionality */}
         <img
           src={project.image}
           alt={project.title}

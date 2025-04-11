@@ -10,14 +10,12 @@ import { fetchVisibleBlogPosts, fetchCategories, type BlogPost } from "@/service
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [connectionStatus, setConnectionStatus] = useState<"checking" | "success" | "error">("checking");
   const [rawPosts, setRawPosts] = useState<any[]>([]);
-  const { isAdmin } = useAuth();
   
   // Check Supabase connection directly
   useEffect(() => {
@@ -123,29 +121,27 @@ const Blog = () => {
             </p>
           </div>
 
-          {/* Connection Status Debug (only visible to admin) */}
-          {isAdmin && (
-            <div className="mb-4 p-4 rounded-md border border-dashed">
-              <div className="flex items-center gap-2 mb-2">
-                <Bug className="h-4 w-4 text-primary" />
-                <span className="font-semibold">Supabase Connection:</span>
-                <span className={connectionStatus === "success" ? "text-green-500" : connectionStatus === "error" ? "text-red-500" : "text-yellow-500"}>
-                  {connectionStatus === "checking" ? "Checking..." : connectionStatus === "success" ? "Connected" : "Error"}
-                </span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Raw posts in DB: {rawPosts.length}, React Query posts: {blogPosts.length}
-              </div>
-              {rawPosts.length > 0 && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer text-sm text-primary">Show first raw post data</summary>
-                  <pre className="text-xs mt-2 p-2 bg-muted/50 rounded overflow-auto max-h-40">
-                    {JSON.stringify(rawPosts[0], null, 2)}
-                  </pre>
-                </details>
-              )}
+          {/* Connection Status Debug (for development purposes) */}
+          <div className="mb-4 p-4 rounded-md border border-dashed">
+            <div className="flex items-center gap-2 mb-2">
+              <Bug className="h-4 w-4 text-primary" />
+              <span className="font-semibold">Supabase Connection:</span>
+              <span className={connectionStatus === "success" ? "text-green-500" : connectionStatus === "error" ? "text-red-500" : "text-yellow-500"}>
+                {connectionStatus === "checking" ? "Checking..." : connectionStatus === "success" ? "Connected" : "Error"}
+              </span>
             </div>
-          )}
+            <div className="text-sm text-muted-foreground">
+              Raw posts in DB: {rawPosts.length}, React Query posts: {blogPosts.length}
+            </div>
+            {rawPosts.length > 0 && (
+              <details className="mt-2">
+                <summary className="cursor-pointer text-sm text-primary">Show first raw post data</summary>
+                <pre className="text-xs mt-2 p-2 bg-muted/50 rounded overflow-auto max-h-40">
+                  {JSON.stringify(rawPosts[0], null, 2)}
+                </pre>
+              </details>
+            )}
+          </div>
 
           {/* Search and Filter */}
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-10">

@@ -7,13 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const ProjectsList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchProjectsList();
@@ -38,7 +36,7 @@ const ProjectsList = () => {
       // Use the fetchProjects function from projectService
       const data = await fetchProjects();
       
-      console.log(`Admin: Successfully fetched ${data?.length || 0} projects`);
+      console.log(`Successfully fetched ${data?.length || 0} projects`);
       if (data && data.length > 0) {
         console.log("First project:", data[0]);
       } else {
@@ -86,17 +84,6 @@ const ProjectsList = () => {
       console.error("Error updating project visibility:", error);
     }
   };
-
-  // Non-admin users shouldn't see this component, but just in case
-  if (!isAdmin) {
-    return (
-      <div className="w-full p-6 bg-muted/10 rounded-lg border border-border/30">
-        <p className="text-muted-foreground text-center">
-          You don't have permission to view this content.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full">

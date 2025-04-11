@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Project, fetchProjects, fetchCategories } from "@/services/projectService";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
 
 import CategoryFilter from "./project-section/CategoryFilter";
@@ -21,7 +20,6 @@ const ProjectsSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<any>(null);
   const [showAllProjects, setShowAllProjects] = useState(false);
-  const { isAdmin } = useAuth();
   
   useEffect(() => {
     const testConnection = async () => {
@@ -41,7 +39,7 @@ const ProjectsSection = () => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
-        console.log("Loading projects, user is admin:", isAdmin);
+        console.log("Loading projects");
         
         // Always load ALL projects
         const allProjectsData = await fetchProjects();
@@ -66,7 +64,7 @@ const ProjectsSection = () => {
     };
     
     loadProjects();
-  }, [isAdmin]);
+  }, []);
 
   return (
     <section id="projects" className="section-padding bg-gray-950 text-white">
@@ -75,17 +73,8 @@ const ProjectsSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-light">Featured Projects</h2>
           <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
           
-          {/* Show/Hide All Projects Toggle - Only visible to admin */}
-          {isAdmin && (
-            <ProjectStats 
-              allProjects={allProjects}
-              showAllProjects={showAllProjects}
-              setShowAllProjects={setShowAllProjects}
-            />
-          )}
-          
-          {/* Connection test display - Only visible to admin */}
-          {isAdmin && connectionStatus && (
+          {/* Connection test display for debugging */}
+          {connectionStatus && (
             <ConnectionStatus connectionStatus={connectionStatus} />
           )}
           

@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
-import { useAuth } from "@/contexts/AuthContext";
 
 import ProjectCard from "@/components/project-page/ProjectCard";
 import ProjectCardSkeleton from "@/components/project-page/ProjectCardSkeleton";
@@ -18,7 +17,6 @@ const Projects = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<any>(null);
-  const { isAdmin } = useAuth();
   
   useEffect(() => {
     const testConnection = async () => {
@@ -39,22 +37,6 @@ const Projects = () => {
       try {
         setIsLoading(true);
         
-        // Direct fetch from Supabase to check if we can get raw data
-        if (isAdmin) {
-          const { data: rawData, error: rawError } = await fetch("https://pdlleyruhdefngyxetby.supabase.co/rest/v1/projects?select=*", {
-            headers: {
-              "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkbGxleXJ1aGRlZm5neXhldGJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwNzk3MTcsImV4cCI6MjA1OTY1NTcxN30.suCSyxmO8PhfWfAY6RYQKa3AhRzE6RVax_VEKJHI8SQ",
-              "Content-Type": "application/json"
-            }
-          }).then(res => res.json());
-          
-          console.log("Direct Supabase API check for projects:", rawData);
-          
-          if (rawError) {
-            console.error("Raw Supabase API error:", rawError);
-          }
-        }
-        
         // CHANGE: Use fetchProjects instead of fetchVisibleProjects to get all projects
         const [projectsData, categoriesData] = await Promise.all([
           fetchProjects(),
@@ -72,7 +54,7 @@ const Projects = () => {
     };
     
     loadProjects();
-  }, [isAdmin]);
+  }, []);
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
@@ -90,19 +72,17 @@ const Projects = () => {
               Each project represents a unique challenge and learning experience.
             </p>
             
-            {/* Connection test display - Only visible for admins */}
-            {isAdmin && connectionStatus && (
+            {/* Show connection debug info for development purposes */}
+            {connectionStatus && (
               <ConnectionDebug connectionStatus={connectionStatus} />
             )}
             
-            {/* Projects length info - Only visible for admins */}
-            {isAdmin && (
-              <div className="mt-4 text-sm text-muted-foreground">
-                Found {projects.length} projects in total.
-                Current filter: {activeCategory}
-                Filtered projects: {filteredProjects.length}
-              </div>
-            )}
+            {/* Project stats */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Found {projects.length} projects in total.
+              Current filter: {activeCategory}
+              Filtered projects: {filteredProjects.length}
+            </div>
           </div>
 
           {isLoading ? (

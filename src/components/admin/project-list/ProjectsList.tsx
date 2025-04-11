@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Project, fetchProjects } from "@/services/projectService"; 
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProjectCard from "./ProjectCard";
 import DebugPanel from "./DebugPanel";
@@ -11,7 +10,6 @@ import DebugPanel from "./DebugPanel";
 const ProjectsList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchProjectsList();
@@ -51,17 +49,6 @@ const ProjectsList = () => {
       setLoading(false);
     }
   };
-
-  // Non-admin users shouldn't see this component, but just in case
-  if (!isAdmin) {
-    return (
-      <div className="w-full p-6 bg-muted/10 rounded-lg border border-border/30">
-        <p className="text-muted-foreground text-center">
-          You don't have permission to view this content.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full">
