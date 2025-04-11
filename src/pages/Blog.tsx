@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { BookOpen, FileText, Search, Bug } from "lucide-react";
-import { fetchVisibleBlogPosts, fetchCategories, type BlogPost } from "@/services/blogService";
+import { fetchBlogPosts, fetchCategories, type BlogPost } from "@/services/blogService";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,7 +51,7 @@ const Blog = () => {
     checkConnection();
   }, []);
   
-  // Fetch blog posts from Supabase using React Query
+  // Fetch ALL blog posts from Supabase using React Query - Modified to use fetchBlogPosts instead
   const { 
     data: blogPosts = [],
     isLoading: isLoadingPosts,
@@ -59,10 +59,10 @@ const Blog = () => {
     error: postsError
   } = useQuery({
     queryKey: ["blogPosts"],
-    queryFn: fetchVisibleBlogPosts,
+    queryFn: fetchBlogPosts, // Changed from fetchVisibleBlogPosts to fetchBlogPosts
     meta: {
       onError: (error: Error) => {
-        console.error("Error in React Query fetchVisibleBlogPosts:", error);
+        console.error("Error in React Query fetchBlogPosts:", error);
       }
     }
   });

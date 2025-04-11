@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export type BlogPost = {
@@ -40,35 +39,10 @@ export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
   }
 };
 
-// Fetch only visible blog posts with improved logging
+// Keep the fetchVisibleBlogPosts function for backward compatibility
 export const fetchVisibleBlogPosts = async (): Promise<BlogPost[]> => {
-  console.log("Fetching visible blog posts...");
-  try {
-    console.log("Making Supabase request to fetch visible blog posts");
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("hidden", false)
-      .order("is_default", { ascending: false })
-      .order("id");
-    
-    if (error) {
-      console.error("Error fetching visible blog posts:", error);
-      throw new Error(`Error fetching visible blog posts: ${error.message}`);
-    }
-    
-    console.log(`Successfully fetched ${data?.length || 0} visible blog posts`);
-    if (data && data.length > 0) {
-      console.log("First visible blog post:", data[0]);
-    } else {
-      console.log("No visible blog posts found");
-    }
-    
-    return (data || []) as BlogPost[];
-  } catch (error) {
-    console.error("Unexpected error in fetchVisibleBlogPosts:", error);
-    throw error;
-  }
+  // Now this just calls fetchBlogPosts to get all posts
+  return fetchBlogPosts();
 };
 
 // Fetch all categories with improved logging
