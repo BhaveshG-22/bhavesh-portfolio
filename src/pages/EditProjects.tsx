@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import {
   toggleProjectVisibility,
   type Project 
 } from "@/services/projectService";
+import { uploadProjectImage, isProjectImage, deleteProjectImage } from "@/services/projectImageService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { 
@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { FileUpload } from "@/components/ui/file-upload";
 import { 
   Select, 
   SelectContent, 
@@ -59,6 +60,7 @@ const EditProjects = () => {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -84,7 +86,14 @@ const EditProjects = () => {
 
   // Add project mutation
   const addProjectMutation = useMutation({
-    mutationFn: (project: Omit<Project, "id" | "created_at" | "updated_at">) => addProject(project),
+    mutationFn: async (project: Omit<Project, "id" | "created_at" | "updated_at">) => {
+      // If there's an uploaded file, upload it first
+      if (uploadedFile) {
+        const imageUrl = await uploadProjectImage(uploadedFile);
+        project.image = imageUrl;
+      }
+      return addProject(project);
+    },
     onSuccess: () => {
       toast.success("Project added successfully");
       queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -98,8 +107,28 @@ const EditProjects = () => {
 
   // Update project mutation
   const updateProjectMutation = useMutation({
-    mutationFn: ({id, data}: {id: number, data: Partial<Omit<Project, "id" | "created_at" | "updated_at">>}) => 
-      updateProject(id, data),
+    mutationFn: async ({id, data}: {id: number, data: Partial<Omit<Project, "id" | "created_at" | "updated_at">>}) => {
+      // If there's an uploaded file, handle the image update
+      if (uploadedFile) {
+        // Upload the new image
+        const imageUrl = await uploadProjectImage(uploadedFile);
+        
+        // If the old image was in our storage, delete it
+        if (editingProject && editingProject.image && isProjectImage(editingProject.image)) {
+          try {
+            await deleteProjectImage(editingProject.image);
+          } catch (error) {
+            console.error("Error deleting previous image:", error);
+            // Continue even if deletion fails
+          }
+        }
+        
+        // Update the image URL in the data
+        data.image = imageUrl;
+      }
+      
+      return updateProject(id, data);
+    },
     onSuccess: () => {
       toast.success("Project updated successfully");
       queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -156,6 +185,7 @@ const EditProjects = () => {
       tags: [],
     });
     setNewTagInput("");
+    setUploadedFile(null);
   };
 
   // Set form data for editing
@@ -208,6 +238,15 @@ const EditProjects = () => {
     });
   };
 
+  // File handling for uploads
+  const handleFileSelected = (file: File) => {
+    setUploadedFile(file);
+  };
+  
+  const handleClearFile = () => {
+    setUploadedFile(null);
+  };
+
   // Submit add project form
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,10 +255,16 @@ const EditProjects = () => {
       return;
     }
     
+    // Validate that we have either an image URL or an uploaded file
+    if (!projectFormData.image && !uploadedFile) {
+      toast.error("Please provide an image URL or upload an image");
+      return;
+    }
+    
     addProjectMutation.mutate({
       title: projectFormData.title!,
       description: projectFormData.description!,
-      image: projectFormData.image || "/placeholder.svg",
+      image: projectFormData.image || "/placeholder.svg", // Will be replaced if uploadedFile exists
       github: projectFormData.github || "#",
       demo: projectFormData.demo || "#",
       category: projectFormData.category!,
@@ -237,12 +282,14 @@ const EditProjects = () => {
       return;
     }
     
+    // For edit, we already have an image, so no need to validate
+    
     updateProjectMutation.mutate({
       id: editingProject.id,
       data: {
         title: projectFormData.title,
         description: projectFormData.description,
-        image: projectFormData.image,
+        image: projectFormData.image, // Will be replaced if uploadedFile exists
         github: projectFormData.github,
         demo: projectFormData.demo,
         category: projectFormData.category,
@@ -346,104 +393,110 @@ const EditProjects = () => {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="image">Image URL</Label>
-                        <Input 
-                          id="image" 
-                          name="image"
-                          value={projectFormData.image || ""}
-                          onChange={handleInputChange}
-                          placeholder="https://example.com/image.jpg"
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="category">Category *</Label>
-                        <Select 
-                          value={projectFormData.category} 
-                          onValueChange={handleCategoryChange}
-                        >
-                          <SelectTrigger id="category">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="tags">Tags</Label>
-                      <div className="flex gap-2">
-                        <Input 
-                          id="newTag"
-                          value={newTagInput}
-                          onChange={(e) => setNewTagInput(e.target.value)}
-                          placeholder="Add a tag"
-                          className="flex-1"
-                        />
-                        <Button 
-                          type="button" 
-                          variant="secondary" 
-                          onClick={addTag}
-                        >
-                          Add
-                        </Button>
-                      </div>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {projectFormData.tags?.map((tag) => (
-                          <Badge 
-                            key={tag} 
-                            variant="secondary"
-                            className="flex items-center gap-1"
-                          >
-                            {tag}
-                            <button 
-                              type="button"
-                              onClick={() => removeTag(tag)}
-                              className="ml-1 text-xs rounded-full hover:bg-destructive/10 p-0.5"
-                            >
-                              ×
-                            </button>
-                          </Badge>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="image">Project Image</Label>
+                    <FileUpload
+                      onFileSelected={handleFileSelected}
+                      onClear={handleClearFile}
+                      currentImage={projectFormData.image}
+                      className="mb-2"
+                    />
+                    <Input
+                      id="image"
+                      name="image"
+                      type="text"
+                      value={projectFormData.image || ""}
+                      onChange={handleInputChange}
+                      placeholder="Or enter an image URL"
+                      disabled={!!uploadedFile}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="category">Category *</Label>
+                    <Select 
+                      value={projectFormData.category} 
+                      onValueChange={handleCategoryChange}
+                    >
+                      <SelectTrigger id="category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
                         ))}
-                      </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="tags">Tags</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        id="newTag"
+                        value={newTagInput}
+                        onChange={(e) => setNewTagInput(e.target.value)}
+                        placeholder="Add a tag"
+                        className="flex-1"
+                      />
+                      <Button 
+                        type="button" 
+                        variant="secondary" 
+                        onClick={addTag}
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {projectFormData.tags?.map((tag) => (
+                        <Badge 
+                          key={tag} 
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {tag}
+                          <button 
+                            type="button"
+                            onClick={() => removeTag(tag)}
+                            className="ml-1 text-xs rounded-full hover:bg-destructive/10 p-0.5"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
                     </div>
                   </div>
-                  <DialogFooter>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => {
-                        resetForm();
-                        setIsAddDialogOpen(false);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit"
-                      disabled={addProjectMutation.isPending}
-                    >
-                      {addProjectMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Adding...
-                        </>
-                      ) : (
-                        "Add Project"
-                      )}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
-
+                </div>
+                <DialogFooter>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => {
+                      resetForm();
+                      setIsAddDialogOpen(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit"
+                    disabled={addProjectMutation.isPending}
+                  >
+                    {addProjectMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      "Add Project"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
           <Tabs 
             defaultValue="all" 
             value={activeTab} 
@@ -637,35 +690,40 @@ const EditProjects = () => {
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-image">Image URL</Label>
-                      <Input 
-                        id="edit-image" 
-                        name="image"
-                        value={projectFormData.image || ""}
-                        onChange={handleInputChange}
-                        placeholder="https://example.com/image.jpg"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-category">Category *</Label>
-                      <Select 
-                        value={projectFormData.category} 
-                        onValueChange={handleCategoryChange}
-                      >
-                        <SelectTrigger id="edit-category">
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-image">Project Image</Label>
+                    <FileUpload
+                      onFileSelected={handleFileSelected}
+                      onClear={handleClearFile}
+                      currentImage={projectFormData.image}
+                      className="mb-2"
+                    />
+                    <Input 
+                      id="edit-image" 
+                      name="image"
+                      value={projectFormData.image || ""}
+                      onChange={handleInputChange}
+                      placeholder="Or enter an image URL"
+                      disabled={!!uploadedFile}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category">Category *</Label>
+                    <Select 
+                      value={projectFormData.category} 
+                      onValueChange={handleCategoryChange}
+                    >
+                      <SelectTrigger id="edit-category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="edit-tags">Tags</Label>

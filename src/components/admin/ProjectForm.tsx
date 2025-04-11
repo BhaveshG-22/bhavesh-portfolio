@@ -13,7 +13,9 @@ import {
   SelectItem 
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, ImageIcon } from "lucide-react";
+import { FileUpload } from "@/components/ui/file-upload";
+import { uploadProjectImage } from "@/services/projectImageService";
 
 type ProjectFormProps = {
   onProjectAdded: () => Promise<void>;
@@ -26,12 +28,26 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
   const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      let finalImageUrl = imageUrl;
+      
+      // If there's a file to upload, upload it first
+      if (uploadedFile) {
+        try {
+          finalImageUrl = await uploadProjectImage(uploadedFile);
+        } catch (uploadError: any) {
+          toast.error(`Failed to upload image: ${uploadError.message}`);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      
       // Mapping form fields to match database column names
       const projectData = {
         title,
@@ -39,7 +55,7 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
         // Map link to demo/github fields based on the database schema
         demo: link,
         github: link,
-        image: imageUrl,
+        image: finalImageUrl,
         category,
         tags: [] // Empty array for tags as required by schema
       };
@@ -57,6 +73,7 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
       setLink("");
       setImageUrl("");
       setCategory("");
+      setUploadedFile(null);
 
       // Refresh projects list
       await onProjectAdded();
@@ -66,6 +83,16 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleFileSelected = (file: File) => {
+    setUploadedFile(file);
+    // Clear any direct URL since we'll be uploading this file
+    setImageUrl("");
+  };
+
+  const handleClearFile = () => {
+    setUploadedFile(null);
   };
 
   return (
@@ -104,14 +131,27 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
           />
         </div>
         <div>
-          <Label htmlFor="imageUrl">Image URL</Label>
-          <Input
-            id="imageUrl"
-            type="text"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            required
+          <Label htmlFor="image" className="block mb-2">Project Image</Label>
+          <FileUpload
+            onFileSelected={handleFileSelected}
+            onClear={handleClearFile}
+            currentImage={imageUrl}
+            className="mb-2"
           />
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Input
+                id="imageUrl"
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="Or enter an image URL"
+                disabled={!!uploadedFile}
+                className="pl-9"
+              />
+              <ImageIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
         </div>
         <div>
           <Label htmlFor="category">Category</Label>

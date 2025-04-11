@@ -1,5 +1,5 @@
-
 import { supabase } from "@/integrations/supabase/client";
+import { deleteProjectImage, isProjectImage } from "./projectImageService";
 
 export type Project = {
   id: number;
@@ -110,14 +110,37 @@ export const updateProject = async (id: number, updates: Partial<Omit<Project, "
 };
 
 export const deleteProject = async (id: number): Promise<void> => {
-  const { error } = await supabase
+  // First get the project to retrieve its image URL
+  const { data: project, error: fetchError } = await supabase
+    .from("projects")
+    .select("image")
+    .eq("id", id)
+    .single();
+  
+  if (fetchError) {
+    console.error("Error fetching project for deletion:", fetchError);
+    throw new Error(fetchError.message);
+  }
+  
+  // Delete the project from the database
+  const { error: deleteError } = await supabase
     .from("projects")
     .delete()
     .eq("id", id);
   
-  if (error) {
-    console.error("Error deleting project:", error);
-    throw new Error(error.message);
+  if (deleteError) {
+    console.error("Error deleting project:", deleteError);
+    throw new Error(deleteError.message);
+  }
+  
+  // If the project had an image in our storage bucket, delete it
+  if (project && project.image && isProjectImage(project.image)) {
+    try {
+      await deleteProjectImage(project.image);
+    } catch (imageError) {
+      console.error("Error deleting project image:", imageError);
+      // Don't throw here, as the project was already deleted successfully
+    }
   }
 };
 
