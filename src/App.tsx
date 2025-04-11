@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import Projects from "./pages/Projects";
+import EditProjects from "./pages/EditProjects";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/edit-projects" element={<EditProjects />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />
