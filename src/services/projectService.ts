@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type Project = {
@@ -49,14 +50,14 @@ export const fetchProjects = async (): Promise<Project[]> => {
   }
 };
 
-// Modified to return all projects instead of just visible ones
+// Modified to correctly filter out hidden projects
 export const fetchVisibleProjects = async (): Promise<Project[]> => {
-  console.log("Fetching all projects (no longer filtering by visibility)...");
+  console.log("Fetching visible projects...");
   try {
-    // Instead of filtering, just return all projects
     const allProjects = await fetchProjects();
-    console.log(`Returning all ${allProjects.length} projects`);
-    return allProjects;
+    const visibleProjects = allProjects.filter(project => !project.hidden);
+    console.log(`Returning ${visibleProjects.length} visible projects out of ${allProjects.length} total`);
+    return visibleProjects;
   } catch (error) {
     console.error("Unexpected error in fetchVisibleProjects:", error);
     return [];

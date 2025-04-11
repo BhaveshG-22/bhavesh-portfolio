@@ -45,8 +45,9 @@ const ProjectsSection = () => {
         console.log("All projects data:", allProjectsData);
         setAllProjects(allProjectsData);
         
-        // CHANGE: Always show all projects regardless of hidden status
-        setProjects(allProjectsData);
+        // CHANGE: Only show visible projects (not hidden)
+        const visibleProjects = allProjectsData.filter(project => !project.hidden);
+        setProjects(visibleProjects);
         
         // Fetch categories
         const categoriesData = await fetchCategories();
