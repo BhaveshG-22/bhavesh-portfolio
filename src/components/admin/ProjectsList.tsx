@@ -108,7 +108,7 @@ const ProjectsList = () => {
         <details className="mt-2">
           <summary className="text-sm cursor-pointer text-primary">Debug API info</summary>
           <div className="mt-2 p-2 bg-muted/30 text-xs rounded overflow-auto max-h-60">
-            <p>Supabase URL: {supabase.supabaseUrl ? "✅ Set" : "❌ Not set"}</p>
+            <p>Supabase Connection: {supabase ? "✅ Available" : "❌ Not available"}</p>
             <button 
               onClick={async () => {
                 try {
