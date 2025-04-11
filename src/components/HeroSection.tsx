@@ -1,12 +1,12 @@
 // AlternativeHeroSection.tsx with enhanced terminal
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  ArrowRight, 
-  ChevronRight, 
-  Github, 
-  Linkedin, 
-  Twitter, 
+import {
+  ArrowRight,
+  ChevronRight,
+  Github,
+  Linkedin,
+  Twitter,
   ExternalLink,
   Code2,
   Sparkles,
@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   RefreshCw,
   HelpCircle,
-  Coffee
+  Coffee,
+
 } from "lucide-react";
 
 // Helper function to create element with custom props
@@ -31,13 +32,13 @@ const TextScramble = ({ text }) => {
   const chars = "!<>-_\\/[]{}—=+*^?#_$%&";
   const ref = useRef(null);
   const intervalRef = useRef(null);
-  
+
   useEffect(() => {
     let iteration = 0;
     let originalText = text;
-    
+
     clearInterval(intervalRef.current);
-    
+
     intervalRef.current = setInterval(() => {
       setDisplayText(prevText => {
         return originalText
@@ -50,17 +51,17 @@ const TextScramble = ({ text }) => {
           })
           .join("");
       });
-      
+
       if (iteration >= originalText.length) {
         clearInterval(intervalRef.current);
       }
-      
+
       iteration += 1 / 3;
     }, 30);
-    
+
     return () => clearInterval(intervalRef.current);
   }, [text]);
-  
+
   return createElement("span", { ref }, displayText);
 };
 
@@ -91,16 +92,16 @@ const AlternativeHeroSection = () => {
   const inputRef = useRef(null);
   const terminalRef = useRef(null);
   const heroRef = useRef(null);
-  
+
   // Available terminal commands
   const availableCommands = [
-    "help", 
-    "clear", 
-    "projects", 
-    "skills", 
-    "about", 
-    "contact", 
-    "github", 
+    "help",
+    "clear",
+    "projects",
+    "skills",
+    "about",
+    "contact",
+    "github",
     "coffee",
     "portfolio",
     "personal",
@@ -109,7 +110,7 @@ const AlternativeHeroSection = () => {
     "programming",
     "profile"
   ];
-  
+
   const commands = {
     help: () => ({
       type: "response",
@@ -223,8 +224,8 @@ Full Stack Developer with expertise in building scalable web applications. Passi
   const findSuggestions = (input) => {
     const trimmedInput = input.trim().toLowerCase();
     if (!trimmedInput) return [];
-    
-    return availableCommands.filter(cmd => 
+
+    return availableCommands.filter(cmd =>
       cmd.toLowerCase().startsWith(trimmedInput)
     );
   };
@@ -232,7 +233,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
   // Auto complete with tab key
   const handleTabCompletion = () => {
     const matchingSuggestions = findSuggestions(userInput);
-    
+
     if (matchingSuggestions.length === 1) {
       // If only one suggestion, autocomplete it
       setUserInput(matchingSuggestions[0]);
@@ -241,13 +242,13 @@ Full Stack Developer with expertise in building scalable web applications. Passi
       // If multiple suggestions
       setSuggestions(matchingSuggestions);
       setSuggestionsVisible(true);
-      
+
       if (tabPressCount > 0 && matchingSuggestions.length > 0) {
         // Cycle through suggestions on repeated tab presses
         const currentIndex = tabPressCount % matchingSuggestions.length;
         setUserInput(matchingSuggestions[currentIndex]);
       }
-      
+
       setTabPressCount(prev => prev + 1);
     }
   };
@@ -256,40 +257,40 @@ Full Stack Developer with expertise in building scalable web applications. Passi
   const processCommand = (cmd) => {
     const trimmedCmd = cmd.trim().toLowerCase();
     const commandFn = commands[trimmedCmd] || commands.unknown;
-    
+
     // Reset tab press count and hide suggestions on command execution
     setTabPressCount(0);
     setSuggestionsVisible(false);
-    
+
     // Add command to history
     setTerminalHistory(prev => [
       ...prev,
-      { 
-        type: "command", 
+      {
+        type: "command",
         content: cmd,
         timestamp: new Date().toLocaleTimeString()
       }
     ]);
-    
+
     // Process command and get response
     const response = commandFn(trimmedCmd);
-    
+
     // If there's a response, add it to history after a slight delay for realism
     if (response) {
       setTimeout(() => {
         setTerminalHistory(prev => [...prev, { ...response, timestamp: new Date().toLocaleTimeString() }]);
       }, 300);
     }
-    
+
     setUserInput("");
   };
-  
+
   // Custom hooks for animations
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 300);
-    
+
     const handleMouseMove = (e) => {
       if (heroRef.current) {
         const rect = heroRef.current.getBoundingClientRect();
@@ -298,15 +299,15 @@ Full Stack Developer with expertise in building scalable web applications. Passi
         setMousePosition({ x, y });
       }
     };
-    
+
     window.addEventListener("mousemove", handleMouseMove);
-    
+
     return () => {
       clearTimeout(timer);
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
-  
+
   // Terminal animation sequence
   useEffect(() => {
     if (isLoaded) {
@@ -316,9 +317,9 @@ Full Stack Developer with expertise in building scalable web applications. Passi
         { text: "cd my-portfolio", delay: 1000 },
         { text: "npm run dev -- --turbo", delay: 1500 }
       ];
-      
+
       let totalDelay = 1000;
-      
+
       initialCommands.forEach((cmd, index) => {
         // Start typing animation
         setTimeout(() => {
@@ -331,7 +332,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             } else {
               clearInterval(typeInterval);
               setIsTyping(false);
-              
+
               // Add command to history after completing typing
               setTimeout(() => {
                 let response = "";
@@ -346,29 +347,29 @@ Full Stack Developer with expertise in building scalable web applications. Passi
                 } else if (cmd.text.includes("git push")) {
                   response = "Everything up-to-date";
                 }
-                
+
                 setTerminalHistory(prev => [
-                  ...prev, 
-                  { 
-                    type: "command", 
+                  ...prev,
+                  {
+                    type: "command",
                     content: cmd.text,
                     timestamp: new Date().toLocaleTimeString()
                   },
-                  { 
-                    type: "response", 
+                  {
+                    type: "response",
                     content: response,
                     timestamp: new Date().toLocaleTimeString()
                   }
                 ]);
                 setTerminalCommand("");
-                
+
                 // Enable user input after initial animation sequence
                 if (index === initialCommands.length - 1) {
                   setTimeout(() => {
                     setTerminalHistory(prev => [
                       ...prev,
-                      { 
-                        type: "response", 
+                      {
+                        type: "response",
                         content: "Type 'help' to see available commands.",
                         timestamp: new Date().toLocaleTimeString()
                       }
@@ -383,7 +384,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             }
           }, 20);
         }, totalDelay);
-        
+
         totalDelay += cmd.delay + cmd.text.length * 20 + 600;
       });
     }
@@ -393,27 +394,27 @@ Full Stack Developer with expertise in building scalable web applications. Passi
   useEffect(() => {
     const matchingSuggestions = findSuggestions(userInput);
     setSuggestions(matchingSuggestions);
-    
+
     // Hide suggestions if no input or no matches
     if (!userInput || matchingSuggestions.length === 0) {
       setSuggestionsVisible(false);
     }
-    
+
     // Reset tab press count when input changes manually (not via tab)
     setTabPressCount(0);
   }, [userInput]);
-  
+
   // Auto-scroll to bottom when terminal content changes
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
   }, [terminalHistory, userInput]);
-  
+
   // 3D tilt effect styles based on mouse position
   const getTiltStyle = () => {
     const maxTilt = 6; // max tilt in degrees
-    
+
     return {
       transform: `perspective(1000px) rotateX(${(mousePosition.y - 0.5) * -maxTilt}deg) rotateY(${(mousePosition.x - 0.5) * maxTilt}deg) scale3d(1.03, 1.03, 1.03)`,
       transition: "transform 0.1s ease"
@@ -445,7 +446,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
       inputRef.current.focus();
     }
   };
-  
+
   // Custom CSS
   const styles = `
     @keyframes fadeUp {
@@ -769,13 +770,13 @@ Full Stack Developer with expertise in building scalable web applications. Passi
       color: rgba(156, 163, 175, 0.8);
     }
   `;
-  
+
   // CSS variables for dynamic styling
   const cssVars = {
     "--mouse-x": mousePosition.x,
     "--mouse-y": mousePosition.y,
   };
-  
+
   // Create terminal with enhanced appearance
   const createTerminal = () => {
     return createElement("div", {
@@ -801,13 +802,13 @@ Full Stack Developer with expertise in building scalable web applications. Passi
           zIndex: 2
         }
       }),
-      
+
       // Scanline effect
       createElement("div", {
         key: "scanline",
         className: "scanline"
       }),
-      
+
       // Terminal tabs
       createElement("div", {
         key: "terminal-tabs",
@@ -830,7 +831,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
           "Output"
         ])
       ]),
-      
+
       // Terminal header
       createElement("div", {
         key: "terminal-header",
@@ -840,37 +841,37 @@ Full Stack Developer with expertise in building scalable web applications. Passi
           key: "dots",
           className: "flex gap-1.5"
         }, [
-          createElement("div", { 
-            key: "dot-1", 
+          createElement("div", {
+            key: "dot-1",
             className: "w-3 h-3 rounded-full bg-red-500 relative group cursor-pointer transition-all hover:brightness-110",
             title: "Close",
             onClick: () => commands.clear()
           }, [
-            createElement(X, { 
-              key: "icon", 
-              className: "w-2 h-2 absolute inset-0 m-auto text-red-900 opacity-0 group-hover:opacity-100 transition-opacity" 
+            createElement(X, {
+              key: "icon",
+              className: "w-2 h-2 absolute inset-0 m-auto text-red-900 opacity-0 group-hover:opacity-100 transition-opacity"
             })
           ]),
-          createElement("div", { 
-            key: "dot-2", 
+          createElement("div", {
+            key: "dot-2",
             className: "w-3 h-3 rounded-full bg-yellow-500 relative group cursor-pointer transition-all hover:brightness-110",
             title: "Minimize"
           }, [
-            createElement("div", { 
-              key: "icon", 
-              className: "w-1.5 h-0.5 bg-yellow-900 absolute inset-0 m-auto opacity-0 group-hover:opacity-100 transition-opacity" 
+            createElement("div", {
+              key: "icon",
+              className: "w-1.5 h-0.5 bg-yellow-900 absolute inset-0 m-auto opacity-0 group-hover:opacity-100 transition-opacity"
             })
           ]),
-          createElement("div", { 
-            key: "dot-3", 
+          createElement("div", {
+            key: "dot-3",
             className: "w-3 h-3 rounded-full bg-green-500 relative group cursor-pointer transition-all hover:brightness-110",
             title: "Expand",
             onClick: () => {
               setCurrentTab(prev => prev === "terminal" ? "output" : "terminal");
             }
           }, [
-            createElement(CheckCircle2, { 
-              key: "icon", 
+            createElement(CheckCircle2, {
+              key: "icon",
               className: "w-2 h-2 absolute inset-0 m-auto text-green-900 opacity-0 group-hover:opacity-100 transition-opacity"
             })
           ])
@@ -888,7 +889,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
           className: "text-xs text-gray-500 font-mono"
         }, new Date().toLocaleTimeString())
       ]),
-      
+
       // Terminal body
       createElement("div", {
         key: "terminal-body",
@@ -907,9 +908,9 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             createElement("div", { key: "steam-1", className: "coffee-steam steam-1" }),
             createElement("div", { key: "steam-2", className: "coffee-steam steam-2" }),
             createElement("div", { key: "steam-3", className: "coffee-steam steam-3" }),
-            createElement(Coffee, { 
-              key: "coffee-icon", 
-              className: "w-16 h-16 text-primary animate-pulse" 
+            createElement(Coffee, {
+              key: "coffee-icon",
+              className: "w-16 h-16 text-primary animate-pulse"
             })
           ]),
           createElement("p", {
@@ -917,7 +918,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             className: "mt-4 text-center text-white"
           }, "Taking a coffee break...")
         ]),
-        
+
         // Conditional content based on selected tab
         currentTab === "terminal" ? [
           // Terminal welcome message
@@ -925,34 +926,34 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             key: "welcome",
             className: `mb-4 text-gray-400 ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-300`
           }, [
-            createElement("div", { 
-              key: "system-info", 
-              className: "mb-2 flex flex-col space-y-0.5" 
+            createElement("div", {
+              key: "system-info",
+              className: "mb-2 flex flex-col space-y-0.5"
             }, [
-              createElement("span", { 
-                key: "line-0", 
-                className: "text-green-400 text-base glitch", 
+              createElement("span", {
+                key: "line-0",
+                className: "text-green-400 text-base glitch",
                 "data-text": "Welcome to DevTerminal v3.5.0"
               }, "Welcome to DevTerminal v3.5.0"),
-              createElement("span", { 
-                key: "line-1", 
-                className: "text-blue-400 flex items-center text-xs" 
+              createElement("span", {
+                key: "line-1",
+                className: "text-blue-400 flex items-center text-xs"
               }, [
-                "OS: ", 
+                "OS: ",
                 createElement("span", { key: "os", className: "ml-1 text-gray-300" }, "NextOS v14.0.1")
               ]),
-              createElement("span", { 
-                key: "line-2", 
-                className: "text-blue-400 flex items-center text-xs" 
+              createElement("span", {
+                key: "line-2",
+                className: "text-blue-400 flex items-center text-xs"
               }, [
-                "NODE: ", 
+                "NODE: ",
                 createElement("span", { key: "node", className: "ml-1 text-gray-300" }, "v18.17.0")
               ]),
-              createElement("span", { 
-                key: "line-3", 
-                className: "text-blue-400 flex items-center text-xs" 
+              createElement("span", {
+                key: "line-3",
+                className: "text-blue-400 flex items-center text-xs"
               }, [
-                "USER: ", 
+                "USER: ",
                 createElement("span", { key: "user", className: "ml-1 text-gray-300" }, "developer@portfolio")
               ])
             ]),
@@ -960,12 +961,12 @@ Full Stack Developer with expertise in building scalable web applications. Passi
               key: "divider",
               className: "w-full my-2 border-t border-gray-800 opacity-50"
             }),
-            createElement("span", { 
-              key: "motivation", 
-              className: "block mb-1 text-green-400 opacity-80" 
+            createElement("span", {
+              key: "motivation",
+              className: "block mb-1 text-green-400 opacity-80"
             }, "// Crafting digital experiences with clean code")
           ]),
-          
+
           // Terminal history (commands and responses)
           ...terminalHistory.map((item, index) => {
             if (item.type === "command") {
@@ -984,7 +985,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
               }, item.content);
             }
           }),
-          
+
           // Current command line
           createElement("div", {
             key: "current-command",
@@ -992,9 +993,9 @@ Full Stack Developer with expertise in building scalable web applications. Passi
           }, [
             createElement("span", { key: "prompt", className: "text-green-400 mr-2" }, "➜"),
             createElement("span", { key: "path", className: "text-blue-400 mr-2" }, "~/portfolio"),
-            
-            allowUserInput ? 
-              createElement("div", { 
+
+            allowUserInput ?
+              createElement("div", {
                 key: "user-input-container",
                 className: "flex-grow text-gray-300 focus-within:outline-none relative"
               }, [
@@ -1012,25 +1013,25 @@ Full Stack Developer with expertise in building scalable web applications. Passi
                   autoCapitalize: "off",
                   spellCheck: "false"
                 }),
-                
+
                 // Tab completion suggestion hint
                 userInput && !suggestionsVisible && suggestions.length > 0 && createElement("div", {
                   key: "completion-hint",
                   className: "suggestion-hint"
                 }, "Press TAB to autocomplete"),
-                
+
                 // Suggestions dropdown
                 suggestionsVisible && suggestions.length > 0 && createElement("div", {
                   key: "suggestions-dropdown",
                   className: "suggestions-list"
-                }, 
+                },
                   suggestions.map((suggestion, idx) => createElement("div", {
                     key: `suggestion-${idx}`,
                     className: `suggestion-item text-gray-300 ${idx === tabPressCount % suggestions.length ? "active bg-blue-800/30" : ""}`,
                     onClick: () => handleSuggestionClick(suggestion)
                   }, suggestion))
                 )
-              ]) : 
+              ]) :
               createElement(React.Fragment, { key: "animated-text" }, [
                 createElement("span", { key: "command-text", className: "text-gray-300" }, terminalCommand),
                 !isTyping && createElement(BlinkingCursor, { key: "cursor" })
@@ -1127,32 +1128,34 @@ Full Stack Developer with expertise in building scalable web applications. Passi
       ])
     ]);
   };
-  
+
   // Create social links with hover effects
   const createSocialLinks = () => {
     const socialIcons = [
-      { icon: Github, href: "#", label: "GitHub" },
-      { icon: Linkedin, href: "#", label: "LinkedIn" },
-      { icon: Twitter, href: "#", label: "Twitter" }
+      { icon: Github, href: "https://github.com/BhaveshG-22", label: "GitHub" },
+      { icon: Linkedin, href: "https://www.linkedin.com/in/bhaveshgavali/", label: "LinkedIn" },
+      { icon: Twitter, href: "https://x.com/BGavali_22", label: "Twitter" }
     ];
-    
+
     return createElement("div", {
       key: "social-links",
       className: `flex gap-4 ${isLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-700 delay-700`
-    }, 
-      socialIcons.map((social, index) => 
+    },
+      socialIcons.map((social, index) =>
         createElement("a", {
           key: `social-${index}`,
           href: social.href,
+          target: "_blank",
+          rel: "noopener noreferrer",
           className: "w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-sm border border-white/10 text-gray-300 hover:text-white hover:border-primary/50 transition-all hover:scale-110",
           "aria-label": social.label
-        }, 
+        },
           createElement(social.icon, { className: "w-5 h-5" })
         )
       )
     );
   };
-  
+
   // Build the complete component with React.createElement
   return createElement("div", {
     key: "hero-container",
@@ -1166,29 +1169,29 @@ Full Stack Developer with expertise in building scalable web applications. Passi
       key: "bg-gradient",
       className: "absolute inset-0 bg-gradient-to-br from-black to-gray-900 z-0"
     }),
-    
+
     createElement("div", {
       key: "noise-overlay",
       className: "noise-bg"
     }),
-    
+
     createElement("div", {
       key: "grid-overlay",
       className: "absolute inset-0 grid-bg z-0"
     }),
-    
+
     // Glowing orbs
     createElement("div", {
       key: "orb-1",
       className: "absolute top-[10%] left-[20%] w-80 h-80 rounded-full bg-primary/20 filter blur-[100px] opacity-60 animate-floatSlow z-0"
     }),
-    
+
     createElement("div", {
       key: "orb-2",
       className: "absolute bottom-[10%] right-[10%] w-96 h-96 rounded-full bg-accent/20 filter blur-[120px] opacity-50 animate-floatSlow z-0",
       style: { animationDelay: "2s" }
     }),
-    
+
     // Main content wrapper
     createElement("div", {
       key: "content-wrapper",
@@ -1212,7 +1215,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             createElement(Sparkles, { key: "icon", className: "w-3.5 h-3.5 mr-2" }),
             "Full-Stack Developer"
           ]),
-          
+
           createElement("h1", {
             key: "heading",
             className: `text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${isLoaded ? "opacity-100" : "opacity-0"} transition-all duration-500 delay-100`,
@@ -1223,13 +1226,13 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             createElement("br", { key: "br" }),
             "digital experiences"
           ]),
-          
+
           createElement("p", {
             key: "description",
             className: `text-lg text-gray-300 max-w-xl ${isLoaded ? "opacity-100" : "opacity-0"} transition-all duration-500 delay-200`,
             style: isLoaded ? { animation: "fadeUp 0.6s ease forwards", animationDelay: "200ms" } : {}
-          }, "I create responsive, high-performance web applications with modern technologies. Specializing in crafting beautiful interfaces and seamless user experiences."),
-          
+          }, "I build full-stack web applications and automation tools using modern technologies. Specializing in high-performance systems, intuitive interfaces, and real-world problem solving."),
+
           createElement("div", {
             key: "buttons",
             className: `flex flex-wrap gap-4 ${isLoaded ? "opacity-100" : "opacity-0"} transition-all duration-500 delay-300`,
@@ -1240,7 +1243,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
               asChild: true,
               size: "lg",
               className: "relative overflow-hidden group bg-gradient-to-r from-primary to-accent text-white font-medium hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
-            }, 
+            },
               createElement("a", {
                 href: "#projects",
                 className: "flex items-center"
@@ -1250,25 +1253,25 @@ Full Stack Developer with expertise in building scalable web applications. Passi
                 createElement(ArrowRight, { key: "arrow", className: "ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" })
               ])
             ),
-            
+
             createElement(Button, {
               key: "secondary-btn",
               variant: "outline",
               size: "lg",
               asChild: true,
               className: "border-gray-600 hover:border-white text-gray-200 hover:text-white transition-all duration-300"
-            }, 
+            },
               createElement("a", {
                 href: "#contact",
                 className: "flex items-center"
               }, "Get in Touch")
             )
           ]),
-          
+
           // Social links
           createSocialLinks()
         ]),
-        
+
         // Right column (Enhanced Terminal)
         createElement("div", {
           key: "right-column",
@@ -1277,13 +1280,13 @@ Full Stack Developer with expertise in building scalable web applications. Passi
         }, createTerminal())
       ])
     ]),
-    
+
     // Helper floating button (help)
     createElement("div", {
       key: "helper",
       className: "absolute bottom-4 right-4 z-20 opacity-0 animation-delay-1000",
       style: isLoaded ? { animation: "fadeIn 0.8s ease forwards", animationDelay: "2000ms" } : {}
-    }, 
+    },
       createElement(Button, {
         key: "helper-btn",
         size: "sm",
@@ -1296,14 +1299,14 @@ Full Stack Developer with expertise in building scalable web applications. Passi
             inputRef.current.focus();
           }
         }
-      }, 
+      },
         createElement(HelpCircle, { className: "w-4 h-4" })
       )
     ),
-    
+
     // CSS styles
     createElement("style", {
-      key: "custom-styles", 
+      key: "custom-styles",
       dangerouslySetInnerHTML: { __html: styles }
     })
   ]);
