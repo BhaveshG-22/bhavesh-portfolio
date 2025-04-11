@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export type Project = {
@@ -155,6 +154,53 @@ export const updateFirstProject = async (): Promise<void> => {
   } catch (error) {
     console.error("Error updating the first project:", error);
     throw new Error("Failed to update the first project");
+  }
+};
+
+// Add this function to update or create the second project
+export const updateSecondProject = async (): Promise<void> => {
+  try {
+    // Get all projects
+    const projects = await fetchProjects();
+    
+    // If we have at least two projects, update the second one
+    // Otherwise create a new one
+    if (projects.length >= 2) {
+      // Sort by ID to make sure we get the second one
+      const sortedProjects = projects.sort((a, b) => a.id - b.id);
+      const secondProject = sortedProjects[1];
+      
+      // Update the second project
+      const updatedProject = await updateProject(secondProject.id, {
+        title: "Drench Clone Game",
+        description: "Developed a clone of the Drench game using React and Tailwind CSS, providing users with an addictive and challenging puzzle experience. Implemented color-matching mechanics on a grid, requiring strategic thinking and planning. The game offers an immersive and visually captivating interface.",
+        image: "public/lovable-uploads/963582ea-1dcf-4747-9978-6bb62c430af0.png",
+        github: "https://github.com/BhaveshG-22/drenchClone-Client",
+        demo: "https://drench-clone.vercel.app/",
+        category: "frontend",
+        tags: ["React", "Tailwind CSS", "Game Development", "Frontend"],
+        is_default: true
+      });
+      
+      console.log("Successfully updated the second project:", updatedProject);
+    } else {
+      // Create a new project
+      const newProject = await addProject({
+        title: "Drench Clone Game",
+        description: "Developed a clone of the Drench game using React and Tailwind CSS, providing users with an addictive and challenging puzzle experience. Implemented color-matching mechanics on a grid, requiring strategic thinking and planning. The game offers an immersive and visually captivating interface.",
+        image: "public/lovable-uploads/963582ea-1dcf-4747-9978-6bb62c430af0.png",
+        github: "https://github.com/BhaveshG-22/drenchClone-Client",
+        demo: "https://drench-clone.vercel.app/",
+        category: "frontend",
+        tags: ["React", "Tailwind CSS", "Game Development", "Frontend"],
+        is_default: true
+      });
+      
+      console.log("Successfully created a new second project:", newProject);
+    }
+  } catch (error) {
+    console.error("Error updating/creating the second project:", error);
+    throw new Error("Failed to update/create the second project");
   }
 };
 

@@ -10,23 +10,26 @@ import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import { useEffect } from "react";
-import { updateFirstProject } from "@/services/projectService";
+import { updateFirstProject, updateSecondProject } from "@/services/projectService";
 import { toast } from "sonner";
 
 const Index = () => {
   useEffect(() => {
-    // Update the first project when the page loads
-    const updateProject = async () => {
+    // Update the first and second projects when the page loads
+    const updateProjects = async () => {
       try {
         await updateFirstProject();
         console.log("First project updated successfully");
+        
+        await updateSecondProject();
+        console.log("Second project updated successfully");
       } catch (error) {
-        console.error("Error updating first project:", error);
+        console.error("Error updating projects:", error);
         toast.error("Failed to update project information");
       }
     };
     
-    updateProject();
+    updateProjects();
   }, []);
   
   return (
