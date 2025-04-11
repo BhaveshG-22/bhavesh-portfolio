@@ -41,25 +41,25 @@ const ProjectsSection = () => {
         setIsLoading(true);
         console.log("Loading projects, user is admin:", isAdmin);
         
-        // Load ALL projects first to see what we have
+        // Always load ALL projects first so we have access to them
         const allProjectsData = await fetchProjects();
+        console.log("All projects data:", allProjectsData);
         setAllProjects(allProjectsData);
         
-        // Log detailed information about the request
-        console.log("About to fetch projects from Supabase in ProjectsSection...");
+        // Determine which projects to display based on admin status and toggle
+        let projectsToDisplay = allProjectsData;
+        if (!(isAdmin && showAllProjects)) {
+          // If not an admin OR admin but not showing all projects, filter to only visible ones
+          projectsToDisplay = allProjectsData.filter(project => !project.hidden);
+        }
+        console.log("Projects to display:", projectsToDisplay.length);
         
-        // Always load visible projects for non-admins
-        // For admins, load all projects if showAllProjects is true
-        const projectsData = isAdmin && showAllProjects 
-          ? await fetchProjects()
-          : await fetchVisibleProjects();
-        
+        // Fetch categories
         const categoriesData = await fetchCategories();
+        console.log("Categories data:", categoriesData);
         
-        console.log("ProjectsSection - Fetched projects:", projectsData);
-        console.log("ProjectsSection - Fetched categories:", categoriesData);
-        
-        setProjects(projectsData);
+        // Set state with fetched data
+        setProjects(projectsToDisplay);
         setCategories(categoriesData);
       } catch (error) {
         console.error("Error loading projects or categories:", error);
@@ -130,7 +130,7 @@ const ProjectsSection = () => {
           {isAdmin && (
             <div className="w-full mb-6">
               <p>Total Projects: {allProjects.length}</p>
-              <p>Visible Projects: {showAllProjects ? allProjects.length : projects.length}</p>
+              <p>Visible Projects: {allProjects.filter(p => !p.hidden).length}</p>
               <p>Filtered Projects: {filteredProjects.length}</p>
             </div>
           )}

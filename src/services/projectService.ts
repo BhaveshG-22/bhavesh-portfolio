@@ -41,7 +41,8 @@ export const fetchProjects = async (): Promise<Project[]> => {
     return data || [];
   } catch (error) {
     console.error("Unexpected error in fetchProjects:", error);
-    throw error;
+    // Return empty array instead of throwing to prevent UI from breaking
+    return [];
   }
 };
 
@@ -52,35 +53,14 @@ export const fetchVisibleProjects = async (): Promise<Project[]> => {
     const allProjects = await fetchProjects();
     console.log(`Total projects in database: ${allProjects.length}`);
     
-    console.log("Making Supabase request to fetch visible projects");
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("hidden", false)
-      .order("is_default", { ascending: false })
-      .order("id");
+    // Filter for visible projects on the client-side to avoid potential RLS issues
+    const visibleProjects = allProjects.filter(project => !project.hidden);
+    console.log(`Filtered visible projects: ${visibleProjects.length}`);
     
-    if (error) {
-      console.error("Error fetching visible projects:", error);
-      throw new Error(error.message);
-    }
-    
-    console.log(`Successfully fetched ${data?.length || 0} visible projects`);
-    if (data && data.length > 0) {
-      console.log("First visible project:", data[0]);
-    } else {
-      console.log("No visible projects found - verify if all projects have hidden=true");
-      
-      // Check if we have any projects that are just showing as hidden
-      if (allProjects.length > 0) {
-        console.log("All projects are hidden=true. You should set some to hidden=false to make them visible.");
-      }
-    }
-    
-    return data || [];
+    return visibleProjects;
   } catch (error) {
     console.error("Unexpected error in fetchVisibleProjects:", error);
-    // Instead of throwing error, return empty array to prevent UI from breaking
+    // Return empty array to prevent UI from breaking
     return [];
   }
 };
