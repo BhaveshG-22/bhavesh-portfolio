@@ -6,7 +6,6 @@ import SkillsSection from "@/components/SkillsSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import CertificationsSection from "@/components/CertificationsSection";
 import ContactSection from "@/components/ContactSection";
-import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 
@@ -20,7 +19,6 @@ const Index = () => {
         <AboutSection />
         <SkillsSection />
         <ProjectsSection />
-        <GithubSection />
         <CertificationsSection />
         <ContactSection />
       </main>
