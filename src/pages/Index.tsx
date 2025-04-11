@@ -9,8 +9,26 @@ import ContactSection from "@/components/ContactSection";
 import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
+import { useEffect } from "react";
+import { updateFirstProject } from "@/services/projectService";
+import { toast } from "sonner";
 
 const Index = () => {
+  useEffect(() => {
+    // Update the first project when the page loads
+    const updateProject = async () => {
+      try {
+        await updateFirstProject();
+        console.log("First project updated successfully");
+      } catch (error) {
+        console.error("Error updating first project:", error);
+        toast.error("Failed to update project information");
+      }
+    };
+    
+    updateProject();
+  }, []);
+  
   return (
     <div className="min-h-screen">
       <ScrollProgressBar />

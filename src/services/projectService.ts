@@ -126,6 +126,38 @@ export const toggleProjectVisibility = async (id: number, isHidden: boolean): Pr
   return updateProject(id, { hidden: !isHidden });
 };
 
+// Add this function to update the first project
+export const updateFirstProject = async (): Promise<void> => {
+  try {
+    // First get all projects to find the one with lowest ID
+    const projects = await fetchProjects();
+    if (projects.length === 0) {
+      console.error("No projects found to update");
+      return;
+    }
+    
+    // Sort by ID to make sure we get the first one
+    const firstProject = projects.sort((a, b) => a.id - b.id)[0];
+    
+    // Update the first project with new Blog App data
+    const updatedProject = await updateProject(firstProject.id, {
+      title: "Blogging App",
+      description: "Developed Blogging App with React, Node.js, MongoDB, and secure user authentication, offering seamless registration, login, and responsive experiences. Utilized React libraries for enhanced functionality and MongoDB Atlas for data storage and CRUD operations.",
+      image: "public/lovable-uploads/c927f09a-08d3-42f0-b7a8-fc7b81d7704c.png",
+      github: "https://github.com/BhaveshG-22/BlogApp2.0",
+      demo: "https://blog-app2-0.vercel.app/",
+      category: "fullstack",
+      tags: ["React", "Node.js", "MongoDB", "Express", "Bootstrap"],
+      is_default: true
+    });
+    
+    console.log("Successfully updated the first project:", updatedProject);
+  } catch (error) {
+    console.error("Error updating the first project:", error);
+    throw new Error("Failed to update the first project");
+  }
+};
+
 export const addCategory = async (name: string): Promise<string> => {
   const { data, error } = await supabase
     .from("project_categories")
