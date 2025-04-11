@@ -1,10 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogIn, LogOut, Mail, BookOpen, FolderKanban, Settings } from "lucide-react";
+import { Menu, X, Mail, BookOpen, FolderKanban } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export interface HeaderProps {
@@ -12,12 +11,6 @@ export interface HeaderProps {
 }
 
 export const Header = ({ activeSection }: HeaderProps) => {
-  const { user, logout, isAdmin } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-  };
-
   const handleContactClick = (e: React.MouseEvent) => {
     e.preventDefault();
     const contactSection = document.getElementById('contact');
@@ -67,17 +60,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 Blog
               </Link>
             </li>
-            {isAdmin && (
-              <li>
-                <Link
-                  to="/secret-project-add"
-                  className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${activeSection === 'admin' ? 'text-primary' : ''
-                    }`}
-                >
-                  Admin
-                </Link>
-              </li>
-            )}
           </ul>
           <div className="flex items-center gap-2">
             <a href="#contact" onClick={handleContactClick}>
@@ -86,18 +68,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 Contact Me
               </Button>
             </a>
-
-            {user ? (
-              <Button variant="destructive" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" /> Logout
-              </Button>
-            ) : (
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/login">
-                  <LogIn className="h-4 w-4 mr-2" /> Login
-                </Link>
-              </Button>
-            )}
           </div>
         </nav>
 
@@ -139,16 +109,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                 >
                   <BookOpen className="h-4 w-4 mr-2 inline-block" /> Blog
                 </Link>
-                
-                {isAdmin && (
-                  <Link
-                    to="/secret-project-add"
-                    className={`text-lg font-medium hover:text-primary transition-colors ${activeSection === 'admin' ? 'text-primary' : ''
-                      }`}
-                  >
-                    <Settings className="h-4 w-4 mr-2 inline-block" /> Admin Dashboard
-                  </Link>
-                )}
               </nav>
 
               <div className="flex flex-col gap-4 mt-8">
@@ -158,18 +118,6 @@ export const Header = ({ activeSection }: HeaderProps) => {
                     Contact Me
                   </Button>
                 </a>
-
-                {user ? (
-                  <Button variant="destructive" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" /> Logout
-                  </Button>
-                ) : (
-                  <Button variant="outline" asChild className="w-full">
-                    <Link to="/login">
-                      <LogIn className="h-4 w-4 mr-2" /> Login
-                    </Link>
-                  </Button>
-                )}
               </div>
             </SheetContent>
           </Sheet>
