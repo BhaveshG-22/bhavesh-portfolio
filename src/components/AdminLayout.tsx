@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
@@ -8,6 +9,12 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
+  const { isAdmin } = useAuth();
+  
+  if (!isAdmin) {
+    return null;
+  }
+  
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <SidebarProvider defaultOpen={true}>

@@ -1,5 +1,6 @@
 
 import { PenSquare, BookOpen, MessageSquare, Github } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Sidebar, 
   SidebarContent, 
@@ -11,6 +12,12 @@ import {
 } from "@/components/ui/sidebar";
 
 export const AdminSidebar = () => {
+  const { isAdmin } = useAuth();
+  
+  if (!isAdmin) {
+    return null;
+  }
+  
   return (
     <Sidebar>
       <SidebarContent className="pt-16">
