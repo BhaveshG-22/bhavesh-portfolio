@@ -92,7 +92,7 @@ const EditProjects = () => {
   };
 
   // Handle project refresh after add/edit
-  const handleProjectChange = async () => {
+  const handleProjectChange = () => {
     return refetchProjects();
   };
 
