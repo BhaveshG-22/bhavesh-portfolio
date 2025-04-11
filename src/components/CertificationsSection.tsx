@@ -1,41 +1,32 @@
 
+import { useState, useEffect } from "react";
 import { BadgeCheck, Award, Bookmark } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-
-interface CertificationProps {
-  title: string;
-  issuer: string;
-  date: string;
-  image: string;
-  credentialUrl?: string;
-}
-
-const certifications: CertificationProps[] = [
-  {
-    title: "Full Stack Web Development",
-    issuer: "Udacity",
-    date: "March 2023",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-    credentialUrl: "#"
-  },
-  {
-    title: "React Advanced Concepts",
-    issuer: "Meta",
-    date: "January 2023",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    credentialUrl: "#"
-  },
-  {
-    title: "Machine Learning Specialization",
-    issuer: "Coursera",
-    date: "November 2022",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-    credentialUrl: "#"
-  }
-];
+import { fetchVisibleCertifications, Certification } from "@/services/certificationService";
+import { toast } from "sonner";
 
 const CertificationsSection = () => {
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCertifications = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchVisibleCertifications();
+        setCertifications(data);
+      } catch (error) {
+        console.error("Error loading certifications:", error);
+        toast.error("Failed to load certifications. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCertifications();
+  }, []);
+
   return (
     <section id="certifications" className="section-padding relative overflow-hidden">
       {/* Background decorative elements */}
@@ -53,54 +44,75 @@ const CertificationsSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {certifications.map((cert, index) => (
-            <Card 
-              key={index} 
-              className="group bg-card/30 backdrop-blur-sm border border-white/10 overflow-hidden hover:border-primary/30 transition-all duration-300"
-            >
-              <div className="relative">
-                <AspectRatio ratio={16/9}>
-                  <img 
-                    src={cert.image} 
-                    alt={cert.title} 
-                    className="object-cover w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-300"
-                  />
-                </AspectRatio>
-                <div className="absolute top-3 right-3 bg-primary/90 p-2 rounded-full shadow-lg">
-                  {index === 0 ? (
-                    <Award className="h-5 w-5 text-white" />
-                  ) : (
-                    <Bookmark className="h-5 w-5 text-white" />
-                  )}
-                </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[1, 2, 3].map((item) => (
+              <Card key={item} className="bg-card/30 backdrop-blur-sm border border-white/10 overflow-hidden">
+                <div className="h-48 bg-muted/20 animate-pulse"></div>
+                <CardContent className="p-5">
+                  <div className="h-6 w-3/4 bg-muted/20 animate-pulse mb-2"></div>
+                  <div className="h-4 w-1/2 bg-muted/20 animate-pulse mb-4"></div>
+                  <div className="h-4 w-1/3 bg-muted/20 animate-pulse"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {certifications.length > 0 ? (
+              certifications.map((cert, index) => (
+                <Card 
+                  key={cert.id} 
+                  className="group bg-card/30 backdrop-blur-sm border border-white/10 overflow-hidden hover:border-primary/30 transition-all duration-300"
+                >
+                  <div className="relative">
+                    <AspectRatio ratio={16/9}>
+                      <img 
+                        src={cert.image} 
+                        alt={cert.title} 
+                        className="object-cover w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-300"
+                      />
+                    </AspectRatio>
+                    <div className="absolute top-3 right-3 bg-primary/90 p-2 rounded-full shadow-lg">
+                      {index === 0 ? (
+                        <Award className="h-5 w-5 text-white" />
+                      ) : (
+                        <Bookmark className="h-5 w-5 text-white" />
+                      )}
+                    </div>
+                  </div>
+                  <CardContent className="p-5">
+                    <h3 className="font-semibold text-lg mb-1 text-gradient group-hover:text-white transition-colors">
+                      {cert.title}
+                    </h3>
+                    <div className="flex items-center text-sm text-muted-foreground mb-3">
+                      <span className="mr-2">Issued by {cert.issuer}</span>
+                      <span>•</span>
+                      <span className="ml-2">{cert.date}</span>
+                    </div>
+                    <div className="flex items-center text-sm mt-3 text-primary">
+                      {cert.credential_url && (
+                        <a 
+                          href={cert.credential_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center hover:underline"
+                        >
+                          <BadgeCheck className="w-4 h-4 mr-1" />
+                          Verify Certificate
+                        </a>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10">
+                <p className="text-muted-foreground">No certifications found.</p>
               </div>
-              <CardContent className="p-5">
-                <h3 className="font-semibold text-lg mb-1 text-gradient group-hover:text-white transition-colors">
-                  {cert.title}
-                </h3>
-                <div className="flex items-center text-sm text-muted-foreground mb-3">
-                  <span className="mr-2">Issued by {cert.issuer}</span>
-                  <span>•</span>
-                  <span className="ml-2">{cert.date}</span>
-                </div>
-                <div className="flex items-center text-sm mt-3 text-primary">
-                  {cert.credentialUrl && (
-                    <a 
-                      href={cert.credentialUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center hover:underline"
-                    >
-                      <BadgeCheck className="w-4 h-4 mr-1" />
-                      Verify Certificate
-                    </a>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
