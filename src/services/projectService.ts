@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export type Project = {
@@ -81,7 +80,8 @@ export const fetchVisibleProjects = async (): Promise<Project[]> => {
     return data || [];
   } catch (error) {
     console.error("Unexpected error in fetchVisibleProjects:", error);
-    throw error;
+    // Instead of throwing error, return empty array to prevent UI from breaking
+    return [];
   }
 };
 

@@ -39,6 +39,7 @@ const ProjectsSection = () => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
+        console.log("Loading projects, user is admin:", isAdmin);
         
         // Load ALL projects first to see what we have
         const allProjectsData = await fetchProjects();
@@ -47,11 +48,13 @@ const ProjectsSection = () => {
         // Log detailed information about the request
         console.log("About to fetch projects from Supabase in ProjectsSection...");
         
-        // Load visible projects and categories from Supabase
-        const [projectsData, categoriesData] = await Promise.all([
-          showAllProjects ? fetchProjects() : fetchVisibleProjects(),
-          fetchCategories()
-        ]);
+        // Always load visible projects for non-admins
+        // For admins, load all projects if showAllProjects is true
+        const projectsData = isAdmin && showAllProjects 
+          ? await fetchProjects()
+          : await fetchVisibleProjects();
+        
+        const categoriesData = await fetchCategories();
         
         console.log("ProjectsSection - Fetched projects:", projectsData);
         console.log("ProjectsSection - Fetched categories:", categoriesData);
@@ -67,7 +70,7 @@ const ProjectsSection = () => {
     };
     
     loadProjects();
-  }, [showAllProjects]);
+  }, [showAllProjects, isAdmin]);
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
