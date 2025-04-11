@@ -10,14 +10,25 @@ const STORAGE_BUCKET = 'project_images';
  */
 export async function uploadProjectImage(file: File): Promise<string> {
   try {
+    console.log(`Starting upload process for file: ${file.name}`);
+    
     // First check if the bucket exists, if not, create it
-    const { data: buckets } = await supabase.storage.listBuckets();
+    console.log(`Checking if bucket ${STORAGE_BUCKET} exists`);
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+    
+    if (bucketsError) {
+      console.error('Error listing buckets:', bucketsError);
+      throw new Error(bucketsError.message);
+    }
+    
     const bucketExists = buckets?.some(bucket => bucket.name === STORAGE_BUCKET);
+    console.log(`Bucket ${STORAGE_BUCKET} exists: ${bucketExists}`);
     
     if (!bucketExists) {
       console.log(`Creating storage bucket: ${STORAGE_BUCKET}`);
       const { data, error } = await supabase.storage.createBucket(STORAGE_BUCKET, {
         public: true, // Make the bucket public so images are accessible
+        fileSizeLimit: 10485760, // 10MB
       });
       
       if (error) {
@@ -31,6 +42,7 @@ export async function uploadProjectImage(file: File): Promise<string> {
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${fileName}`;
     
+    console.log(`Uploading file to path: ${filePath}`);
     const { data, error } = await supabase.storage
       .from(STORAGE_BUCKET)
       .upload(filePath, file, {
@@ -43,14 +55,19 @@ export async function uploadProjectImage(file: File): Promise<string> {
       throw new Error(error.message);
     }
     
+    console.log('File uploaded successfully:', data);
+    
     // Get public URL for the uploaded file
+    console.log('Getting public URL for the file');
     const { data: urlData } = supabase.storage
       .from(STORAGE_BUCKET)
       .getPublicUrl(filePath);
       
+    console.log('Public URL:', urlData.publicUrl);
     return urlData.publicUrl;
   } catch (error: any) {
     console.error('Error in uploadProjectImage:', error);
+    toast.error(`Failed to upload image: ${error.message}`);
     throw new Error(`Failed to upload image: ${error.message}`);
   }
 }

@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { deleteProjectImage, isProjectImage } from "./projectImageService";
 
@@ -82,20 +83,41 @@ export const addProject = async (project: Omit<Project, "id" | "created_at" | "u
   const { data, error } = await supabase
     .from("projects")
     .insert([project])
-    .select()
-    .single();
+    .select();
   
   if (error) {
     console.error("Error adding project:", error);
     throw new Error(error.message);
   }
   
-  return data;
+  if (!data || data.length === 0) {
+    throw new Error("Failed to add project: No data returned");
+  }
+  
+  return data[0];
 };
 
 export const updateProject = async (id: number, updates: Partial<Omit<Project, "id" | "created_at" | "updated_at">>): Promise<Project> => {
-  // The issue is here - using .single() can cause errors if no rows are returned
-  // Let's change it to use .maybeSingle() instead and handle the case when no data is returned
+  console.log(`Updating project ${id} with:`, updates);
+  
+  // First check if the project exists
+  const { data: existingProject, error: checkError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+  
+  if (checkError) {
+    console.error("Error checking project existence:", checkError);
+    throw new Error(checkError.message);
+  }
+  
+  if (!existingProject) {
+    console.error(`Project with id ${id} does not exist`);
+    throw new Error(`Project with id ${id} not found`);
+  }
+  
+  // Now proceed with the update
   const { data, error } = await supabase
     .from("projects")
     .update(updates)
@@ -108,10 +130,11 @@ export const updateProject = async (id: number, updates: Partial<Omit<Project, "
   }
   
   if (!data || data.length === 0) {
-    console.error("No project found with id:", id);
-    throw new Error(`Project with id ${id} not found`);
+    console.error(`No data returned when updating project ${id}`);
+    throw new Error(`Failed to update project: No data returned`);
   }
   
+  console.log(`Successfully updated project ${id}:`, data[0]);
   return data[0];
 };
 
@@ -167,6 +190,7 @@ export const updateFirstProject = async (): Promise<void> => {
     
     // Sort by ID to make sure we get the first one
     const firstProject = projects.sort((a, b) => a.id - b.id)[0];
+    console.log("Attempting to update first project with ID:", firstProject.id);
     
     // Update the first project with new Blog App data
     const updatedProject = await updateProject(firstProject.id, {
