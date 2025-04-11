@@ -1,6 +1,5 @@
 
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Trash2, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Project, fetchProjects, toggleProjectVisibility } from "@/services/projectService"; 
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProjectsList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -24,11 +24,28 @@ const ProjectsList = () => {
       setLoading(true);
       console.log("Fetching projects in Admin ProjectsList");
       
-      // Use the fetchProjects function from projectService instead of direct Supabase call
+      // Direct fetch to debug
+      try {
+        const { data: directData, error: directError } = await supabase
+          .from('projects')
+          .select('*');
+          
+        console.log("Direct Supabase projects query:", directData?.length, "projects", directError);
+      } catch (err) {
+        console.error("Direct query failed:", err);
+      }
+      
+      // Use the fetchProjects function from projectService
       const data = await fetchProjects();
       
       console.log(`Admin: Successfully fetched ${data?.length || 0} projects`);
-      setProjects(data);
+      if (data && data.length > 0) {
+        console.log("First project:", data[0]);
+      } else {
+        console.log("No projects found or empty array returned");
+      }
+      
+      setProjects(data || []);
     } catch (error: any) {
       toast.error(`Failed to fetch projects: ${error.message}`);
       console.error("Error fetching projects:", error);
@@ -85,14 +102,28 @@ const ProjectsList = () => {
     <div className="w-full">
       <h2 className="text-2xl font-semibold mb-4 text-foreground">Current Projects</h2>
       
-      {/* Debug info - Always visible in admin sections */}
+      {/* Debug info */}
       <div className="mb-4 p-3 bg-muted/20 rounded-md border border-border/30">
         <p className="text-sm text-muted-foreground">Projects count: {projects.length}</p>
         <details className="mt-2">
-          <summary className="text-sm cursor-pointer text-primary">Debug info</summary>
-          <pre className="mt-2 p-2 bg-muted/30 text-xs rounded overflow-auto max-h-60">
-            {JSON.stringify(projects[0] || {}, null, 2)}
-          </pre>
+          <summary className="text-sm cursor-pointer text-primary">Debug API info</summary>
+          <div className="mt-2 p-2 bg-muted/30 text-xs rounded overflow-auto max-h-60">
+            <p>Supabase URL: {supabase.supabaseUrl ? "✅ Set" : "❌ Not set"}</p>
+            <button 
+              onClick={async () => {
+                try {
+                  const { data, error } = await supabase.from('projects').select('count');
+                  console.log("Count query:", data, error);
+                  toast.info(`Count result: ${JSON.stringify(data)}`);
+                } catch (e) {
+                  console.error("Count error:", e);
+                }
+              }}
+              className="px-2 py-1 bg-primary/20 text-primary rounded text-xs mt-1"
+            >
+              Test Count Query
+            </button>
+          </div>
         </details>
       </div>
       

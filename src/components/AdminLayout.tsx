@@ -12,7 +12,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { isAdmin } = useAuth();
   
   if (!isAdmin) {
-    return null;
+    return <div className="flex items-center justify-center h-screen bg-background text-foreground">Access Denied</div>;
   }
   
   return (

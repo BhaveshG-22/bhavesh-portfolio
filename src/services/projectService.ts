@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type Project = {
@@ -19,6 +20,8 @@ export const fetchProjects = async (): Promise<Project[]> => {
   console.log("Fetching all projects...");
   try {
     console.log("Making Supabase request to fetch all projects");
+    
+    // Let's add a direct fetch with more logging
     const { data, error } = await supabase
       .from("projects")
       .select("*")
@@ -38,6 +41,7 @@ export const fetchProjects = async (): Promise<Project[]> => {
       console.log("No projects found");
     }
     
+    // Even if data is null, return an empty array instead of null
     return data || [];
   } catch (error) {
     console.error("Unexpected error in fetchProjects:", error);
@@ -48,7 +52,7 @@ export const fetchProjects = async (): Promise<Project[]> => {
 
 // Modified to return all projects instead of just visible ones
 export const fetchVisibleProjects = async (): Promise<Project[]> => {
-  console.log("Fetching visible projects (now returning all projects)...");
+  console.log("Fetching all projects (no longer filtering by visibility)...");
   try {
     // Instead of filtering, just return all projects
     const allProjects = await fetchProjects();
