@@ -1,10 +1,11 @@
+
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import ThemeToggle from './ThemeToggle';
 import { ModeToggle } from './mode-toggle';
-import { Link } from "@nextui-org/react";
+import { Link as RouterLink } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,15 +25,15 @@ const Header = () => {
   return (
     <header className="bg-background sticky top-0 z-50 w-full border-b">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="font-bold text-2xl">
+        <RouterLink to="/" className="font-bold text-2xl">
           My Portfolio
-        </Link>
+        </RouterLink>
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex gap-6">
             {navigationLinks.map((link) => (
-              <Link key={link.name} href={link.href} className="hover:text-primary transition-colors">
+              <RouterLink key={link.name} to={link.href} className="hover:text-primary transition-colors">
                 {link.name}
-              </Link>
+              </RouterLink>
             ))}
           </nav>
           <ModeToggle />
@@ -51,9 +52,9 @@ const Header = () => {
               </SheetHeader>
               <div className="grid gap-4 py-4">
                 {navigationLinks.map((link) => (
-                  <Link key={link.name} href={link.href} className="hover:text-primary transition-colors block py-2">
+                  <RouterLink key={link.name} to={link.href} className="hover:text-primary transition-colors block py-2">
                     {link.name}
-                  </Link>
+                  </RouterLink>
                 ))}
                 <ThemeToggle />
               </div>

@@ -1,5 +1,6 @@
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import Projects from "./pages/Projects";

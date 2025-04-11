@@ -62,7 +62,7 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header activeSection="projects" />
+      <Header />
       <main className="flex-grow pt-24 pb-16 bg-background">
         <section className="max-container px-4">
           <div className="mb-12">

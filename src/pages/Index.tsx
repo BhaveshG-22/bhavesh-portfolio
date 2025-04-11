@@ -35,7 +35,7 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <ScrollProgressBar />
-      <Header activeSection="home" />
+      <Header />
       <main className="pt-0">
         <HeroSection />
         <AboutSection />
