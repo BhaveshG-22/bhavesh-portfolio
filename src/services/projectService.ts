@@ -94,19 +94,25 @@ export const addProject = async (project: Omit<Project, "id" | "created_at" | "u
 };
 
 export const updateProject = async (id: number, updates: Partial<Omit<Project, "id" | "created_at" | "updated_at">>): Promise<Project> => {
+  // The issue is here - using .single() can cause errors if no rows are returned
+  // Let's change it to use .maybeSingle() instead and handle the case when no data is returned
   const { data, error } = await supabase
     .from("projects")
     .update(updates)
     .eq("id", id)
-    .select()
-    .single();
+    .select();
   
   if (error) {
     console.error("Error updating project:", error);
     throw new Error(error.message);
   }
   
-  return data;
+  if (!data || data.length === 0) {
+    console.error("No project found with id:", id);
+    throw new Error(`Project with id ${id} not found`);
+  }
+  
+  return data[0];
 };
 
 export const deleteProject = async (id: number): Promise<void> => {

@@ -10,6 +10,23 @@ const STORAGE_BUCKET = 'project_images';
  */
 export async function uploadProjectImage(file: File): Promise<string> {
   try {
+    // First check if the bucket exists, if not, create it
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(bucket => bucket.name === STORAGE_BUCKET);
+    
+    if (!bucketExists) {
+      console.log(`Creating storage bucket: ${STORAGE_BUCKET}`);
+      const { data, error } = await supabase.storage.createBucket(STORAGE_BUCKET, {
+        public: true, // Make the bucket public so images are accessible
+      });
+      
+      if (error) {
+        console.error('Error creating bucket:', error);
+        throw new Error(error.message);
+      }
+      console.log('Bucket created successfully:', data);
+    }
+    
     const fileExt = file.name.split('.').pop();
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${fileName}`;
