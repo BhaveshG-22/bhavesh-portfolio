@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,20 @@ import {
 import { Label } from "@/components/ui/label";
 import { Loader2, ImageIcon } from "lucide-react";
 import { FileUpload } from "@/components/ui/file-upload";
-import { uploadProjectImage } from "@/services/projectImageService";
-import { addProject } from "@/services/projectService";
+import { uploadProjectImage, isProjectImage, deleteProjectImage } from "@/services/projectImageService";
+import { addProject, updateProject } from "@/services/projectService";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCategories } from "@/services/projectService";
+import { Project } from "@/types/project";
 
 type ProjectFormProps = {
   onProjectAdded: () => Promise<void>;
+  project?: Project | null;
+  mode: 'add' | 'edit';
 };
 
-const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
+const ProjectForm = ({ onProjectAdded, project = null, mode = 'add' }: ProjectFormProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [github, setGithub] = useState("");
@@ -42,6 +45,19 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
     queryFn: fetchCategories
   });
 
+  // If we're editing, load the project data
+  useEffect(() => {
+    if (mode === 'edit' && project) {
+      setTitle(project.title);
+      setDescription(project.description);
+      setGithub(project.github);
+      setDemo(project.demo);
+      setImageUrl(project.image);
+      setCategory(project.category);
+      setTags(project.tags || []);
+    }
+  }, [mode, project]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -54,6 +70,17 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
         try {
           finalImageUrl = await uploadProjectImage(uploadedFile);
           console.log("Uploaded image URL:", finalImageUrl);
+          
+          // If we're editing and replacing an existing image, delete the old one
+          if (mode === 'edit' && project && project.image && isProjectImage(project.image)) {
+            try {
+              await deleteProjectImage(project.image);
+              console.log("Deleted old image:", project.image);
+            } catch (deleteError: any) {
+              console.error("Failed to delete old image:", deleteError);
+              // Continue even if old image deletion fails
+            }
+          }
         } catch (uploadError: any) {
           toast.error(`Failed to upload image: ${uploadError.message}`);
           setIsSubmitting(false);
@@ -79,13 +106,19 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
         tags: tags
       };
 
-      console.log("Submitting project data:", projectData);
+      console.log(`${mode === 'add' ? 'Adding' : 'Updating'} project data:`, projectData);
       
-      // Use the addProject function from projectService
-      const addedProject = await addProject(projectData);
-      console.log("Project added successfully:", addedProject);
+      if (mode === 'add') {
+        // Add new project
+        await addProject(projectData);
+        toast.success("Project added successfully!");
+      } else if (project && project.id) {
+        // Update existing project
+        console.log(`Updating project ID: ${project.id} with:`, projectData);
+        await updateProject(project.id, projectData);
+        toast.success("Project updated successfully!");
+      }
 
-      toast.success("Project added successfully!");
       // Clear form fields
       setTitle("");
       setDescription("");
@@ -100,8 +133,8 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
       // Refresh projects list
       await onProjectAdded();
     } catch (error: any) {
-      console.error("Error adding project:", error);
-      toast.error(`Failed to add project: ${error.message}`);
+      console.error(`Error ${mode === 'add' ? 'adding' : 'updating'} project:`, error);
+      toast.error(`Failed to ${mode === 'add' ? 'add' : 'update'} project: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -131,7 +164,9 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Add New Project</h2>
+        <h2 className="text-2xl font-semibold">
+          {mode === 'add' ? 'Add New Project' : 'Edit Project'}
+        </h2>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -260,10 +295,10 @@ const ProjectForm = ({ onProjectAdded }: ProjectFormProps) => {
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Adding...
+              {mode === 'add' ? 'Adding...' : 'Updating...'}
             </>
           ) : (
-            "Add Project"
+            mode === 'add' ? 'Add Project' : 'Update Project'
           )}
         </Button>
       </form>
