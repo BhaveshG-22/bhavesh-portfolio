@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github, Loader2 } from "lucide-react";
-import { Project, fetchVisibleProjects, fetchCategories } from "@/services/projectService";
+import { Project, fetchProjects, fetchCategories } from "@/services/projectService";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -55,9 +55,9 @@ const Projects = () => {
           }
         }
         
-        // Load projects and categories from Supabase using our service
+        // CHANGE: Use fetchProjects instead of fetchVisibleProjects to get all projects
         const [projectsData, categoriesData] = await Promise.all([
-          fetchVisibleProjects(),
+          fetchProjects(),
           fetchCategories()
         ]);
         

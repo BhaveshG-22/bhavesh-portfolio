@@ -46,21 +46,16 @@ export const fetchProjects = async (): Promise<Project[]> => {
   }
 };
 
+// Modified to return all projects instead of just visible ones
 export const fetchVisibleProjects = async (): Promise<Project[]> => {
-  console.log("Fetching visible projects...");
+  console.log("Fetching visible projects (now returning all projects)...");
   try {
-    // First, let's check ALL projects to see what we have
+    // Instead of filtering, just return all projects
     const allProjects = await fetchProjects();
-    console.log(`Total projects in database: ${allProjects.length}`);
-    
-    // Filter for visible projects on the client-side to avoid potential RLS issues
-    const visibleProjects = allProjects.filter(project => !project.hidden);
-    console.log(`Filtered visible projects: ${visibleProjects.length}`);
-    
-    return visibleProjects;
+    console.log(`Returning all ${allProjects.length} projects`);
+    return allProjects;
   } catch (error) {
     console.error("Unexpected error in fetchVisibleProjects:", error);
-    // Return empty array to prevent UI from breaking
     return [];
   }
 };

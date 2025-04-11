@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Project, fetchVisibleProjects, fetchProjects, fetchCategories, toggleProjectVisibility } from "@/services/projectService";
+import { Project, fetchProjects, fetchCategories, toggleProjectVisibility } from "@/services/projectService";
 import { toast } from "sonner";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
 import { useAuth } from "@/contexts/AuthContext";
@@ -41,25 +41,19 @@ const ProjectsSection = () => {
         setIsLoading(true);
         console.log("Loading projects, user is admin:", isAdmin);
         
-        // Always load ALL projects first so we have access to them
+        // Always load ALL projects
         const allProjectsData = await fetchProjects();
         console.log("All projects data:", allProjectsData);
         setAllProjects(allProjectsData);
         
-        // Determine which projects to display based on admin status and toggle
-        let projectsToDisplay = allProjectsData;
-        if (!(isAdmin && showAllProjects)) {
-          // If not an admin OR admin but not showing all projects, filter to only visible ones
-          projectsToDisplay = allProjectsData.filter(project => !project.hidden);
-        }
-        console.log("Projects to display:", projectsToDisplay.length);
+        // CHANGE: Always show all projects regardless of hidden status
+        setProjects(allProjectsData);
         
         // Fetch categories
         const categoriesData = await fetchCategories();
         console.log("Categories data:", categoriesData);
         
         // Set state with fetched data
-        setProjects(projectsToDisplay);
         setCategories(categoriesData);
       } catch (error) {
         console.error("Error loading projects or categories:", error);
@@ -70,7 +64,7 @@ const ProjectsSection = () => {
     };
     
     loadProjects();
-  }, [showAllProjects, isAdmin]);
+  }, [isAdmin]);
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
