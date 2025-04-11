@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { runSupabaseConnectionTest } from "@/utils/supabaseConnectionTest";
 
 import CategoryFilter from "./project-section/CategoryFilter";
-import ConnectionStatus from "./project-section/ConnectionStatus";
 import ProjectsGrid from "./project-section/ProjectsGrid";
 import ProjectStats from "./project-section/ProjectStats";
 
@@ -73,10 +72,7 @@ const ProjectsSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-light">Featured Projects</h2>
           <div className="w-32 h-1 bg-teal-500 opacity-80 mb-8" />
           
-          {/* Connection test display for debugging */}
-          {connectionStatus && (
-            <ConnectionStatus connectionStatus={connectionStatus} />
-          )}
+          {/* Connection debug info removed */}
           
           {isLoading ? (
             <div className="w-full flex justify-center py-12">
