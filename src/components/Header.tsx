@@ -1,123 +1,61 @@
+import { useState } from 'react';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Menu } from "lucide-react"
+import ThemeToggle from './ThemeToggle';
+import { ModeToggle } from './mode-toggle';
+import { Link } from "@nextui-org/react";
 
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Button } from "@/components/ui/button";
-import { Menu, X, Mail, BookOpen, FolderKanban } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-export interface HeaderProps {
-  activeSection?: string;
-}
-
-export const Header = ({ activeSection }: HeaderProps) => {
-  const handleContactClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-    }
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
+  const navigationLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Edit Projects', href: '/edit-projects' },
+    { name: 'Edit Certifications', href: '/edit-certifications' }
+  ];
+
   return (
-    <header className="w-full z-30 bg-transparent border-b border-white/5">
-      <div className="max-container flex items-center justify-between h-16 px-4">
-        <Link
-          to="/"
-          className="text-xl font-bold hover:text-primary transition-colors"
-        >
-          <span className="text-gradient-light font-poppins">BhaveshG.dev</span>
+    <header className="bg-background sticky top-0 z-50 w-full border-b">
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="font-bold text-2xl">
+          My Portfolio
         </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <ul className="flex items-center gap-6">
-            <li>
-              <Link
-                to="/"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${activeSection === 'home' ? 'text-primary' : ''
-                  }`}
-              >
-                Home
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex gap-6">
+            {navigationLinks.map((link) => (
+              <Link key={link.name} href={link.href} className="hover:text-primary transition-colors">
+                {link.name}
               </Link>
-            </li>
-
-            <li>
-              <Link
-                to="/projects"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${activeSection === 'projects-page' ? 'text-primary' : ''
-                  }`}
-              >
-                Projects
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/blog"
-                className={`text-sm font-medium text-foreground hover:text-primary transition-colors ${activeSection === 'blog' ? 'text-primary' : ''
-                  }`}
-              >
-                Blog
-              </Link>
-            </li>
-          </ul>
-          <div className="flex items-center gap-2">
-            <a href="#contact" onClick={handleContactClick}>
-              <Button size="default" className="h-10">
-                <Mail className="h-4 w-4 mr-2" />
-                Contact Me
-              </Button>
-            </a>
-          </div>
-        </nav>
-
-        {/* Mobile Navigation */}
-        <div className="flex md:hidden items-center gap-2">
-          <Sheet>
+            ))}
+          </nav>
+          <ModeToggle />
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" className="px-4 py-2" aria-label="Open menu">
-                <Menu className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="flex flex-col pt-16 bg-background/80 backdrop-blur-md">
-              <nav className="flex flex-col items-start gap-6">
-                <Link
-                  to="/"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${activeSection === 'home' ? 'text-primary' : ''
-                    }`}
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/#projects"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${activeSection === 'projects' ? 'text-primary' : ''
-                    }`}
-                >
-                  Projects
-                </Link>
-                <Link
-                  to="/projects"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${activeSection === 'projects-page' ? 'text-primary' : ''
-                    }`}
-                >
-                  <FolderKanban className="h-4 w-4 mr-2 inline-block" /> All Projects
-                </Link>
-                <Link
-                  to="/blog"
-                  className={`text-lg font-medium hover:text-primary transition-colors ${activeSection === 'blog' ? 'text-primary' : ''
-                    }`}
-                >
-                  <BookOpen className="h-4 w-4 mr-2 inline-block" /> Blog
-                </Link>
-              </nav>
-
-              <div className="flex flex-col gap-4 mt-8">
-                <a href="#contact" onClick={handleContactClick}>
-                  <Button className="w-full">
-                    <Mail className="h-4 w-4 mr-2" />
-                    Contact Me
-                  </Button>
-                </a>
+            <SheetContent side="left" className="sm:max-w-sm">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+                <SheetDescription>
+                  Explore the site.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="grid gap-4 py-4">
+                {navigationLinks.map((link) => (
+                  <Link key={link.name} href={link.href} className="hover:text-primary transition-colors block py-2">
+                    {link.name}
+                  </Link>
+                ))}
+                <ThemeToggle />
               </div>
             </SheetContent>
           </Sheet>
