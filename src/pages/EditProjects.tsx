@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -467,36 +468,36 @@ const EditProjects = () => {
                       ))}
                     </div>
                   </div>
-                </div>
-                <DialogFooter>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => {
-                      resetForm();
-                      setIsAddDialogOpen(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit"
-                    disabled={addProjectMutation.isPending}
-                  >
-                    {addProjectMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding...
-                      </>
-                    ) : (
-                      "Add Project"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                  <DialogFooter>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => {
+                        resetForm();
+                        setIsAddDialogOpen(false);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit"
+                      disabled={addProjectMutation.isPending}
+                    >
+                      {addProjectMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        "Add Project"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+          
           <Tabs 
             defaultValue="all" 
             value={activeTab} 
