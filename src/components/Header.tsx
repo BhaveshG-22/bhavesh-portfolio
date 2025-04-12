@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Menu, LogOut } from "lucide-react"
-import ThemeToggle from './ThemeToggle';
-import { ModeToggle } from './mode-toggle';
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
 
@@ -60,7 +58,6 @@ const Header = () => {
               </RouterLink>
             )}
           </nav>
-          <ModeToggle />
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -95,7 +92,6 @@ const Header = () => {
                     Login
                   </RouterLink>
                 )}
-                <ThemeToggle />
               </div>
             </SheetContent>
           </Sheet>
@@ -106,3 +102,4 @@ const Header = () => {
 };
 
 export default Header;
+
