@@ -5,9 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { fetchVisibleCertifications, Certification } from "@/services/certificationService";
 import { toast } from "sonner";
-import { BaseComponentProps } from "@/types/component";
 
-const CertificationsSection = ({ className = "" }: BaseComponentProps) => {
+const CertificationsSection = () => {
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,7 +28,7 @@ const CertificationsSection = ({ className = "" }: BaseComponentProps) => {
   }, []);
 
   return (
-    <section id="certifications" className={`section-padding relative overflow-hidden ${className}`}>
+    <section id="certifications" className="section-padding relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-secondary/5 blur-3xl"></div>

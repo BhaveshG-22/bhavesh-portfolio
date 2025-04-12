@@ -5,10 +5,10 @@ import AboutSection from "@/components/AboutSection";
 import SkillsSection from "@/components/SkillsSection";
 import CertificationsSection from "@/components/CertificationsSection";
 import ContactSection from "@/components/ContactSection";
+import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import FeaturedProjects from "@/components/FeaturedProjects";
-import GithubSection from "@/components/GithubSection";
 
 const Index = () => {
   return (
@@ -17,12 +17,12 @@ const Index = () => {
       <Header />
       <main className="pt-0">
         <HeroSection />
-        <AboutSection className="bg-[#E5DEFF]" />
-        <SkillsSection className="bg-[#D3E4FD]" />
-        <FeaturedProjects className="bg-[#F2FCE2]" />
-        <GithubSection className="bg-[#FEF7CD]" />
-        <CertificationsSection className="bg-[#FEC6A1]" />
-        <ContactSection className="bg-[#FFDEE2]" />
+        <AboutSection />
+        <SkillsSection />
+        <FeaturedProjects />
+        <GithubSection />
+        <CertificationsSection />
+        <ContactSection />
       </main>
       <Footer />
     </div>

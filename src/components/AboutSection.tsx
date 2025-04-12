@@ -1,16 +1,13 @@
-import { BaseComponentProps } from '@/types/component';
+
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
-const AboutSection = ({ className = '' }: BaseComponentProps) => {
+const AboutSection = () => {
   return (
-    <section 
-      id="about" 
-      className={`section-padding relative overflow-hidden ${className}`}
-    >
+    <section id="about" className="section-padding relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/5 blur-3xl"></div>
