@@ -20,7 +20,8 @@ const Header = () => {
   ];
 
   const adminLinks = [
-    { name: 'Edit Certifications', href: '/edit-certifications' }
+    { name: 'Edit Certifications', href: '/edit-certifications' },
+    { name: 'Edit Blog', href: '/edit-blog' }
   ];
 
   const handleLogout = () => {

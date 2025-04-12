@@ -11,6 +11,7 @@ import Projects from "./pages/Projects";
 import CreateProject from "./pages/CreateProject";
 import EditProject from "./pages/EditProject";
 import Login from "./pages/Login";
+import EditBlog from "./pages/EditBlog";
 
 function App() {
   const queryClient = new QueryClient();
@@ -54,6 +55,11 @@ function App() {
               {
                 path: "/login",
                 element: <Login />,
+                errorElement: <NotFound />
+              },
+              {
+                path: "/edit-blog",
+                element: <EditBlog />,
                 errorElement: <NotFound />
               }
             ])}
