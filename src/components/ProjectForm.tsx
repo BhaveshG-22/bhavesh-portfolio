@@ -20,12 +20,13 @@ const ProjectForm = ({ project, onSubmit, isLoading }: ProjectFormProps) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState(project?.title || '');
   const [description, setDescription] = useState(project?.description || '');
-  const [imageUrl, setImageUrl] = useState(project?.image_url || '');
-  const [githubUrl, setGithubUrl] = useState(project?.github_url || '');
-  const [liveUrl, setLiveUrl] = useState(project?.live_url || '');
-  const [featured, setFeatured] = useState(project?.featured || false);
+  const [imageUrl, setImageUrl] = useState(project?.image || '');
+  const [githubUrl, setGithubUrl] = useState(project?.github || '');
+  const [liveUrl, setLiveUrl] = useState(project?.demo || '');
+  const [featured, setFeatured] = useState(project?.is_default || false);
   const [techInput, setTechInput] = useState('');
-  const [techStack, setTechStack] = useState<string[]>(project?.tech_stack || []);
+  const [techStack, setTechStack] = useState<string[]>(project?.tags || []);
+  const [category, setCategory] = useState(project?.category || 'Other');
 
   const handleAddTech = () => {
     if (techInput.trim() && !techStack.includes(techInput.trim())) {
@@ -45,10 +46,13 @@ const ProjectForm = ({ project, onSubmit, isLoading }: ProjectFormProps) => {
       title,
       description,
       tech_stack: techStack,
-      image_url: imageUrl || null,
-      github_url: githubUrl || null,
-      live_url: liveUrl || null,
-      featured
+      image: imageUrl || '',
+      github: githubUrl || '',
+      demo: liveUrl || '',
+      is_default: featured,
+      hidden: false,
+      category: category,
+      tags: techStack
     };
     
     await onSubmit(projectData);
@@ -78,6 +82,17 @@ const ProjectForm = ({ project, onSubmit, isLoading }: ProjectFormProps) => {
             required
             placeholder="Describe your project..."
             className="mt-1 min-h-[120px]"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="category">Category</Label>
+          <Input
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Web Development, Mobile App, etc."
+            className="mt-1"
           />
         </div>
 

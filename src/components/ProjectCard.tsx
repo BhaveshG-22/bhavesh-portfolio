@@ -33,11 +33,11 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
   });
   
   const toggleFeatureMutation = useMutation({
-    mutationFn: ({ id, featured }: { id: string, featured: boolean }) => 
+    mutationFn: ({ id, featured }: { id: number, featured: boolean }) => 
       toggleProjectFeatured(id, featured),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      toast.success(`Project ${project.featured ? 'unfeatured' : 'featured'} successfully`);
+      toast.success(`Project ${project.is_default ? 'unfeatured' : 'featured'} successfully`);
     },
     onError: (error: any) => {
       toast.error(`Failed to update project: ${error.message}`);
@@ -55,16 +55,16 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
   const handleToggleFeatured = () => {
     toggleFeatureMutation.mutate({ 
       id: project.id, 
-      featured: !project.featured 
+      featured: !project.is_default 
     });
   };
   
   return (
     <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300">
       <div className="relative h-52 overflow-hidden">
-        {project.image_url ? (
+        {project.image ? (
           <img 
-            src={project.image_url} 
+            src={project.image} 
             alt={project.title}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
@@ -73,7 +73,7 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
             <span className="text-muted-foreground">No image</span>
           </div>
         )}
-        {project.featured && (
+        {project.is_default && (
           <div className="absolute top-2 right-2">
             <Badge variant="default" className="bg-primary">Featured</Badge>
           </div>
@@ -83,7 +83,7 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
       <CardHeader className="pb-2">
         <CardTitle>{project.title}</CardTitle>
         <div className="flex flex-wrap gap-1 mt-2">
-          {project.tech_stack.map((tech) => (
+          {project.tags.map((tech) => (
             <Badge key={tech} variant="secondary" className="mr-1 mb-1">
               {tech}
             </Badge>
@@ -97,9 +97,9 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
       
       <CardFooter className="flex justify-between pt-4 pb-4 border-t">
         <div className="flex space-x-2">
-          {project.github_url && (
+          {project.github && (
             <a 
-              href={project.github_url} 
+              href={project.github} 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
@@ -108,9 +108,9 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
               <span className="sr-only">GitHub</span>
             </a>
           )}
-          {project.live_url && (
+          {project.demo && (
             <a 
-              href={project.live_url} 
+              href={project.demo} 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
@@ -127,11 +127,11 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
               size="icon"
               variant="ghost"
               onClick={handleToggleFeatured}
-              title={project.featured ? "Unfeature project" : "Feature project"}
+              title={project.is_default ? "Unfeature project" : "Feature project"}
             >
               <Star 
                 size={18} 
-                className={project.featured ? "fill-primary text-primary" : ""} 
+                className={project.is_default ? "fill-primary text-primary" : ""} 
               />
             </Button>
             <Link to={`/project/edit/${project.id}`}>

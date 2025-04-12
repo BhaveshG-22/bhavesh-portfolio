@@ -2,14 +2,17 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export interface Project {
-  id: string;
+  id: number;
   title: string;
   description: string;
   tech_stack: string[];
-  image_url: string | null;
-  github_url: string | null;
-  live_url: string | null;
-  featured: boolean;
+  image: string;
+  github: string;
+  demo: string;
+  hidden: boolean | null;
+  is_default: boolean | null;
+  category: string;
+  tags: string[];
   created_at: string;
   updated_at: string;
 }
@@ -32,7 +35,7 @@ export async function getFeaturedProjects(limit: number = 3): Promise<Project[]>
   const { data, error } = await supabase
     .from('projects')
     .select('*')
-    .eq('featured', true)
+    .eq('is_default', true)
     .order('created_at', { ascending: false })
     .limit(limit);
   
@@ -44,7 +47,7 @@ export async function getFeaturedProjects(limit: number = 3): Promise<Project[]>
   return data || [];
 }
 
-export async function getProjectById(id: string): Promise<Project | null> {
+export async function getProjectById(id: number): Promise<Project | null> {
   const { data, error } = await supabase
     .from('projects')
     .select('*')
@@ -62,7 +65,17 @@ export async function getProjectById(id: string): Promise<Project | null> {
 export async function createProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>): Promise<Project> {
   const { data, error } = await supabase
     .from('projects')
-    .insert(project)
+    .insert({
+      title: project.title,
+      description: project.description,
+      category: project.category || 'Other',
+      tags: project.tech_stack, // Map tech_stack to tags
+      image: project.image || '',
+      github: project.github || '',
+      demo: project.demo || '',
+      is_default: project.is_default || false, // Map featured to is_default
+      hidden: project.hidden || false
+    })
     .select()
     .single();
   
@@ -74,10 +87,22 @@ export async function createProject(project: Omit<Project, 'id' | 'created_at' |
   return data;
 }
 
-export async function updateProject(id: string, project: Partial<Omit<Project, 'id' | 'created_at' | 'updated_at'>>): Promise<Project> {
+export async function updateProject(id: number, project: Partial<Omit<Project, 'id' | 'created_at' | 'updated_at'>>): Promise<Project> {
+  const updateData: any = {};
+  
+  if (project.title) updateData.title = project.title;
+  if (project.description) updateData.description = project.description;
+  if (project.category) updateData.category = project.category;
+  if (project.tech_stack) updateData.tags = project.tech_stack; // Map tech_stack to tags
+  if (project.image) updateData.image = project.image;
+  if (project.github) updateData.github = project.github;
+  if (project.demo) updateData.demo = project.demo;
+  if (project.is_default !== undefined) updateData.is_default = project.is_default; // Map featured to is_default
+  if (project.hidden !== undefined) updateData.hidden = project.hidden;
+  
   const { data, error } = await supabase
     .from('projects')
-    .update(project)
+    .update(updateData)
     .eq('id', id)
     .select()
     .single();
@@ -90,7 +115,7 @@ export async function updateProject(id: string, project: Partial<Omit<Project, '
   return data;
 }
 
-export async function deleteProject(id: string): Promise<void> {
+export async function deleteProject(id: number): Promise<void> {
   const { error } = await supabase
     .from('projects')
     .delete()
@@ -102,6 +127,6 @@ export async function deleteProject(id: string): Promise<void> {
   }
 }
 
-export async function toggleProjectFeatured(id: string, featured: boolean): Promise<Project> {
-  return updateProject(id, { featured });
+export async function toggleProjectFeatured(id: number, featured: boolean): Promise<Project> {
+  return updateProject(id, { is_default: featured });
 }

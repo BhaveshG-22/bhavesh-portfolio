@@ -24,7 +24,7 @@ const EditProject = () => {
       if (!id) return;
       
       try {
-        const projectData = await getProjectById(id);
+        const projectData = await getProjectById(parseInt(id));
         if (!projectData) {
           setError('Project not found');
           return;
@@ -45,7 +45,7 @@ const EditProject = () => {
     
     setIsLoading(true);
     try {
-      await updateProject(id, projectData);
+      await updateProject(parseInt(id), projectData);
       toast.success('Project updated successfully');
       navigate('/projects');
     } catch (error: any) {

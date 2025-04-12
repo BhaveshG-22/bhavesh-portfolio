@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useQuery } from '@tanstack/react-query';
@@ -20,7 +20,7 @@ const Projects = () => {
   });
 
   const uniqueTechStacks = projects.reduce((acc: string[], project) => {
-    project.tech_stack.forEach(tech => {
+    project.tags.forEach(tech => {
       if (!acc.includes(tech)) {
         acc.push(tech);
       }
@@ -29,7 +29,7 @@ const Projects = () => {
   }, []);
 
   const filteredProjects = filter
-    ? projects.filter(project => project.tech_stack.includes(filter))
+    ? projects.filter(project => project.tags.includes(filter))
     : projects;
 
   return (
