@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllProjects } from '@/services/projectService';
-import ProjectCard from '@/components/ProjectCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Loader2, ExternalLink, Github } from 'lucide-react';
@@ -37,112 +36,91 @@ const FeaturedProjects = () => {
   }
 
   return (
-    <section className="py-16 bg-[#0F111A]">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h2 className="text-5xl font-bold text-white mb-4">Featured Projects</h2>
-          <div className="h-1 w-52 bg-gradient-to-r from-teal-400 to-teal-200 mb-10"></div>
-          
-          {/* Filter buttons */}
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Button
-              onClick={() => setFilter(null)}
-              variant={!filter ? "default" : "outline"} 
-              className={`rounded-md ${!filter ? 'bg-teal-500 hover:bg-teal-600 text-black' : 'border-gray-600 text-gray-300'}`}
-            >
-              All
-            </Button>
-            
-            {categories.slice(0, 5).map((category) => (
-              <Button
-                key={category}
-                onClick={() => setFilter(category)}
-                variant={filter === category ? "default" : "outline"}
-                className={`rounded-md ${filter === category ? 'bg-transparent border border-gray-600 text-gray-300' : 'bg-transparent border border-gray-600 text-gray-300'}`}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
+    <section className="py-20 bg-black">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="mb-12">
+          <h2 className="text-4xl font-bold text-white mb-3">Featured Projects</h2>
+          <div className="h-1 w-44 bg-teal-500 mb-10"></div>
         </div>
 
-        {/* Project cards */}
-        <div className="grid grid-cols-1 gap-8 mt-8">
-          {filteredProjects.slice(0, 3).map((project) => (
-            <div key={project.id} className="bg-[#1A1D29] rounded-lg overflow-hidden border border-gray-800">
-              <div className="flex flex-col md:flex-row">
-                <div className="md:w-1/3 h-60 md:h-auto relative">
-                  {project.image ? (
-                    <img 
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                      <span className="text-gray-500">No image</span>
-                    </div>
-                  )}
-                </div>
+        {/* Project grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16">
+          {filteredProjects.slice(0, 4).map((project) => (
+            <div key={project.id} className="flex flex-col">
+              {/* Project Screenshot */}
+              <div className="mb-6 h-[220px] overflow-hidden rounded-lg bg-gray-900/50">
+                {project.image ? (
+                  <img 
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover object-top"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                    <span className="text-gray-500">No image</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Project Title & Info */}
+              <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
+              
+              {/* Tech stack */}
+              <div className="flex flex-wrap mb-3">
+                {project.tech_stack.map((tech, index) => (
+                  <span 
+                    key={tech} 
+                    className="text-sm text-teal-400 mr-2"
+                  >
+                    {tech}{index < project.tech_stack.length - 1 ? " /" : ""}
+                  </span>
+                ))}
+              </div>
+              
+              {/* Description */}
+              <p className="text-gray-400 mb-4 line-clamp-2">
+                {project.description}
+              </p>
+              
+              {/* Links */}
+              <div className="flex gap-4 mt-auto">
+                {project.demo && (
+                  <a 
+                    href={project.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors group"
+                  >
+                    <span>Live Preview</span>
+                    <ExternalLink size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                )}
                 
-                <div className="p-6 md:w-2/3 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-4xl font-bold text-white mb-4">{project.title}</h3>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tech_stack.map((tech) => (
-                        <span 
-                          key={tech} 
-                          className="px-3 py-1 text-sm rounded-md bg-[#20232F] border border-teal-500/20 text-teal-400"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <p className="text-gray-300 mb-6 line-clamp-3 md:line-clamp-4">
-                      {project.description}
-                    </p>
-                  </div>
-                  
-                  <div className="flex gap-4">
-                    {project.demo && (
-                      <a 
-                        href={project.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors"
-                      >
-                        <ExternalLink size={18} />
-                        Live Preview
-                      </a>
-                    )}
-                    
-                    {project.github && (
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-gray-400 hover:text-gray-300 transition-colors"
-                      >
-                        <Github size={18} />
-                        Repo URL
-                      </a>
-                    )}
-                  </div>
-                </div>
+                {project.github && (
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-400 hover:text-gray-300 transition-colors group"
+                  >
+                    <span>Repo Url</span>
+                    <Github size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                )}
               </div>
             </div>
           ))}
         </div>
         
-        <div className="flex justify-center mt-10">
-          <Link to="/projects">
-            <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
-              View All Projects
-            </Button>
-          </Link>
-        </div>
+        {projects.length > 4 && (
+          <div className="flex justify-center mt-12">
+            <Link to="/projects">
+              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+                View All Projects
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
