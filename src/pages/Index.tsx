@@ -10,26 +10,44 @@ import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import { useEffect } from "react";
-import { updateFirstProject, updateSecondProject } from "@/services/projectService";
+import { updateProject, fetchProjects } from "@/services/projectService";
 import { toast } from "sonner";
 
 const Index = () => {
   useEffect(() => {
     // Update the first and second projects when the page loads
-    const updateProjects = async () => {
+    const updateInitialProjects = async () => {
       try {
-        await updateFirstProject();
-        console.log("First project updated successfully");
+        // Fetch projects first to get their IDs
+        const projects = await fetchProjects();
         
-        await updateSecondProject();
-        console.log("Second project updated successfully");
+        // Update first two projects if they exist
+        if (projects.length > 0) {
+          await updateProject(projects[0].id, {
+            title: projects[0].title,
+            description: projects[0].description,
+            // Add any other fields you want to update
+            is_default: true
+          });
+        }
+        
+        if (projects.length > 1) {
+          await updateProject(projects[1].id, {
+            title: projects[1].title,
+            description: projects[1].description,
+            // Add any other fields you want to update
+            is_default: true
+          });
+        }
+        
+        console.log("Initial projects updated successfully");
       } catch (error) {
-        console.error("Error updating projects:", error);
+        console.error("Error updating initial projects:", error);
         toast.error("Failed to update project information");
       }
     };
     
-    updateProjects();
+    updateInitialProjects();
   }, []);
   
   return (
@@ -51,3 +69,4 @@ const Index = () => {
 };
 
 export default Index;
+
