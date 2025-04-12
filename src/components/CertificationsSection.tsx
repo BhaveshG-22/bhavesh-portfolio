@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { BadgeCheck, Award, Bookmark } from "lucide-react";
+import { BadgeCheck, Award, Bookmark, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { fetchVisibleCertifications, Certification } from "@/services/certificationService";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
-const CertificationsSection = () => {
+const CertificationsSection = ({ className }: { className?: string }) => {
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,7 +29,7 @@ const CertificationsSection = () => {
   }, []);
 
   return (
-    <section id="certifications" className="section-padding relative overflow-hidden">
+    <section id="certifications" className={`section-padding relative overflow-hidden ${className}`}>
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-secondary/5 blur-3xl"></div>
@@ -63,46 +64,59 @@ const CertificationsSection = () => {
               certifications.map((cert, index) => (
                 <Card 
                   key={cert.id} 
-                  className="group bg-card/30 backdrop-blur-sm border border-white/10 overflow-hidden hover:border-primary/30 transition-all duration-300"
+                  className="group bg-card border border-white/10 overflow-hidden hover:border-primary/40 transition-all duration-300 shadow-lg"
                 >
                   <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
                     <AspectRatio ratio={16/9}>
                       <img 
                         src={cert.image} 
                         alt={cert.title} 
-                        className="object-cover w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-300"
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                       />
                     </AspectRatio>
-                    <div className="absolute top-3 right-3 bg-primary/90 p-2 rounded-full shadow-lg">
+                    <div className="absolute top-3 right-3 bg-primary/90 p-2 rounded-full shadow-lg z-20">
                       {index === 0 ? (
                         <Award className="h-5 w-5 text-white" />
                       ) : (
                         <Bookmark className="h-5 w-5 text-white" />
                       )}
                     </div>
+                    
+                    {/* Certificate title overlay for better visibility */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+                      <h3 className="font-semibold text-xl text-white mb-1 drop-shadow-md">
+                        {cert.title}
+                      </h3>
+                    </div>
                   </div>
-                  <CardContent className="p-5">
-                    <h3 className="font-semibold text-lg mb-1 text-gradient group-hover:text-white transition-colors">
-                      {cert.title}
-                    </h3>
+                  
+                  <CardContent className="p-5 bg-card">
                     <div className="flex items-center text-sm text-muted-foreground mb-3">
                       <span className="mr-2">Issued by {cert.issuer}</span>
                       <span>•</span>
                       <span className="ml-2">{cert.date}</span>
                     </div>
-                    <div className="flex items-center text-sm mt-3 text-primary">
-                      {cert.credential_url && (
+                    
+                    {cert.credential_url && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="w-full mt-3 border border-primary/20 hover:bg-primary/10 text-primary"
+                        asChild
+                      >
                         <a 
                           href={cert.credential_url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="inline-flex items-center hover:underline"
+                          className="inline-flex items-center justify-center gap-2"
                         >
-                          <BadgeCheck className="w-4 h-4 mr-1" />
+                          <BadgeCheck className="w-4 h-4" />
                           Verify Certificate
+                          <ExternalLink className="w-3 h-3 opacity-70" />
                         </a>
-                      )}
-                    </div>
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               ))
