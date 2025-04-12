@@ -4,6 +4,10 @@ import { getAllProjects } from '@/services/projectService';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Loader2, ExternalLink, Github } from 'lucide-react';
+import { Inter } from 'next/font/google';
+
+// Initialize Inter font
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 const FeaturedProjects = () => {
   const [filter, setFilter] = useState(null);
@@ -35,10 +39,10 @@ const FeaturedProjects = () => {
   }
 
   return (
-    <section className="py-12 bg-black">
+    <section className={`py-12 bg-black ${inter.className}`}>
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-1">Featured Projects</h2>
+          <h2 className="text-2xl font-medium text-white mb-1 tracking-tight">Featured Projects</h2>
           <div className="h-0.5 w-32 bg-teal-500"></div>
         </div>
 
@@ -62,19 +66,19 @@ const FeaturedProjects = () => {
               </div>
               
               {/* Project Title */}
-              <h3 className="text-lg font-medium text-white mb-1">{project.title}</h3>
+              <h3 className="text-lg font-medium text-white mb-1 tracking-tight">{project.title}</h3>
               
               {/* Tech stack */}
               <div className="flex flex-wrap mb-2">
                 {project.tech_stack.map((tech, index) => (
-                  <span key={tech} className="text-xs text-teal-400 hover:text-teal-300 cursor-pointer mr-1">
+                  <span key={tech} className="text-xs text-teal-400 hover:text-teal-300 cursor-pointer mr-1 font-light">
                     {tech}{index < project.tech_stack.length - 1 ? " /" : ""}
                   </span>
                 ))}
               </div>
               
               {/* Description */}
-              <p className="text-gray-400 mb-3 text-sm line-clamp-2">
+              <p className="text-gray-400 mb-3 text-sm line-clamp-2 font-light leading-relaxed">
                 {project.description}
               </p>
               
@@ -85,7 +89,7 @@ const FeaturedProjects = () => {
                     href={project.demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-teal-400 hover:text-teal-300 transition-colors text-xs"
+                    className="flex items-center gap-1 text-teal-400 hover:text-teal-300 transition-colors text-xs font-light"
                   >
                     <span>Live Preview</span>
                     <ExternalLink size={12} />
@@ -97,7 +101,7 @@ const FeaturedProjects = () => {
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-gray-400 hover:text-gray-300 transition-colors text-xs"
+                    className="flex items-center gap-1 text-gray-400 hover:text-gray-300 transition-colors text-xs font-light"
                   >
                     <span>Repo Url</span>
                     <Github size={12} />
