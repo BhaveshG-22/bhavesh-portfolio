@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllProjects } from '@/services/projectService';
@@ -36,19 +35,17 @@ const FeaturedProjects = () => {
   }
 
   return (
-    <section className="py-12 bg-black font-sans">
+    <section className="py-12 bg-background text-foreground">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8">
-          <h2 className="text-2xl font-medium text-white mb-1 tracking-tight">Featured Projects</h2>
-          <div className="h-0.5 w-32 bg-teal-500"></div>
+          <h2 className="text-2xl font-medium text-foreground mb-1 tracking-tight">Featured Projects</h2>
+          <div className="h-0.5 w-32 bg-primary"></div>
         </div>
 
-        {/* Project grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14">
           {filteredProjects.slice(0, 4).map((project) => (
-            <div key={project.id} className="flex flex-col">
-              {/* Project Screenshot */}
-              <div className="mb-4 h-60 overflow-hidden rounded bg-gray-900/50">
+            <div key={project.id} className="flex flex-col bg-card rounded-lg p-4 border border-border">
+              <div className="mb-4 h-60 overflow-hidden rounded bg-muted/50">
                 {project.image ? (
                   <img 
                     src={project.image}
@@ -56,37 +53,36 @@ const FeaturedProjects = () => {
                     className="w-full h-full object-cover object-top"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                    <span className="text-gray-500 text-sm">No image</span>
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <span className="text-muted-foreground text-sm">No image</span>
                   </div>
                 )}
               </div>
               
-              {/* Project Title */}
-              <h3 className="text-lg font-medium text-white mb-1 tracking-tight">{project.title}</h3>
+              <h3 className="text-lg font-medium text-card-foreground mb-1 tracking-tight">{project.title}</h3>
               
-              {/* Tech stack */}
               <div className="flex flex-wrap mb-2">
                 {project.tech_stack.map((tech, index) => (
-                  <span key={tech} className="text-xs text-teal-400 hover:text-teal-300 cursor-pointer mr-1 font-light">
+                  <span 
+                    key={tech} 
+                    className="text-xs text-primary hover:text-primary/80 cursor-pointer mr-1 font-light"
+                  >
                     {tech}{index < project.tech_stack.length - 1 ? " /" : ""}
                   </span>
                 ))}
               </div>
               
-              {/* Description */}
-              <p className="text-gray-400 mb-3 text-sm line-clamp-2 font-light leading-relaxed">
+              <p className="text-muted-foreground mb-3 text-sm line-clamp-2 font-light leading-relaxed">
                 {project.description}
               </p>
               
-              {/* Links */}
               <div className="flex gap-4 mt-auto">
                 {project.demo && (
                   <a 
                     href={project.demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-teal-400 hover:text-teal-300 transition-colors text-xs font-light"
+                    className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-xs font-light"
                   >
                     <span>Live Preview</span>
                     <ExternalLink size={12} />
@@ -98,7 +94,7 @@ const FeaturedProjects = () => {
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-gray-400 hover:text-gray-300 transition-colors text-xs font-light"
+                    className="flex items-center gap-1 text-secondary hover:text-secondary/80 transition-colors text-xs font-light"
                   >
                     <span>Repo Url</span>
                     <Github size={12} />
