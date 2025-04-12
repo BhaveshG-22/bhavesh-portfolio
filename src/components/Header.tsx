@@ -16,9 +16,7 @@ const Header = () => {
 
   const navigationLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Projects', href: '/projects' },
     { name: 'Blog', href: '/blog' },
-    { name: 'Edit Projects', href: '/edit-projects' },
     { name: 'Edit Certifications', href: '/edit-certifications' }
   ];
 

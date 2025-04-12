@@ -3,10 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
-import Projects from "./pages/Projects";
 import NotFound from "./pages/NotFound";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import EditProjects from "./pages/EditProjects";
 import { Toaster } from "@/components/ui/sonner";
 import EditCertifications from "./pages/EditCertifications";
 
@@ -27,16 +25,6 @@ function App() {
               {
                 path: "/blog",
                 element: <Blog />,
-                errorElement: <NotFound />
-              },
-              {
-                path: "/projects",
-                element: <Projects />,
-                errorElement: <NotFound />
-              },
-              {
-                path: "/edit-projects",
-                element: <EditProjects />,
                 errorElement: <NotFound />
               },
               {
