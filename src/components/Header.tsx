@@ -25,8 +25,8 @@ const Header = () => {
   return (
     <header className="bg-background sticky top-0 z-50 w-full border-b">
       <div className="container flex h-16 items-center justify-between">
-        <RouterLink to="/" className="font-bold text-2xl">
-          My Portfolio
+        <RouterLink to="/" className="font-bold text-2xl text-gradient-bright">
+          BhaveshG.dev
         </RouterLink>
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex gap-6">
