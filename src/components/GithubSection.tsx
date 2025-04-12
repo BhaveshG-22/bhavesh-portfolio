@@ -1,9 +1,10 @@
 
 import GitHubContributions from "./GitHubContributions";
+import { BaseComponentProps } from "@/types/component";
 
-const GithubSection = () => {
+const GithubSection = ({ className = "" }: BaseComponentProps) => {
   return (
-    <section id="github" className="section-padding">
+    <section id="github" className={`section-padding ${className}`}>
       <div className="max-container">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gradient-bright mb-4">

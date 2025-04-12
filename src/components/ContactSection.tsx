@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { BaseComponentProps } from "@/types/component";
 
 // Create schema for form validation
 const contactFormSchema = z.object({
@@ -27,7 +28,7 @@ type ContactSubmissionInsert = {
   message: string;
 };
 
-const ContactSection = () => {
+const ContactSection = ({ className = "" }: BaseComponentProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
@@ -173,7 +174,7 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="section-padding bg-muted/30">
+    <section id="contact" className={`section-padding bg-muted/30 ${className}`}>
       <div className="max-container">
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>

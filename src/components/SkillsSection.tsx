@@ -1,6 +1,7 @@
 
 import TechStackSlider from "./TechStackSlider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { BaseComponentProps } from "@/types/component";
 import {
   Code,
   FileCode,
@@ -27,7 +28,7 @@ import {
   FileCog
 } from "lucide-react";
 
-const SkillsSection = () => {
+const SkillsSection = ({ className = "" }: BaseComponentProps) => {
   const isMobile = useIsMobile();
   
   // Tech stacks for sliders with standard Lucide icons
@@ -60,7 +61,7 @@ const SkillsSection = () => {
   ];
 
   return (
-    <section id="skills" className="section-padding relative bg-muted/30">
+    <section id="skills" className={`section-padding relative bg-muted/30 ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-tl from-primary/5 to-transparent z-0" />
 
       <div className="max-container relative z-10">

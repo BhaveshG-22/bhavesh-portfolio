@@ -1,11 +1,13 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllProjects } from '@/services/projectService';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Loader2, ExternalLink, Github } from 'lucide-react';
+import { BaseComponentProps } from '@/types/component';
 
-const FeaturedProjects = () => {
+const FeaturedProjects = ({ className = "" }: BaseComponentProps) => {
   const [filter, setFilter] = useState(null);
   
   const { data: projects = [], isLoading, error } = useQuery({
@@ -35,7 +37,7 @@ const FeaturedProjects = () => {
   }
 
   return (
-    <section className="py-12 bg-background text-foreground">
+    <section className={`py-12 bg-background text-foreground ${className}`}>
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8">
           <h2 className="text-2xl font-medium text-foreground mb-1 tracking-tight">Featured Projects</h2>
