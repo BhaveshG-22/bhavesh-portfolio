@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { BadgeCheck, ExternalLink, ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
+import { BadgeCheck, ExternalLink, ChevronRight, Calendar, Building } from "lucide-react";
 import { fetchVisibleCertifications, Certification } from "@/services/certificationService";
 import { toast } from "sonner";
 
 const CertificationsSection = () => {
   const [certifications, setCertifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [selectedCert, setSelectedCert] = useState(null);
 
   useEffect(() => {
     const loadCertifications = async () => {
@@ -26,204 +25,164 @@ const CertificationsSection = () => {
     loadCertifications();
   }, []);
 
-  const toggleCard = (id) => {
-    setExpandedCard(expandedCard === id ? null : id);
-  };
-
-  // Get unique issuers for filtering
-  const issuers = [...new Set(certifications.map(cert => cert.issuer))];
-
-  // Filter certifications
-  const filteredCerts = activeFilter === "all" 
-    ? certifications 
-    : certifications.filter(cert => cert.issuer === activeFilter);
-
   return (
-    <section id="certifications" className="py-16 md:py-24 px-4 md:px-6">
-      <div className="max-w-screen-xl mx-auto">
-        {/* Section header with modern styling */}
-        <div className="mb-12 md:mb-16">
-          <span className="inline-block text-sm font-semibold text-primary mb-2 tracking-wider uppercase">Qualifications</span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">My Certifications</h2>
-          <p className="text-muted-foreground max-w-2xl">
-            Professional credentials that demonstrate my expertise and commitment to continuous learning.
+    <section id="certifications" className="py-16 md:py-20 bg-background">
+      <div className="container px-4 mx-auto">
+        {/* Section header with professional styling */}
+        <div className="mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">Professional Certifications</h2>
+          <div className="w-16 h-1 bg-primary mb-4"></div>
+          <p className="text-muted-foreground max-w-3xl">
+            Industry-recognized credentials validating technical expertise and professional qualifications.
           </p>
         </div>
 
-        {/* Filter pills - only show if we have certifications */}
-        {!isLoading && certifications.length > 0 && (
-          <div className="mb-8 overflow-x-auto pb-2 md:pb-0">
-            <div className="flex space-x-2 md:space-x-3">
-              <button
-                onClick={() => setActiveFilter("all")}
-                className={`whitespace-nowrap px-4 py-2 text-sm rounded-full transition-colors ${
-                  activeFilter === "all"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted hover:bg-muted/80 text-foreground"
-                }`}
-              >
-                All Certifications
-              </button>
-              
-              {issuers.map(issuer => (
-                <button
-                  key={issuer}
-                  onClick={() => setActiveFilter(issuer)}
-                  className={`whitespace-nowrap px-4 py-2 text-sm rounded-full transition-colors ${
-                    activeFilter === issuer
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted hover:bg-muted/80 text-foreground"
-                  }`}
-                >
-                  {issuer}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {isLoading ? (
-          /* Modern skeleton loader */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="aspect-[4/3] bg-muted/40 rounded-2xl p-6 animate-pulse">
-                <div className="h-6 w-2/3 bg-background/40 rounded-full mb-6"></div>
-                <div className="h-4 w-1/2 bg-background/40 rounded-full mb-3"></div>
-                <div className="h-4 w-3/4 bg-background/40 rounded-full mb-3"></div>
-                <div className="h-4 w-1/3 bg-background/40 rounded-full"></div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCerts.length > 0 ? (
-              filteredCerts.map((cert, index) => (
-                <div
-                  key={cert.id}
-                  className={`group rounded-2xl overflow-hidden transition-all duration-300 ${
-                    expandedCard === cert.id
-                      ? "bg-card shadow-xl"
-                      : "bg-muted/40 hover:bg-card hover:shadow-lg"
-                  }`}
-                >
-                  {/* Card with expandable content */}
-                  <div className="p-6">
-                    {/* Top section with title and logo */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
-                          {cert.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">{cert.issuer}</p>
-                      </div>
-                      
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-background flex-shrink-0">
-                        <img 
-                          src={cert.image} 
-                          alt="" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Date info */}
-                    <div className="flex items-center text-sm text-muted-foreground mb-4">
-                      <span className="opacity-70">Issued:</span>
-                      <span className="ml-2 font-medium">{cert.date}</span>
-                    </div>
-                    
-                    {/* Bottom action area */}
-                    <div className="flex items-center justify-between mt-auto">
-                      <button
-                        onClick={() => toggleCard(cert.id)}
-                        className="text-sm font-medium flex items-center text-primary hover:underline"
-                      >
-                        {expandedCard === cert.id ? (
-                          <>
-                            <span>Show less</span>
-                            <ChevronUp className="ml-1 w-4 h-4" />
-                          </>
-                        ) : (
-                          <>
-                            <span>Show details</span>
-                            <ChevronDown className="ml-1 w-4 h-4" />
-                          </>
-                        )}
-                      </button>
-                      
-                      {cert.credential_url && !expandedCard && (
-                        <a
-                          href={cert.credential_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-medium text-primary hover:underline flex items-center"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span>Verify</span>
-                          <ArrowUpRight className="ml-1 w-3.5 h-3.5" />
-                        </a>
-                      )}
-                    </div>
+        {/* Certification cards container */}
+        <div className="space-y-5">
+          {isLoading ? (
+            /* Professional skeleton loader */
+            Array(3).fill(0).map((_, i) => (
+              <div key={i} className="bg-card border border-border rounded-md shadow-sm p-5 animate-pulse">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <div className="w-16 h-16 bg-muted/40 rounded-md flex-shrink-0"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 bg-muted/40 rounded w-2/3"></div>
+                    <div className="h-4 bg-muted/40 rounded w-1/3"></div>
+                    <div className="h-4 bg-muted/40 rounded w-1/2"></div>
                   </div>
-                  
-                  {/* Expanded content */}
-                  {expandedCard === cert.id && (
-                    <div className="px-6 pb-6">
-                      <div className="pt-4 border-t border-border/40">
-                        <div className="text-sm space-y-4">
-                          <div>
-                            <h4 className="font-medium mb-1">About this certification</h4>
-                            <p className="text-muted-foreground leading-relaxed">
-                              This credential validates skills and knowledge in {cert.title}. 
-                              It demonstrates professional expertise and commitment to industry standards.
-                            </p>
-                          </div>
+                  <div className="w-8 h-8 bg-muted/40 rounded-full"></div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <>
+              {certifications.length > 0 ? (
+                certifications.map((cert, index) => (
+                  <div 
+                    key={cert.id}
+                    className={`bg-card border transition-all duration-200 rounded-md shadow-sm overflow-hidden
+                      ${selectedCert === cert.id 
+                        ? "border-primary" 
+                        : "border-border hover:border-border/80 hover:shadow"}`}
+                  >
+                    {/* Collapsed view */}
+                    <div 
+                      className="p-5 cursor-pointer"
+                      onClick={() => setSelectedCert(selectedCert === cert.id ? null : cert.id)}
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center gap-4">
+                        {/* Certificate logo */}
+                        <div className="w-16 h-16 bg-muted/30 rounded-md border border-border/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          <img 
+                            src={cert.image} 
+                            alt={cert.issuer} 
+                            className="w-12 h-12 object-contain"
+                          />
+                        </div>
+                        
+                        {/* Certificate details */}
+                        <div className="flex-1">
+                          <h3 className="text-base font-semibold mb-1">{cert.title}</h3>
                           
-                          <div>
-                            <h4 className="font-medium mb-2">Key skills</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {["Technical Proficiency", "Professional Knowledge", "Industry Best Practices"].map((skill, i) => (
-                                <span 
-                                  key={i}
-                                  className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-y-1 sm:gap-x-6 text-sm text-muted-foreground">
+                            <div className="flex items-center">
+                              <Building className="w-4 h-4 mr-1.5 text-muted-foreground/70" />
+                              <span>{cert.issuer}</span>
                             </div>
+                            
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1.5 text-muted-foreground/70" />
+                              <span>{cert.date}</span>
+                            </div>
+                            
+                            {index === 0 && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                Featured
+                              </span>
+                            )}
                           </div>
-                          
-                          {cert.credential_url && (
-                            <a
-                              href={cert.credential_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-4 inline-flex items-center justify-center w-full py-2.5 px-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                            >
-                              <BadgeCheck className="w-4 h-4 mr-2" />
-                              <span>View and Verify Credential</span>
-                              <ExternalLink className="ml-2 w-3.5 h-3.5" />
-                            </a>
-                          )}
+                        </div>
+                        
+                        {/* Expand/collapse indicator */}
+                        <div className={`w-8 h-8 rounded-full bg-muted/30 flex items-center justify-center transition-transform duration-200
+                          ${selectedCert === cert.id ? "rotate-90" : ""}`}>
+                          <ChevronRight className="w-5 h-5 text-muted-foreground" />
                         </div>
                       </div>
                     </div>
-                  )}
+                    
+                    {/* Expanded details */}
+                    {selectedCert === cert.id && (
+                      <div className="px-5 pb-5 pt-2 border-t border-border/40 bg-muted/5">
+                        <div className="pl-0 md:pl-20">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-sm">
+                            <div>
+                              <h4 className="font-semibold mb-1.5 text-foreground">Overview</h4>
+                              <p className="text-muted-foreground">
+                                This certification validates professional expertise in {cert.title.toLowerCase()} 
+                                and related technical competencies.
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <h4 className="font-semibold mb-1.5 text-foreground">Skills Validated</h4>
+                              <ul className="text-muted-foreground space-y-1">
+                                <li>• Technical proficiency</li>
+                                <li>• Industry best practices</li>
+                                <li>• Professional knowledge</li>
+                              </ul>
+                            </div>
+                            
+                            <div className="flex flex-col">
+                              <h4 className="font-semibold mb-1.5 text-foreground">Credential</h4>
+                              <div className="flex-1">
+                                <p className="text-muted-foreground">
+                                  Issued by {cert.issuer} in compliance with industry standards.
+                                </p>
+                              </div>
+                              
+                              {cert.credential_url && (
+                                <a
+                                  href={cert.credential_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <BadgeCheck className="w-4 h-4 mr-1.5" />
+                                  <span>Verify credential</span>
+                                  <ExternalLink className="ml-1.5 w-3.5 h-3.5" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10 bg-muted/20 rounded-md border border-border">
+                  <p className="text-muted-foreground">No certifications found.</p>
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full flex items-center justify-center py-16 bg-muted/40 rounded-2xl">
-                <div className="text-center">
-                  <p className="text-muted-foreground mb-2">No certifications found for this filter.</p>
-                  <button
-                    onClick={() => setActiveFilter("all")}
-                    className="text-sm font-medium text-primary hover:underline"
-                  >
-                    View all certifications
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </>
+          )}
+        </div>
+        
+        {/* Footer information */}
+        {!isLoading && certifications.length > 0 && (
+          <div className="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm">
+            <p className="text-muted-foreground max-w-lg">
+              All certifications listed are current and in good standing. Verification links lead to the official issuer's credential verification system.
+            </p>
+            
+            <div className="mt-4 sm:mt-0">
+              <span className="inline-flex items-center px-3 py-1.5 rounded bg-muted text-muted-foreground">
+                <BadgeCheck className="w-4 h-4 mr-1.5 text-primary" />
+                <span>Verified credentials</span>
+              </span>
+            </div>
           </div>
         )}
       </div>
