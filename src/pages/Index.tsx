@@ -4,7 +4,6 @@ import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import SkillsSection from "@/components/SkillsSection";
 import CertificationsSection from "@/components/CertificationsSection";
-import ContactSection from "@/components/ContactSection";
 import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
@@ -22,7 +21,6 @@ const Index = () => {
         <FeaturedProjects />
         <GithubSection />
         <CertificationsSection />
-        <ContactSection />
       </main>
       <Footer />
     </div>
