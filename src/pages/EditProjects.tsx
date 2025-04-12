@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -92,8 +91,13 @@ const EditProjects = () => {
   };
 
   // Handle project refresh after add/edit
-  const handleProjectChange = () => {
-    return refetchProjects();
+  const handleProjectChange = async () => {
+    try {
+      const result = await refetchProjects();
+      return result;
+    } catch (error) {
+      console.error("Error refreshing projects:", error);
+    }
   };
 
   // Handle toggle visibility
