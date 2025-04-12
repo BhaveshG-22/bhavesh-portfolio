@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Menu, LogOut } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
 
@@ -47,15 +47,10 @@ const Header = () => {
                 {link.name}
               </RouterLink>
             ))}
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <Button variant="ghost" size="sm" onClick={logout} className="hover:text-primary transition-colors">
-                <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </Button>
-            ) : (
-              <RouterLink to="/login" className="hover:text-primary transition-colors">
-                Login
-              </RouterLink>
             )}
           </nav>
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -82,15 +77,10 @@ const Header = () => {
                     {link.name}
                   </RouterLink>
                 ))}
-                {isAuthenticated ? (
+                {isAuthenticated && (
                   <Button variant="ghost" onClick={handleLogout} className="justify-start px-2">
-                    <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </Button>
-                ) : (
-                  <RouterLink to="/login" className="hover:text-primary transition-colors block py-2" onClick={() => setIsMenuOpen(false)}>
-                    Login
-                  </RouterLink>
                 )}
               </div>
             </SheetContent>
