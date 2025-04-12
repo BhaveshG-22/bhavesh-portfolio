@@ -7,6 +7,10 @@ import NotFound from "./pages/NotFound";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import EditCertifications from "./pages/EditCertifications";
+import Projects from "./pages/Projects";
+import CreateProject from "./pages/CreateProject";
+import EditProject from "./pages/EditProject";
+import Login from "./pages/Login";
 
 function App() {
   const queryClient = new QueryClient();
@@ -30,6 +34,26 @@ function App() {
               {
                 path: "/edit-certifications",
                 element: <EditCertifications />,
+                errorElement: <NotFound />
+              },
+              {
+                path: "/projects",
+                element: <Projects />,
+                errorElement: <NotFound />
+              },
+              {
+                path: "/project/new",
+                element: <CreateProject />,
+                errorElement: <NotFound />
+              },
+              {
+                path: "/project/edit/:id",
+                element: <EditProject />,
+                errorElement: <NotFound />
+              },
+              {
+                path: "/login",
+                element: <Login />,
                 errorElement: <NotFound />
               }
             ])}

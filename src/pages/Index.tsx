@@ -8,6 +8,7 @@ import ContactSection from "@/components/ContactSection";
 import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
+import FeaturedProjects from "@/components/FeaturedProjects";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
         <HeroSection />
         <AboutSection />
         <SkillsSection />
+        <FeaturedProjects />
         <GithubSection />
         <CertificationsSection />
         <ContactSection />
