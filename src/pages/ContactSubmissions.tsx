@@ -47,7 +47,7 @@ const ContactSubmissions = () => {
           ) : error ? (
             <SubmissionError error={error} refreshSubmissions={refreshSubmissions} />
           ) : submissions.length === 0 ? (
-            <EmptySubmissions />
+            <EmptySubmissions onRefresh={refreshSubmissions} />
           ) : (
             <ContactSubmissionTable 
               submissions={submissions}
