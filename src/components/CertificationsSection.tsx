@@ -1,15 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { BadgeCheck, Award, Bookmark, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { fetchVisibleCertifications, Certification } from "@/services/certificationService";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
-const CertificationsSection = ({ className }: { className?: string }) => {
-  const [certifications, setCertifications] = useState<Certification[]>([]);
+const CertificationsSection = () => {
+  const [certifications, setCertifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeCard, setActiveCard] = useState(null);
 
   useEffect(() => {
     const loadCertifications = async () => {
@@ -29,28 +28,28 @@ const CertificationsSection = ({ className }: { className?: string }) => {
   }, []);
 
   return (
-    <section id="certifications" className={`section-padding relative overflow-hidden ${className}`}>
+    <section id="certifications" className="py-16 md:py-24 px-4 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-secondary/5 blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-56 h-56 rounded-full bg-primary/10 blur-3xl"></div>
+        <div className="absolute top-1/4 right-10 w-40 h-40 rounded-full bg-secondary/5 blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-10 w-56 h-56 rounded-full bg-primary/10 blur-3xl"></div>
       </div>
       
-      <div className="max-container relative z-10">
-        <div className="flex flex-col items-center text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gradient-light">Certifications</h2>
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="flex flex-col items-center text-center mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gradient-light">Certifications</h2>
           <div className="w-24 h-1.5 bg-primary rounded-full mb-6 animate-pulse"></div>
-          <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed">
             Professional achievements and continuous learning that showcase my expertise and dedication.
           </p>
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[1, 2, 3].map((item) => (
               <Card key={item} className="bg-card/30 backdrop-blur-sm border border-white/10 overflow-hidden">
-                <div className="h-48 bg-muted/20 animate-pulse"></div>
-                <CardContent className="p-5">
+                <div className="h-40 sm:h-48 bg-muted/20 animate-pulse"></div>
+                <CardContent className="p-4 md:p-5">
                   <div className="h-6 w-3/4 bg-muted/20 animate-pulse mb-2"></div>
                   <div className="h-4 w-1/2 bg-muted/20 animate-pulse mb-4"></div>
                   <div className="h-4 w-1/3 bg-muted/20 animate-pulse"></div>
@@ -59,65 +58,87 @@ const CertificationsSection = ({ className }: { className?: string }) => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {certifications.length > 0 ? (
               certifications.map((cert, index) => (
                 <Card 
                   key={cert.id} 
-                  className="group bg-card border border-white/10 overflow-hidden hover:border-primary/40 transition-all duration-300 shadow-lg"
+                  className={`group relative bg-card/30 backdrop-blur-sm border overflow-hidden transition-all duration-300 ${
+                    activeCard === cert.id 
+                      ? "border-primary scale-105 shadow-xl z-10" 
+                      : "border-white/10 hover:border-primary/30"
+                  }`}
+                  onMouseEnter={() => setActiveCard(cert.id)}
+                  onMouseLeave={() => setActiveCard(null)}
+                  onClick={() => cert.credential_url && window.open(cert.credential_url, "_blank")}
                 >
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
                     <AspectRatio ratio={16/9}>
                       <img 
                         src={cert.image} 
                         alt={cert.title} 
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                        className={`object-cover w-full h-full transition-all duration-300 ${
+                          activeCard === cert.id ? "opacity-90 scale-105" : "opacity-70 group-hover:opacity-80"
+                        }`}
                       />
                     </AspectRatio>
-                    <div className="absolute top-3 right-3 bg-primary/90 p-2 rounded-full shadow-lg z-20">
+                    
+                    {/* Badge overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80"></div>
+                    
+                    {/* Top right badge */}
+                    <div className={`absolute top-3 right-3 p-2 rounded-full shadow-lg transition-all duration-300 ${
+                      index === 0 ? "bg-yellow-500/90" : "bg-primary/90"
+                    }`}>
                       {index === 0 ? (
-                        <Award className="h-5 w-5 text-white" />
+                        <Award className="h-4 w-4 md:h-5 md:w-5 text-white" />
                       ) : (
-                        <Bookmark className="h-5 w-5 text-white" />
+                        <Bookmark className="h-4 w-4 md:h-5 md:w-5 text-white" />
                       )}
                     </div>
                     
-                    {/* Certificate title overlay for better visibility */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-                      <h3 className="font-semibold text-xl text-white mb-1 drop-shadow-md">
-                        {cert.title}
-                      </h3>
+                    {/* Issuer Badge */}
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs">
+                      {cert.issuer}
+                    </div>
+                    
+                    {/* Date Badge */}
+                    <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs">
+                      {cert.date}
                     </div>
                   </div>
                   
-                  <CardContent className="p-5 bg-card">
-                    <div className="flex items-center text-sm text-muted-foreground mb-3">
-                      <span className="mr-2">Issued by {cert.issuer}</span>
-                      <span>•</span>
-                      <span className="ml-2">{cert.date}</span>
+                  <CardContent className="p-4 md:p-5">
+                    <div className="flex justify-between items-start">
+                      <h3 className={`font-bold text-base md:text-lg transition-colors ${
+                        activeCard === cert.id 
+                          ? "text-white" 
+                          : "text-gradient group-hover:text-white"
+                      }`}>
+                        {cert.title}
+                      </h3>
                     </div>
                     
                     {cert.credential_url && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="w-full mt-3 border border-primary/20 hover:bg-primary/10 text-primary"
-                        asChild
-                      >
-                        <a 
-                          href={cert.credential_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2"
-                        >
-                          <BadgeCheck className="w-4 h-4" />
-                          Verify Certificate
-                          <ExternalLink className="w-3 h-3 opacity-70" />
-                        </a>
-                      </Button>
+                      <div className="flex items-center justify-between mt-4">
+                        <span className="text-xs md:text-sm text-muted-foreground">
+                          Tap to view details
+                        </span>
+                        <div className="flex items-center text-xs md:text-sm text-primary group-hover:text-primary-light transition-colors">
+                          <BadgeCheck className="w-4 h-4 mr-1" />
+                          <span className="mr-1">Verify</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </div>
+                      </div>
                     )}
                   </CardContent>
+                  
+                  {/* Interactive hover effect overlay */}
+                  {cert.credential_url && (
+                    <div className={`absolute inset-0 bg-primary/10 pointer-events-none transition-opacity duration-300 ${
+                      activeCard === cert.id ? "opacity-100" : "opacity-0"
+                    }`}></div>
+                  )}
                 </Card>
               ))
             ) : (
