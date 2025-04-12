@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +9,6 @@ import {
   toggleProjectVisibility,
   type Project 
 } from "@/services/projectService";
-import { isProjectImage } from "@/services/projectImageService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProjectForm from "@/components/admin/ProjectForm";
@@ -85,7 +85,7 @@ const EditProjects = () => {
       : projects.filter(project => project.hidden);
 
   // Start editing a project
-  const startEditing = (project: Project) => {
+  const handleStartEditing = (project: Project) => {
     setEditingProject(project);
     setIsEditDialogOpen(true);
   };
@@ -93,8 +93,11 @@ const EditProjects = () => {
   // Handle project refresh after add/edit
   const handleProjectChange = async () => {
     try {
-      const result = await refetchProjects();
-      return result;
+      await queryClient.invalidateQueries({ queryKey: ["projects"] });
+      await refetchProjects();
+      // Close dialogs after successful operations
+      setIsAddDialogOpen(false);
+      setIsEditDialogOpen(false);
     } catch (error) {
       console.error("Error refreshing projects:", error);
     }
@@ -144,7 +147,7 @@ const EditProjects = () => {
               </Button>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <ProjectForm 
-                  onProjectAdded={handleProjectChange} 
+                  onProjectAdded={handleProjectChange}
                   mode="add"
                 />
               </DialogContent>
@@ -242,7 +245,7 @@ const EditProjects = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => startEditing(project)}
+                        onClick={() => handleStartEditing(project)}
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>

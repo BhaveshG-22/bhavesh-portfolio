@@ -18,7 +18,7 @@ import { X, Loader2 } from "lucide-react";
 interface ProjectFormProps {
   project?: Project | null;
   mode?: 'add' | 'edit';
-  onProjectAdded: () => Promise<any>; // Changed to accept any Promise return type
+  onProjectAdded: () => Promise<any>; // Accept any Promise return type
 }
 
 const ProjectForm = ({ project, mode = 'add', onProjectAdded }: ProjectFormProps) => {
