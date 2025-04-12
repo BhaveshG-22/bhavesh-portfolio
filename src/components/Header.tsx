@@ -15,7 +15,6 @@ const Header = () => {
   };
 
   const navigationLinks = [
-    { name: 'Home', href: '/' },
     { name: 'Projects', href: '/projects' },
     { name: 'Blog', href: '/blog' }
   ];
@@ -102,4 +101,3 @@ const Header = () => {
 };
 
 export default Header;
-
