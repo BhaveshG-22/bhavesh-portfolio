@@ -21,7 +21,8 @@ const Header = () => {
 
   const adminLinks = [
     { name: 'Edit Certifications', href: '/edit-certifications' },
-    { name: 'Edit Blog', href: '/edit-blog' }
+    { name: 'Edit Blog', href: '/edit-blog' },
+    { name: 'Contact Submissions', href: '/contact-submissions' }
   ];
 
   const handleLogout = () => {
