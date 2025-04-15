@@ -19,6 +19,7 @@ export interface GitHubContributionsProps {
   username: string;
   className?: string;
   onError?: (error: string) => void;
+  hideStats?: boolean; // New prop to control stats visibility
 }
 
 // Custom hook for fetching contributions
@@ -109,7 +110,8 @@ function useGitHubContributions(username: string) {
 const GitHubContributions = ({
   username,
   className = "",
-  onError
+  onError,
+  hideStats = false, // Default to false for backward compatibility
 }: GitHubContributionsProps) => {
   const { data, isLoading, error, refetch, startDate } = useGitHubContributions(username);
   const [tooltip, setTooltip] = useState<{ content: string; x: number; y: number } | null>(null);
@@ -362,25 +364,27 @@ const GitHubContributions = ({
         </div>
       </div>
 
-      {/* Stats section */}
-      <div className="grid grid-cols-4 gap-2 mb-4">
-        <div className="bg-gray-800/50 rounded p-2 text-center">
-          <div className="text-xs text-gray-400">Current Streak</div>
-          <div className="text-white font-bold">{stats.current} days</div>
+      {/* Conditionally render stats */}
+      {!hideStats && (
+        <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="bg-gray-800/50 rounded p-2 text-center">
+            <div className="text-xs text-gray-400">Current Streak</div>
+            <div className="text-white font-bold">{stats.current} days</div>
+          </div>
+          <div className="bg-gray-800/50 rounded p-2 text-center">
+            <div className="text-xs text-gray-400">Longest Streak</div>
+            <div className="text-white font-bold">{stats.longest} days</div>
+          </div>
+          <div className="bg-gray-800/50 rounded p-2 text-center">
+            <div className="text-xs text-gray-400">Best Day</div>
+            <div className="text-white font-bold">{stats.best}</div>
+          </div>
+          <div className="bg-gray-800/50 rounded p-2 text-center">
+            <div className="text-xs text-gray-400">Daily Average</div>
+            <div className="text-white font-bold">{stats.average}</div>
+          </div>
         </div>
-        <div className="bg-gray-800/50 rounded p-2 text-center">
-          <div className="text-xs text-gray-400">Longest Streak</div>
-          <div className="text-white font-bold">{stats.longest} days</div>
-        </div>
-        <div className="bg-gray-800/50 rounded p-2 text-center">
-          <div className="text-xs text-gray-400">Best Day</div>
-          <div className="text-white font-bold">{stats.best}</div>
-        </div>
-        <div className="bg-gray-800/50 rounded p-2 text-center">
-          <div className="text-xs text-gray-400">Daily Average</div>
-          <div className="text-white font-bold">{stats.average}</div>
-        </div>
-      </div>
+      )}
 
       <div ref={chartRef} className="relative">
         <div className="grid grid-cols-[auto_1fr] gap-x-1 overflow-hidden">

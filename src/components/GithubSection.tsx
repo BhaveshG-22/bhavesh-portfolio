@@ -14,7 +14,7 @@ const GithubSection = () => {
           </p>
         </div>
         <div className="w-full">
-          <GitHubContributions username="BhaveshG-22" />
+          <GitHubContributions username="BhaveshG-22" hideStats={true} />
         </div>
       </div>
     </section>
