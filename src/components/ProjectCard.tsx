@@ -95,37 +95,32 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
       
       <CardFooter className="flex justify-between pt-4 pb-4 border-t">
         <div className="flex space-x-2">
-          {project.github && (
-            <a 
-              href={project.github} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-              title="View source code"
-            >
-              <Github size={20} />
-              <span className="sr-only">GitHub</span>
-            </a>
-          )}
-          {isDeployed ? (
-            <a 
-              href={project.demo} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-              title="View live demo"
-            >
-              <ExternalLink size={20} />
-              <span className="sr-only">Live Demo</span>
-            </a>
-          ) : (
-            <span
-              className="text-muted-foreground flex items-center"
-              title="Project under development"
-            >
-              <Code2 size={20} />
-              <span className="sr-only">Under Development</span>
-            </span>
+          {/* Only show links if the project is deployed */}
+          {isDeployed && (
+            <>
+              {project.github && (
+                <a 
+                  href={project.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                  title="View source code"
+                >
+                  <Github size={20} />
+                  <span className="sr-only">GitHub</span>
+                </a>
+              )}
+              <a 
+                href={project.demo} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors"
+                title="View live demo"
+              >
+                <ExternalLink size={20} />
+                <span className="sr-only">Live Demo</span>
+              </a>
+            </>
           )}
         </div>
         

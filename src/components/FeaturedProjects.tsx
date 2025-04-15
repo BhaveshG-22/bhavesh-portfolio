@@ -85,35 +85,38 @@ const FeaturedProjects = () => {
                 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex gap-4">
+                    {/* Only show links if demo URL is present */}
                     {project.demo ? (
-                      <a 
-                        href={project.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center text-primary hover:text-primary/80 transition-colors"
-                        aria-label={`Live demo of ${project.title}`}
-                      >
-                        <ExternalLink size={16} className="mr-1" />
-                        <span className="text-sm font-medium">Demo</span>
-                      </a>
+                      <>
+                        <a 
+                          href={project.demo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center text-primary hover:text-primary/80 transition-colors"
+                          aria-label={`Live demo of ${project.title}`}
+                        >
+                          <ExternalLink size={16} className="mr-1" />
+                          <span className="text-sm font-medium">Demo</span>
+                        </a>
+                        
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                            aria-label={`GitHub repository for ${project.title}`}
+                          >
+                            <Github size={16} className="mr-1" />
+                            <span className="text-sm font-medium">Code</span>
+                          </a>
+                        )}
+                      </>
                     ) : (
                       <span className="flex items-center text-amber-600 dark:text-amber-500">
                         <Code2 size={16} className="mr-1" />
                         <span className="text-sm font-medium">Under Development</span>
                       </span>
-                    )}
-                    
-                    {project.github && (
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                        aria-label={`GitHub repository for ${project.title}`}
-                      >
-                        <Github size={16} className="mr-1" />
-                        <span className="text-sm font-medium">Code</span>
-                      </a>
                     )}
                   </div>
                 </div>
