@@ -62,7 +62,7 @@ const ContactSection = () => {
           </div>
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Get In Touch</h2>
           <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-            Have a project in mind or want to discuss opportunities? Drop me a message and I'll get back to you soon.
+           Let’s build something cool together — drop a message!
           </p>
         </div>
 
