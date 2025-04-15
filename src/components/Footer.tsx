@@ -1,9 +1,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { isAuthenticated } = useAuth();
   
   return (
     <footer className="bg-muted/50 py-12">
@@ -74,6 +77,13 @@ const Footer = () => {
                   Contact
                 </a>
               </li>
+              {isAuthenticated && (
+                <li>
+                  <Link to="/admin/contact-submissions" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Contact Submissions
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
         </div>

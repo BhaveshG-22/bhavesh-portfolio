@@ -8,6 +8,7 @@ import GithubSection from "@/components/GithubSection";
 import Footer from "@/components/Footer";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import FeaturedProjects from "@/components/FeaturedProjects";
+import ContactSection from "@/components/ContactSection";
 
 const Index = () => {
   return (
@@ -21,6 +22,7 @@ const Index = () => {
         <FeaturedProjects />
         <GithubSection />
         <CertificationsSection />
+        <ContactSection />
       </main>
       <Footer />
     </div>
