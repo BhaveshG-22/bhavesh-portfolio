@@ -63,23 +63,6 @@ const FeaturedProjects = () => {
                     <span className="text-slate-400 dark:text-slate-500 text-sm font-medium">No image available</span>
                   </div>
                 )}
-                
-                {/* Project status badge */}
-                <div className="absolute top-2 left-2">
-                  <Badge 
-                    variant={project.demo ? "default" : "secondary"} 
-                    className={project.demo ? "bg-green-500" : "bg-amber-500"}
-                  >
-                    {project.demo ? "Deployed" : "Under Development"}
-                  </Badge>
-                </div>
-                
-                {/* Featured badge */}
-                {project.is_default && (
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="default" className="bg-primary">Featured</Badge>
-                  </div>
-                )}
               </div>
               
               <div className="p-6">

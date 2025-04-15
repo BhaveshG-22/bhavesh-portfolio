@@ -76,16 +76,6 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
             <span className="text-muted-foreground">No image</span>
           </div>
         )}
-        {project.is_default && (
-          <div className="absolute top-2 right-2">
-            <Badge variant="default" className="bg-primary">Featured</Badge>
-          </div>
-        )}
-        <div className="absolute top-2 left-2">
-          <Badge variant={isDeployed ? "default" : "secondary"} className={isDeployed ? "bg-green-500" : "bg-amber-500"}>
-            {isDeployed ? "Deployed" : "Under Development"}
-          </Badge>
-        </div>
       </div>
       
       <CardHeader className="pb-2">
@@ -139,8 +129,23 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
           )}
         </div>
         
+        {/* Display deployment status */}
+        <div className="flex items-center">
+          {isDeployed ? (
+            <span className="text-green-500 text-sm font-medium flex items-center">
+              <ExternalLink size={16} className="mr-1" />
+              Demo
+            </span>
+          ) : (
+            <span className="text-amber-500 text-sm font-medium flex items-center">
+              <Code2 size={16} className="mr-1" />
+              Under Development
+            </span>
+          )}
+        </div>
+        
         {isAdmin && (
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 ml-4">
             <Button
               size="icon"
               variant="ghost"
