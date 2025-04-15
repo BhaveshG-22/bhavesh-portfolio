@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Github, ExternalLink, Star, Pencil, Trash2 } from 'lucide-react';
+import { Github, ExternalLink, Star, Pencil, Trash2, Code2 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteProject, toggleProjectFeatured } from '@/services/projectService';
 import { toast } from 'sonner';
@@ -58,6 +58,9 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
       featured: !project.is_default 
     });
   };
+
+  // Check if the project is deployed (has a demo link)
+  const isDeployed = Boolean(project.demo);
   
   return (
     <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300">
@@ -78,6 +81,11 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
             <Badge variant="default" className="bg-primary">Featured</Badge>
           </div>
         )}
+        <div className="absolute top-2 left-2">
+          <Badge variant={isDeployed ? "default" : "secondary"} className={isDeployed ? "bg-green-500" : "bg-amber-500"}>
+            {isDeployed ? "Deployed" : "Under Development"}
+          </Badge>
+        </div>
       </div>
       
       <CardHeader className="pb-2">
@@ -103,21 +111,31 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
+              title="View source code"
             >
               <Github size={20} />
               <span className="sr-only">GitHub</span>
             </a>
           )}
-          {project.demo && (
+          {isDeployed ? (
             <a 
               href={project.demo} 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
+              title="View live demo"
             >
               <ExternalLink size={20} />
               <span className="sr-only">Live Demo</span>
             </a>
+          ) : (
+            <span
+              className="text-muted-foreground flex items-center"
+              title="Project under development"
+            >
+              <Code2 size={20} />
+              <span className="sr-only">Under Development</span>
+            </span>
           )}
         </div>
         

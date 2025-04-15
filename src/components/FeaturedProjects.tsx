@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllProjects } from '@/services/projectService';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Loader2, ExternalLink, Github, ArrowRight } from 'lucide-react';
+import { Loader2, ExternalLink, Github, ArrowRight, Code2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const FeaturedProjects = () => {
   const { data: projects = [], isLoading, error } = useQuery({
@@ -49,7 +51,7 @@ const FeaturedProjects = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
           {featuredProjects.map((project) => (
             <div key={project.id} className="group relative bg-white dark:bg-slate-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
-              <div className="aspect-[16/9] overflow-hidden">
+              <div className="aspect-[16/9] overflow-hidden relative">
                 {project.image ? (
                   <img 
                     src={project.image}
@@ -59,6 +61,23 @@ const FeaturedProjects = () => {
                 ) : (
                   <div className="w-full h-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">
                     <span className="text-slate-400 dark:text-slate-500 text-sm font-medium">No image available</span>
+                  </div>
+                )}
+                
+                {/* Project status badge */}
+                <div className="absolute top-2 left-2">
+                  <Badge 
+                    variant={project.demo ? "default" : "secondary"} 
+                    className={project.demo ? "bg-green-500" : "bg-amber-500"}
+                  >
+                    {project.demo ? "Deployed" : "Under Development"}
+                  </Badge>
+                </div>
+                
+                {/* Featured badge */}
+                {project.is_default && (
+                  <div className="absolute top-2 right-2">
+                    <Badge variant="default" className="bg-primary">Featured</Badge>
                   </div>
                 )}
               </div>
@@ -83,7 +102,7 @@ const FeaturedProjects = () => {
                 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex gap-4">
-                    {project.demo && (
+                    {project.demo ? (
                       <a 
                         href={project.demo}
                         target="_blank"
@@ -94,6 +113,11 @@ const FeaturedProjects = () => {
                         <ExternalLink size={16} className="mr-1" />
                         <span className="text-sm font-medium">Demo</span>
                       </a>
+                    ) : (
+                      <span className="flex items-center text-amber-600 dark:text-amber-500">
+                        <Code2 size={16} className="mr-1" />
+                        <span className="text-sm font-medium">Under Development</span>
+                      </span>
                     )}
                     
                     {project.github && (
