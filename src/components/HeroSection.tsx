@@ -1245,7 +1245,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
               className: "relative overflow-hidden group bg-gradient-to-r from-primary to-accent text-white font-medium hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
             },
               createElement("a", {
-                href: "#projects",
+                href: "/projects",
                 className: "flex items-center"
               }, [
                 createElement(Monitor, { key: "icon", className: "mr-2 h-4 w-4" }),
