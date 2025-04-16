@@ -6,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const AboutSection = () => {
-  const pdfURL = 'public/uploads/BhaveshResume.pdf'
+  const pdfURL = '/uploads/BhaveshResume.pdf';
 
   function downloadFile() {
     // Create an anchor element (a link) to simulate a download
