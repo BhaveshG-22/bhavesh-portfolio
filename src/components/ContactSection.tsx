@@ -72,15 +72,14 @@ const ContactSection = () => {
     document.body.removeChild(link);
   }
 
-
   return (
     <section id="contact" className="py-20 bg-muted/30">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl flex items-center justify-center gap-2">
+          <div className="inline-block rounded-lg bg-muted p-2 mb-2">
             <Mail className="h-6 w-6 text-primary" />
-            Get In Touch
-          </h2>
+          </div>
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Get In Touch</h2>
           <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed">
             Let's build something cool together — drop a message!
           </p>
@@ -92,7 +91,7 @@ const ContactSection = () => {
               variant="outline"
               className="group relative overflow-hidden rounded-full border-2 border-primary px-8 py-6 transition-all hover:bg-primary/10 hover:shadow-lg"
             >
-              <span className="relative z-10 flex items-center gap-3 font-medium text-lg transition-transform duration-300 group-hover:translate-x-2">
+              <span className="relative z-10 flex items-center gap-3 font-medium text-lg transition-transform duration-300 group-hover:font-bold">
                 Download My Resume
                 <FileDown className="h-5 w-5 animate-bounce" />
               </span>
