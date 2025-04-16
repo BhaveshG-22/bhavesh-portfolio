@@ -30,7 +30,7 @@ const Footer = () => {
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
-                <a href="https:https://www.linkedin.com/in/bhaveshgavali" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com/in/bhaveshgavali" target="_blank" rel="noreferrer" aria-label="LinkedIn">
                   <Linkedin className="h-5 w-5" />
                 </a>
               </Button>
