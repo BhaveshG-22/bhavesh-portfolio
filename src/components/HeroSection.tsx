@@ -1264,7 +1264,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
               createElement("a", {
                 href: "#contact",
                 className: "flex items-center"
-              }, "Get in Touch")
+              }, "Full Stack Developer ")
             )
           ]),
 
