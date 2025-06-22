@@ -106,7 +106,6 @@ const AlternativeHeroSection = () => {
     "portfolio",
     "personal",
     "professional",
-    "python",
     "programming",
     "profile"
   ];
@@ -131,14 +130,6 @@ const AlternativeHeroSection = () => {
       setTerminalHistory([]);
       return null;
     },
-    projects: () => ({
-      type: "response",
-      content: `My latest projects:
-1. E-commerce Dashboard - React/NextJS
-2. Mobile Banking App - React Native
-3. Real-time Chat Application - Socket.io/Express
-4. Portfolio Website - You're looking at it!`
-    }),
     skills: () => ({
       type: "response",
       content: `My technical skills:
@@ -149,16 +140,16 @@ const AlternativeHeroSection = () => {
     }),
     about: () => ({
       type: "response",
-      content: `Hi, I'm a Full Stack Developer passionate about creating exceptional digital experiences. I specialize in React, TypeScript, and modern backend technologies.`
+      content: `Hi, I'm Bhavesh Gavali, a Full Stack Developer passionate about creating exceptional digital experiences. I specialize in React, TypeScript, and modern backend technologies with 1.5+ years of experience.`
     }),
     contact: () => ({
       type: "response",
-      content: `Email: developer@example.com
-LinkedIn: linkedin.com/in/developer
-Twitter: @developer`
+      content: `Email: bhaveshgavali2022@gmail.com
+LinkedIn: https://www.linkedin.com/in/bhaveshgavali/
+Twitter: @Bhavesh_2424_`
     }),
     github: () => {
-      window.open("https://github.com", "_blank");
+      window.open("https://github.com/BhaveshG-22", "_blank");
       return {
         type: "response",
         content: "Opening GitHub profile..."
@@ -175,44 +166,44 @@ Twitter: @developer`
     portfolio: () => ({
       type: "response",
       content: `My portfolio highlights:
-- 5+ years of development experience
-- 20+ successful projects delivered
-- Expertise in modern web technologies
-- Focus on performance and accessibility`
+- 1.5+ years of development experience
+- 4+ strong showcased projects delivered
+- Scaled Gigzy.ca with 20+ live users
+- Implemented CI/CD & real-time logging in Shipyard`
     }),
     professional: () => ({
       type: "response",
       content: `Professional Experience:
-- Senior Developer at Tech Solutions Inc. (2020-Present)
-- Web Developer at Digital Innovations (2018-2020)
-- Freelance Developer (2016-2018)`
+- Full Stack Developer Intern at Tutormates (Feb 2024 – Jun 2024)
+- Personal Projects & Learning (2023-Present)
+- Focus on React, TypeScript, and Node.js development`
     }),
     personal: () => ({
       type: "response",
       content: `A bit about me:
-I enjoy hiking, photography, and contributing to open source projects in my spare time. Always learning something new!`
+Passionate about building innovative web solutions and continuously learning new technologies. Currently exploring modern web development patterns and best practices.`
     }),
-    python: () => ({
+    projects: () => ({
       type: "response",
-      content: `Python Experience:
-- Data analysis with pandas & numpy
-- Web development with Django & FastAPI
-- Automation scripts and tooling
-- Machine learning projects with scikit-learn`
+      content: `Featured Projects:
+- Shipyard: CI/CD platform with real-time logging
+- Gigzy: Local service marketplace (20+ live users)
+- AI Trade Agent: Crypto arbitrage bot
+- Personal Portfolio: This interactive terminal site`
     }),
     programming: () => ({
       type: "response",
-      content: `Programming Languages:
-- JavaScript/TypeScript (Expert)
-- Python (Advanced)
-- Java (Intermediate)
-- Go (Beginner)
-- SQL (Advanced)`
+      content: `Programming Languages & Technologies:
+- JavaScript (Proficient)
+- TypeScript (Proficient)
+- Node.js (Proficient)
+- SQL (Intermediate)
+- React & Next.js (Proficient)`
     }),
     profile: () => ({
       type: "response",
       content: `Professional Profile:
-Full Stack Developer with expertise in building scalable web applications. Passionate about clean code, user experience, and solving complex problems.`
+Full Stack Developer with 1.5+ years of experience building scalable web applications. Passionate about creating efficient solutions, clean code, and delivering exceptional user experiences.`
     }),
     unknown: (cmd) => ({
       type: "response",
