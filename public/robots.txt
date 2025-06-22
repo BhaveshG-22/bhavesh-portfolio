@@ -1,3 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://bhaveshg.dev/sitemap.xml
+
+# Disallow admin and editing routes
+Disallow: /admin/
+Disallow: /edit-*
+Disallow: /login
+Disallow: /project/new
+Disallow: /project/edit/
+
+# Allow important crawlers explicitly
 User-agent: Googlebot
 Allow: /
 
@@ -8,7 +22,4 @@ User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
 Allow: /

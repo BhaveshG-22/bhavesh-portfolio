@@ -54,8 +54,9 @@ const AboutSection = () => {
                 <AspectRatio ratio={1 / 1} className="rounded-lg overflow-hidden">
                   <img
                     src="/uploads/089c2863-e6f0-4ce5-8967-1b826cc6804a.png"
-                    alt="Developer Portrait"
+                    alt="Bhavesh Gavali - Full-Stack Developer Portrait"
                     className="object-cover w-full h-full transition-all duration-700 group-hover:scale-105"
+                    loading="lazy"
                   />
                 </AspectRatio>
               </div>
@@ -67,7 +68,7 @@ const AboutSection = () => {
             <div className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 h-full">
               <div className="mb-6 flex items-start">
                 <Avatar className="h-16 w-16 mr-4 ring-2 ring-primary/30">
-                  <AvatarImage src="/uploads/089c2863-e6f0-4ce5-8967-1b826cc6804a.png" alt="Profile" />
+                  <AvatarImage src="/uploads/089c2863-e6f0-4ce5-8967-1b826cc6804a.png" alt="Bhavesh Gavali Profile Picture" />
                   <AvatarFallback>BG</AvatarFallback>
                 </Avatar>
                 <div>

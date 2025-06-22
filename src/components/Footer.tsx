@@ -35,7 +35,7 @@ const Footer = () => {
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
-                <a href="https://x.com/BGavali_22" target="_blank" rel="noreferrer" aria-label="Twitter">
+                <a href="https://x.com/Bhavesh_2424_" target="_blank" rel="noreferrer" aria-label="Twitter">
                   <Twitter className="h-5 w-5" />
                 </a>
               </Button>

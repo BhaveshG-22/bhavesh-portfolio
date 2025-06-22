@@ -68,8 +68,9 @@ const ProjectCard = ({ project, isAdmin = false }: ProjectCardProps) => {
         {project.image ? (
           <img 
             src={project.image} 
-            alt={project.title}
+            alt={`${project.title} - Project Screenshot`}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">

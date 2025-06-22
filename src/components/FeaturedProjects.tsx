@@ -34,7 +34,7 @@ const FeaturedProjects = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex justify-between items-end mb-12">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Featured Work</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Featured Projects</h2>
             <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-xl">
               Selected projects showcasing my expertise and skills
             </p>
@@ -55,8 +55,9 @@ const FeaturedProjects = () => {
                 {project.image ? (
                   <img 
                     src={project.image}
-                    alt={project.title}
+                    alt={`${project.title} - Portfolio Project Screenshot`}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                    loading="lazy"
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">

@@ -1134,7 +1134,7 @@ Full Stack Developer with expertise in building scalable web applications. Passi
     const socialIcons = [
       { icon: Github, href: "https://github.com/BhaveshG-22", label: "GitHub" },
       { icon: Linkedin, href: "https://www.linkedin.com/in/bhaveshgavali/", label: "LinkedIn" },
-      { icon: Twitter, href: "https://x.com/BGavali_22", label: "Twitter" }
+      { icon: Twitter, href: "https://x.com/Bhavesh_2424_", label: "Twitter" }
     ];
 
     return createElement("div", {
