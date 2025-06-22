@@ -45,9 +45,13 @@ function useGitHubContributions(username: string) {
     abortControllerRef.current = controller;
 
     try {
-      // Using the token directly, but in a production environment you should use environment variables
+      const token = import.meta.env.VITE_GITHUB_TOKEN;
+      if (!token) {
+        throw new Error("GitHub token not configured. Please add VITE_GITHUB_TOKEN to your environment variables.");
+      }
+
       const response = await fetch(
-        `https://54p3k92j7i.execute-api.us-east-1.amazonaws.com/api/contributions?username=${username}&token=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`,
+        `https://54p3k92j7i.execute-api.us-east-1.amazonaws.com/api/contributions?username=${username}&token=${token}`,
         {
           signal: controller.signal
         }
