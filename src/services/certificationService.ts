@@ -14,7 +14,6 @@ export type Certification = {
 };
 
 export const fetchCertifications = async (): Promise<Certification[]> => {
-  console.log("Fetching all certifications...");
   try {
     const { data, error } = await supabase
       .from("certifications")
@@ -22,27 +21,21 @@ export const fetchCertifications = async (): Promise<Certification[]> => {
       .order("date", { ascending: false });
     
     if (error) {
-      console.error("Error fetching certifications:", error);
       throw new Error(error.message);
     }
     
-    console.log(`Successfully fetched ${data?.length || 0} certifications`);
     return data || [];
   } catch (error) {
-    console.error("Unexpected error in fetchCertifications:", error);
     return [];
   }
 };
 
 export const fetchVisibleCertifications = async (): Promise<Certification[]> => {
-  console.log("Fetching visible certifications...");
   try {
     const allCertifications = await fetchCertifications();
     const visibleCertifications = allCertifications.filter(cert => !cert.hidden);
-    console.log(`Returning ${visibleCertifications.length} visible certifications out of ${allCertifications.length} total`);
     return visibleCertifications;
   } catch (error) {
-    console.error("Unexpected error in fetchVisibleCertifications:", error);
     return [];
   }
 };
@@ -55,7 +48,6 @@ export const addCertification = async (certification: Omit<Certification, "id" |
     .single();
   
   if (error) {
-    console.error("Error adding certification:", error);
     throw new Error(error.message);
   }
   
@@ -71,7 +63,6 @@ export const updateCertification = async (id: number, updates: Partial<Omit<Cert
     .single();
   
   if (error) {
-    console.error("Error updating certification:", error);
     throw new Error(error.message);
   }
   
@@ -85,12 +76,10 @@ export const deleteCertification = async (id: number): Promise<void> => {
     .eq("id", id);
   
   if (error) {
-    console.error("Error deleting certification:", error);
     throw new Error(error.message);
   }
 };
 
 export const toggleCertificationVisibility = async (id: number, isHidden: boolean): Promise<Certification> => {
-  console.log(`Toggling certification ${id} visibility from ${isHidden} to ${!isHidden}`);
   return updateCertification(id, { hidden: !isHidden });
 };
